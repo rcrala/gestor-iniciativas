@@ -14,7 +14,7 @@ The application replaces email + Excel processes with a single, auditable, trace
 - Microsoft Entra ID for SSO
 - SharePoint Online for document storage
 - PAC CLI (Power Platform CLI) for ALM
-- Azure DevOps for git hosting and pipelines
+- GitHub for git hosting and GitHub Actions for CI/CD
 - Claude Code with `microsoft/power-platform-skills` plugins
 - C# Dataverse plug-ins only when Power Fx + Power Automate cannot handle the case
 - PCF Controls (TypeScript + React) only when standard Canvas controls are insufficient

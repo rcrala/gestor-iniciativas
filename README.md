@@ -10,7 +10,7 @@ INNOVA estandariza el ciclo completo de gestión de iniciativas de proyectos, de
 - Microsoft Entra ID (SSO)
 - SharePoint Online (gestión documental)
 - PAC CLI para ALM
-- Azure DevOps (Git + pipelines)
+- GitHub (Git + GitHub Actions)
 - Claude Code con plugins oficiales de Microsoft Power Platform
 
 ## Roles del sistema

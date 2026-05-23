@@ -88,5 +88,5 @@ Los valores reales se configuran al provisionar los ambientes en Sprint 0.
 - Cada solution es independiente y puede desplegarse por separado (excepto `innova-core` que es prerequisito de las demás)
 - DEV usa solutions Unmanaged
 - QA y PROD usan solutions Managed
-- Pipeline en Azure DevOps construye desde fuentes desempaquetadas, empaqueta, e importa
+- Pipeline en GitHub Actions construye desde fuentes desempaquetadas, empaqueta, e importa
 - Rollback: cada release etiqueta el repo (`git tag innova-core-v1.0.0`) para reconstruir cualquier versión
