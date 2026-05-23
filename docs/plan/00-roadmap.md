@@ -109,7 +109,7 @@ Cada actividad concreta = 1 issue. Plantilla y campos obligatorios definidos en 
 | `WBS_INNOVA.xlsx` no está versionado — el mapeo de módulos podría no coincidir | Validar este roadmap contra el Excel original antes de empezar Sprint 0 |
 | PROD environment no aprovisionado | Issue en Fase 0 para definir fecha y responsable |
 | `.mcp.json` y `.claude/settings.json` con rutas WSL hardcodeadas | Issue en Fase 0 para resolver portabilidad |
-| Inconsistencias entre README.md (menciona `develop`) y la directriz GitHub (`dev-cfg` o `main`) | Issue en Fase 0 para reconciliar |
+| ~~Inconsistencias entre README.md (menciona `develop`) y la directriz GitHub (`dev-cfg` o `main`)~~ | **Resuelto en issue #2 (PR adoptando directriz como `docs/conventions/github-workflow.md` con `main` como base)** |
 | Migración de iniciativas existentes en Excel/correo | ADR pendiente, abrir issue en Sprint 0 |
 
 ## Estado

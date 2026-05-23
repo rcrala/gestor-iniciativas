@@ -87,12 +87,20 @@ tests/                # Planes y casos de prueba
 
 ## Flujo de contribución
 
-1. Crear branch desde `develop`: `feature/<modulo>-<tarea-corta>` (ejemplo: `feature/m2-pantalla-solicitante`)
-2. Seguir convenciones en `docs/conventions/`
-3. Ejecutar pruebas locales antes de PR
-4. PR contra `develop` con descripción del cambio y screenshots cuando aplique
-5. Code review obligatorio por al menos un colega
-6. Merge tras CI verde y aprobación
+Seguimos la [Directriz de Trabajo con GitHub](docs/conventions/github-workflow.md). Resumen:
+
+1. **Issue primero**: abrir un issue en GitHub con objetivo, alcance, criterios de aceptación, validaciones y riesgos
+2. **Crear branch desde `main` actualizado**: `issue-<id>-<stream>-<tema-corto>` (ejemplo: `issue-23-canvas-pmo-evaluacion`)
+3. Seguir convenciones en [`docs/conventions/`](docs/conventions/)
+4. Implementar **solo** lo definido en el issue
+5. Ejecutar tests/smoke tests; corregir en el mismo branch si fallan
+6. Commits con [Conventional Commits](docs/conventions/commit-messages.md) y `Refs #<id>` en el cuerpo
+7. **PR contra `main`** con resumen, issues relacionados, evidencia de tests, riesgos
+8. Code review obligatorio
+9. Merge tras CI verde + aprobación
+10. Eliminar el branch local y remoto, confirmar cierre del issue
+
+Para situaciones excepcionales (bootstrap, hotfix, spike), ver el apéndice de la directriz.
 
 ## Equipo
 
