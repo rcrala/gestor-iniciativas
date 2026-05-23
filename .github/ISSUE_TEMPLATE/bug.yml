@@ -1,0 +1,95 @@
+name: Bug
+description: Reportar un defecto o comportamiento incorrecto en INNOVA
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reporta defectos con suficiente detalle para que sean reproducibles.
+        Si es un bug en PROD del cliente, marca el label `p0` o `p1` segun impacto y notifica de inmediato.
+
+        **Despues de crear el issue:** agrega los labels de **stream** (`core`, `canvas`, `flows`, `reports`, `pcf`, `plugins`, `docs`, `ci`) y **prioridad** (`p0`, `p1`, `p2`) que apliquen.
+
+  - type: dropdown
+    id: ambiente
+    attributes:
+      label: Ambiente donde ocurre
+      options:
+        - DEV (GTC - org93905a7d)
+        - QA (GTC - org8b65c4d6)
+        - PROD (tenant cliente)
+        - Local / pre-deploy
+        - Otro (especificar en pasos)
+    validations:
+      required: true
+
+  - type: textarea
+    id: resumen
+    attributes:
+      label: Resumen del problema
+      description: Que esta pasando mal (1-3 oraciones)
+      placeholder: Al crear una iniciativa con monto superior al umbral, el flow de routing no escala al Comite y queda en estado "Pendiente Gerencia"...
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducir
+      description: Secuencia exacta que provoca el bug
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamiento esperado
+      placeholder: La iniciativa deberia transicionar a estado "Pendiente Comite"...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamiento actual
+      placeholder: La iniciativa transiciona a "Pendiente Gerencia"...
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Evidencia (logs, capturas, run-id de flow)
+      description: Pega capturas o links. Para flows incluir el run-id; para canvas incluir version del .msapp si aplica.
+      placeholder: |
+        - Run id: 08585098765432109876
+        - Captura adjunta
+        - Iniciativa de prueba: pas_iniciativa con consecutivo INI-0042
+    validations:
+      required: false
+
+  - type: textarea
+    id: causa
+    attributes:
+      label: Posible causa (opcional)
+      description: Si tienes hipotesis sobre el origen, compartelo
+      placeholder: Sospecho que el umbral se evalua como string en lugar de numero...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad funcional
+      description: Impacto en el usuario / negocio
+      options:
+        - Bloqueante (no puede operar)
+        - Mayor (workaround disponible pero costoso)
+        - Menor (cosmetico o edge case)
+    validations:
+      required: true

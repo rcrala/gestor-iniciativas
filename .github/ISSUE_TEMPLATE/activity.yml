@@ -1,0 +1,87 @@
+name: Actividad (activity)
+description: Nueva actividad concreta de desarrollo en INNOVA (segun directriz GitHub)
+title: "[Activity] "
+labels: ["activity"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Sigue la [directriz de trabajo con GitHub](../blob/main/docs/conventions/github-workflow.md).
+        Cada actividad debe ser concreta, acotada y ejecutable en una sola unidad de trabajo.
+
+        **Despues de crear el issue:** agrega manualmente los labels de **stream** (`core`, `canvas`, `flows`, `reports`, `pcf`, `plugins`, `docs`, `ci`) y **prioridad** (`p0`, `p1`, `p2`) que apliquen. El label `activity` ya viene aplicado.
+
+  - type: input
+    id: modulo
+    attributes:
+      label: Modulo o fase del plan
+      description: "A que parte del [plan](../blob/main/docs/plan/00-roadmap.md) pertenece. Ej M2, Sprint 0 (S0-5), Fase 0."
+      placeholder: "Sprint 0 - S0-5"
+    validations:
+      required: true
+
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: Que se quiere lograr (1-3 oraciones)
+      placeholder: Permitir al PMO registrar la evaluacion de una iniciativa...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alcance
+    attributes:
+      label: Alcance
+      description: Que archivos / modulos / tablas / flows toca. Que NO esta incluido.
+      placeholder: |
+        - Crear canvas screen X
+        - Modificar tabla pas_evaluacionpmo
+        - Crear flow Y
+
+        Fuera de alcance: notificaciones por Teams (sera otra actividad).
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptacion
+      description: Condiciones observables que confirman que esta listo. Usa checklist.
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: validaciones
+    attributes:
+      label: Validaciones / tests requeridos
+      description: Que tests/smoke tests deben pasar. Como se valida.
+      placeholder: |
+        - Smoke test en DEV con 3 escenarios (feliz, datos faltantes, error tecnico)
+        - Solution check sin errores
+    validations:
+      required: true
+
+  - type: textarea
+    id: riesgos
+    attributes:
+      label: Riesgos
+      description: Efectos secundarios posibles. Como se mitigan.
+      placeholder: |
+        - Riesgo: ...
+          Mitigacion: ...
+    validations:
+      required: true
+
+  - type: input
+    id: branch
+    attributes:
+      label: Branch sugerido
+      description: Formato `issue-<id>-<stream>-<tema-corto>` (rellenar el id al abrir el branch)
+      placeholder: "issue-<id>-canvas-pmo-evaluacion"
+    validations:
+      required: false
