@@ -75,18 +75,36 @@ Detalle en `docs/decisions/`. Resumen:
 
 ## Ambientes
 
-| Ambiente | Propósito | URL pattern |
-|---|---|---|
-| DEV | Desarrollo y pruebas individuales | `grupo-pasqui-innova-dev.crm.dynamics.com` |
-| QA | Pruebas integradas y UAT | `grupo-pasqui-innova-qa.crm.dynamics.com` |
-| PROD | Producción | `grupo-pasqui-innova.crm.dynamics.com` |
+INNOVA tiene tres ambientes lógicos, pero **viven en dos tenants distintos**:
 
-Los valores reales se configuran al provisionar los ambientes en Sprint 0.
+| Ambiente | Tenant | URL | Propósito |
+|---|---|---|---|
+| DEV | GTC (nuestro) | `https://org93905a7d.crm.dynamics.com/` | Desarrollo y pruebas individuales |
+| QA | GTC (nuestro) | `https://org8b65c4d6.crm.dynamics.com/` | Pruebas integradas, UAT del equipo, ambiente espejo de PROD |
+| **PROD** | **Cliente (Grupo Pasquí)** | `<pendiente, lo provisiona el cliente>` | Producción operada por el cliente |
+
+PROD no está en nuestro tenant. Ver [ADR-0004](../decisions/0004-entrega-cliente.md) para la estrategia completa de entrega y [`entrega-cliente.md`](entrega-cliente.md) para la guía operativa de instalación.
 
 ## Estrategia de ALM
 
 - Cada solution es independiente y puede desplegarse por separado (excepto `innova-core` que es prerequisito de las demás)
 - DEV usa solutions Unmanaged
-- QA y PROD usan solutions Managed
-- Pipeline en GitHub Actions construye desde fuentes desempaquetadas, empaqueta, e importa
-- Rollback: cada release etiqueta el repo (`git tag innova-core-v1.0.0`) para reconstruir cualquier versión
+- QA usa solutions Managed (para validar el formato que recibirá el cliente)
+- **PROD recibe solutions Managed empaquetadas en GitHub Releases**, el cliente las importa en su tenant
+- Pipeline en GitHub Actions construye desde fuentes desempaquetadas, empaqueta, valida con `pac solution check`, sube como release artifact
+- Configuración por tenant vía **Environment Variables** (no hardcodeada) — ver [`entrega-cliente.md`](entrega-cliente.md)
+- Conexiones por tenant vía **Connection References** que el cliente vincula a sus credenciales
+- Rollback: cada release etiqueta el repo (`git tag v1.0.0`) y conserva el ZIP entregado al cliente para reconstruir cualquier versión
+
+```
+                  Nuestro tenant (GTC)                     Cliente (Grupo Pasqui)
+                  ─────────────────────                    ─────────────────────────
+                                                            ▲
+   develop  ──►  DEV (unmanaged)  ──►  QA (managed)         │ import asistido
+                                                ▼           │ (PAC CLI + settings.json)
+                                         GitHub Release ────┘
+                                         (managed ZIP + deployment-settings.json)
+                                                            │
+                                                            ▼
+                                                       PROD (managed)
+```
