@@ -1,61 +1,185 @@
-# Power Platform
-**/bin/
-**/obj/
+# =============================================================================
+# .gitignore - INNOVA (Power Platform + PCF + plugins .NET)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Power Platform / PAC CLI
+# -----------------------------------------------------------------------------
 **/*.msapp
 !docs/**/*.msapp
 **/exported/
 **/out/
+.pac/
+**/.pcf-build/
+**/Generated/
+*.SolutionPackager.log
+*.pcfproj.user
+*.cdsproj.user
+*.dvt-vsp.json
+# Build artifacts del PAC
+**/AppPackages/
+**/Solutions/*.zip
+solutions/**/bin/
+solutions/**/obj/
 
-# Node
-**/node_modules/
-**/dist/
-**/.next/
-**/.cache/
-
-# .NET
+# -----------------------------------------------------------------------------
+# .NET (plugins de Dataverse)
+# -----------------------------------------------------------------------------
+**/bin/
+**/obj/
 **/*.user
 **/*.suo
 **/*.dll
 **/*.pdb
 **/.vs/
+**/packages/
+**/TestResults/
+**/[Tt]est[Rr]esult*/
+**/[Dd]ebug/
+**/[Rr]elease/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/artifacts/
+*.nupkg
+*.snupkg
+*.cache
+*.tlog
+*.tmp_proj
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+.nuget/
+project.lock.json
+project.fragment.lock.json
+# Coverage .NET
+**/coverage.cobertura.xml
+**/coverage.opencover.xml
+*.coverage
+*.coveragexml
 
-# IDE
+# -----------------------------------------------------------------------------
+# Node / TypeScript / PCF
+# -----------------------------------------------------------------------------
+**/node_modules/
+**/dist/
+**/.next/
+**/.cache/
+**/coverage/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+.npm/
+.yarn/
+.yarn-integrity
+.pnp.*
+.parcel-cache/
+# Logs npm/yarn/pnpm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# -----------------------------------------------------------------------------
+# Power BI
+# -----------------------------------------------------------------------------
+# Cache local de Power BI Desktop
+*.pbix.tmp
+.pbi/
+# NOTA: los .pbix se commitean (son los reportes versionados);
+# si migran a .pbip (formato git-friendly) eliminar esta nota.
+
+# -----------------------------------------------------------------------------
+# IDEs y editores
+# -----------------------------------------------------------------------------
+# VS Code (compartir extensiones recomendadas pero no settings personales)
 .vscode/settings.json
 .vscode/launch.json
+.vscode/tasks.json
+.vscode/*.code-workspace
+!.vscode/extensions.json
+# JetBrains
 .idea/
+*.iml
+# Vim / Neovim
+*.swp
+*.swo
+*~
+# Emacs
+\#*\#
+.\#*
+# Fleet
+.fleet/
+# VS Code Local History
+.history/
+# Sublime
+*.sublime-workspace
+*.sublime-project
 
-# Secrets
+# -----------------------------------------------------------------------------
+# Secrets y credenciales (CRITICO - nunca commitear)
+# -----------------------------------------------------------------------------
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!.env.template
 *.pfx
 *.cer
 *.p12
+*.key
+*.pem
+id_rsa
+id_rsa.*
+*.ppk
 secrets.json
 *-secrets.json
+*.secrets
 appsettings.local.json
 appsettings.development.json
+appsettings.Development.json
+local.settings.json
+# Azure / Entra
+.azure/
+azureauth.json
+.publishsettings
+*.publishsettings
+# Service principal / connection refs (export accidental)
+**/connectionreferences/**/connection.json
 
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Logs
-*.log
-logs/
-npm-debug.log*
-
-# Claude Code local state (only the user-specific session data)
+# -----------------------------------------------------------------------------
+# Claude Code y herramientas MCP (estado local por usuario)
+# -----------------------------------------------------------------------------
 .claude/local/
 .claude/projects/
-
-# PAC CLI
-.pac/
-# Added by code-review-graph
+.claude/settings.local.json
+.claude/.credentials.json
 .code-review-graph/
 
-# Backups locales del repo
-innova-repo.zip
-*.bak
+# -----------------------------------------------------------------------------
+# OS
+# -----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
 
+# -----------------------------------------------------------------------------
+# Logs generales y temporales
+# -----------------------------------------------------------------------------
+*.log
+logs/
+*.tmp
+*.temp
+
+# -----------------------------------------------------------------------------
+# Backups locales
+# -----------------------------------------------------------------------------
+*.bak
+*.backup
+*.orig
+innova-repo.zip
