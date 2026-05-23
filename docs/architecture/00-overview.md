@@ -100,7 +100,7 @@ PROD no está en nuestro tenant. Ver [ADR-0004](../decisions/0004-entrega-client
                   Nuestro tenant (GTC)                     Cliente (Grupo Pasqui)
                   ─────────────────────                    ─────────────────────────
                                                             ▲
-   develop  ──►  DEV (unmanaged)  ──►  QA (managed)         │ import asistido
+     main   ──►  DEV (unmanaged)  ──►  QA (managed)         │ import asistido
                                                 ▼           │ (PAC CLI + settings.json)
                                          GitHub Release ────┘
                                          (managed ZIP + deployment-settings.json)

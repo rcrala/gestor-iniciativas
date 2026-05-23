@@ -1,71 +1,72 @@
 # Convención de Mensajes de Commit
 
-Seguimos [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/) en inglés.
+> Esta convención es parte de la [Directriz de Trabajo con GitHub](./github-workflow.md). Si hay diferencia entre ambos, la directriz manda.
+
+## Resumen
+
+Seguimos [Conventional Commits](https://www.conventionalcommits.org/) en inglés con el footer `Refs #<id>` (o `Closes #<id>`) obligatorio.
 
 ## Formato
 
 ```
 <tipo>(<scope>): <descripción corta en presente, imperativo>
 
-[cuerpo opcional]
+[cuerpo opcional con detalle y "por qué"]
 
-[footer opcional]
+Refs #<número de issue>
+[evidencia breve de validación]
 ```
 
-## Tipos
+## Tipos y scopes
 
-| Tipo | Uso |
-|---|---|
-| `feat` | Nueva funcionalidad |
-| `fix` | Corrección de bug |
-| `docs` | Solo documentación |
-| `style` | Cambios de formato, sin cambio de comportamiento |
-| `refactor` | Refactor sin cambio de comportamiento ni nuevo feature |
-| `perf` | Mejora de performance |
-| `test` | Agregar o corregir pruebas |
-| `chore` | Build, deps, configuración |
-| `ci` | Cambios al pipeline de CI |
+Ver §4 de [`github-workflow.md`](./github-workflow.md#4-trazabilidad-en-commits) para la tabla completa.
 
-## Scopes recomendados
+Tipos: `feat`, `fix`, `chore`, `test`, `docs`, `refactor`, `style`, `perf`, `ci`.
 
-- `m1` a `m14` para los módulos del WBS
-- `f1` a `f6` para fases transversales
-- `core`, `flows`, `canvas`, `reports` para solutions
-- `pcf`, `plugins` para artefactos custom
-- `docs`, `scripts`, `ci`
+Scopes: `core`, `canvas`, `flows`, `reports`, `pcf`, `plugins`, `docs`, `ci`, `m1`-`m14`, `f1`-`f6`.
+
+## Reglas no-negociables
+
+- Descripción en inglés, modo imperativo, sin punto final, máx 72 chars.
+- Referencia al issue **obligatoria** en el cuerpo: `Refs #<id>`.
+- `Closes #<id>` solo en el commit del PR final que cierra el issue.
+- Un commit, un cambio lógico — si hay "y" en la descripción, probablemente son dos commits.
 
 ## Ejemplos
 
 ```
 feat(m2): add pantalla del solicitante with consecutivo generator
 
-Adds the requester screen with all sections from the specification:
-- Información general
-- Información de la iniciativa
-- Tabla dinámica de colaboradores
-
-Closes #42
+Refs #23
+- Implements 3 sections: información general, información de iniciativa,
+  tabla dinámica de colaboradores
+- Smoke test en DEV OK con 5 escenarios
 ```
 
 ```
 fix(m7): correct timing of scheduled reminder flow
 
+Refs #58
 The reminder flow was running at midnight UTC which is 6 PM in CR.
 Changed to run at 14:00 UTC (8 AM CR) per requirements.
 ```
 
 ```
 docs(arch): update data model after PMO workshop decisions
+
+Refs #12
 ```
 
 ```
 chore(ci): bump pac CLI to latest version
+
+Refs #45
 ```
 
-## Reglas
+## Co-autoría con agentes de IA
 
-- Descripción corta en inglés, modo imperativo, sin punto final
-- Máximo 72 caracteres en la primera línea
-- Cuerpo opcional con detalle, separado por línea en blanco
-- Footer para referencias (Closes, Refs, BREAKING CHANGE)
-- Un commit, un cambio lógico — si hay que poner "y" en la descripción, probablemente son dos commits
+Cuando el commit sea generado/asistido por Claude Code u otro agente, incluir como footer adicional:
+
+```
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+```

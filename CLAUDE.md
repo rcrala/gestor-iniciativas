@@ -126,6 +126,8 @@ Full guide: `docs/conventions/power-automate-style.md`.
 
 Every PR must:
 
+- Originate from an issue (`Refs #<id>` in every commit, `Closes #<id>` in the final commit) — see `docs/conventions/github-workflow.md`
+- Branch from `main` updated, named `issue-<id>-<stream>-<short-topic>`
 - Be reviewed by at least one other developer
 - Have tests added or updated (unit tests for plugins, smoke tests for flows)
 - Include exported, unpacked solution sources committed to git
@@ -133,6 +135,7 @@ Every PR must:
 - Update relevant docs if the schema or API changed
 - Pass the CI pipeline (`.github/workflows/ci.yml`)
 - Include a manual smoke-test log in the PR description
+- Branch deleted (local and remote) after merge
 
 ## Common workflows
 
