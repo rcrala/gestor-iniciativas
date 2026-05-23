@@ -1,0 +1,61 @@
+# Power Platform
+**/bin/
+**/obj/
+**/*.msapp
+!docs/**/*.msapp
+**/exported/
+**/out/
+
+# Node
+**/node_modules/
+**/dist/
+**/.next/
+**/.cache/
+
+# .NET
+**/*.user
+**/*.suo
+**/*.dll
+**/*.pdb
+**/.vs/
+
+# IDE
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+*.pfx
+*.cer
+*.p12
+secrets.json
+*-secrets.json
+appsettings.local.json
+appsettings.development.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Claude Code local state (only the user-specific session data)
+.claude/local/
+.claude/projects/
+
+# PAC CLI
+.pac/
+# Added by code-review-graph
+.code-review-graph/
+
+# Backups locales del repo
+innova-repo.zip
+*.bak
+

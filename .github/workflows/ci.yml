@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate-solutions:
+    name: Validate Power Platform Solutions
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PAC CLI
+        uses: microsoft/powerplatform-actions/actions-install@v1
+
+      - name: Pack solutions (smoke test)
+        shell: pwsh
+        run: |
+          $solutions = Get-ChildItem -Path solutions -Directory
+          foreach ($sol in $solutions) {
+            if (Test-Path "$($sol.FullName)/Other/Solution.xml") {
+              pac solution pack --folder $sol.FullName --zipfile "./out/$($sol.Name).zip" --packagetype Unmanaged
+            }
+          }
+
+  test-plugins:
+    name: Test C# Plug-ins
+    runs-on: ubuntu-latest
+    if: hashFiles('plugins/**/*.csproj') != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build
+        run: dotnet build plugins/ --configuration Release
+
+      - name: Test
+        run: dotnet test plugins/ --no-build --configuration Release
+
+  lint-pcf:
+    name: Lint PCF Controls
+    runs-on: ubuntu-latest
+    if: hashFiles('pcf/**/package.json') != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install and lint
+        working-directory: pcf
+        run: |
+          npm ci
+          npm run lint
+          npm run build
