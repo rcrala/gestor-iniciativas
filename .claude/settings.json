@@ -6,14 +6,18 @@
       "Bash(npm:*)",
       "Bash(node:*)",
       "Bash(pwsh:*)",
+      "Bash(jq:*)",
       "Bash(git status)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git show:*)",
       "Bash(git branch:*)",
-      "Bash(jq:*)",
-      "PowerShell($env:Path = [System.Environment]::GetEnvironmentVariable\\('Path','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('Path','User'\\); $pac = Get-Command pac -ErrorAction SilentlyContinue; if \\($pac\\) { \"Encontrado en: $\\($pac.Source\\)\"; & pac --version } else { \"No esta en PATH. Buscando en ubicaciones tipicas...\"; $candidates = @\\(\"$env:LOCALAPPDATA\\\\Microsoft\\\\PowerAppsCLI\\\\pac.exe\", \"$env:USERPROFILE\\\\.dotnet\\\\tools\\\\pac.exe\", \"$env:ProgramFiles\\\\Microsoft\\\\PowerAppsCLI\\\\pac.exe\", \"${env:ProgramFiles\\(x86\\)}\\\\Microsoft\\\\PowerAppsCLI\\\\pac.exe\", \"$env:LOCALAPPDATA\\\\Microsoft\\\\WindowsApps\\\\pac.exe\"\\); foreach \\($p in $candidates\\) { if \\(Test-Path $p\\) { \"ENCONTRADO: $p\" } else { \"no: $p\" } } })",
-      "PowerShell(& \"$env:LOCALAPPDATA\\\\Microsoft\\\\PowerAppsCLI\\\\pac.cmd\" help 2>&1 | Select-String -Pattern '^Version:')"
+      "Bash(git checkout:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh label:*)",
+      "Bash(gh api:*)"
     ],
     "ask": [
       "Bash(git push:*)",
@@ -30,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git rev-parse --git-dir >/dev/null 2>&1 && code-review-graph update --skip-flows --repo \"/mnt/c/Randall/azure/gestor-iniciativas\" || true",
+            "command": "git rev-parse --git-dir >/dev/null 2>&1 && code-review-graph update --skip-flows --repo . || true",
             "timeout": 30
           }
         ]
@@ -42,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git rev-parse --git-dir >/dev/null 2>&1 && code-review-graph status --repo \"/mnt/c/Randall/azure/gestor-iniciativas\" || echo 'Not a git repo, skipping'",
+            "command": "git rev-parse --git-dir >/dev/null 2>&1 && code-review-graph status --repo . || echo 'Not a git repo or code-review-graph not installed, skipping'",
             "timeout": 10
           }
         ]
