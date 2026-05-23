@@ -61,26 +61,26 @@
 | **Riesgos** | Cambios manuales en DEV que no queden en el solution. Mitigación: convención de "solo cambios vía solution" |
 | **Labels** | `activity`, `p0`, `core` |
 
-### S0-5 — Configurar Service Principal y Connection References
+### S0-5 — Service Principal, Connection References y Environment Variables
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Que los flows usen identidad de service principal (no usuario), y que las conexiones sean portables entre ambientes |
-| **Alcance** | Registrar App Registration en Entra ID. Asignar permisos en DEV (rol System Customizer + acceso a Dataverse). Crear Connection References para Dataverse, Office 365 Outlook, Teams, SharePoint. Documentar en `docs/runbooks/02-service-principal.md`. Guardar el ClientId (no el secret) en `docs/architecture/secrets-inventory.md` |
-| **Criterios de aceptación** | (1) App Reg creada. (2) Secret en KeyVault o equivalente (NUNCA en git). (3) Connection References usadas por al menos un flow de prueba. (4) Documentación reproducible para QA y PROD |
-| **Validaciones requeridas** | Flow de prueba ejecuta como service principal (verificar en el run log) |
-| **Riesgos** | Permisos insuficientes del SP. Mitigación: probar con caso real antes de cerrar |
+| **Objetivo** | Establecer el modelo de identidad (SP), conexiones portables (Connection References) y parametrización por tenant (Environment Variables) que permite entregar el solution al cliente sin acoplar URLs/IDs nuestros. Ver [ADR-0004](../decisions/0004-entrega-cliente.md) |
+| **Alcance** | (1) Registrar App Registration en Entra ID **nuestro** para DEV/QA; documentar pasos equivalentes que el cliente debe seguir en su tenant. (2) Crear Connection References: `cr_innova_dataverse`, `cr_innova_outlook`, `cr_innova_sharepoint`, `cr_innova_teams`, `cr_innova_office365users`. (3) Modelar Environment Variables de Dataverse para todo lo tenant-specific (URLs SharePoint, correos institucionales, IDs Teams, parámetros operativos). (4) Documentar inventario en `docs/architecture/entrega-cliente.md`. (5) Generar `deployment-settings.dev.json` y `deployment-settings.qa.json` de ejemplo |
+| **Criterios de aceptación** | (1) App Reg creada en GTC. (2) Secret en Key Vault, nunca en git. (3) Las 5 Connection References usadas por al menos un flow piloto. (4) 6+ Environment Variables modeladas y consumidas. (5) `deployment-settings.dev.json` y `.qa.json` generados con valores reales. (6) Plantilla `deployment-settings.prod.template.json` versionada para que el cliente la rellene. (7) Runbook reproducible en `docs/runbooks/02-service-principal.md` cubre tanto el SP nuestro como el del cliente |
+| **Validaciones requeridas** | (a) Flow de prueba ejecuta como SP (verificar en run log). (b) Importar solution en QA con `--settings-file deployment-settings.qa.json` y verificar que las variables aparecen poblados. (c) Romper a propósito una Environment Variable y validar que el flow falla con error claro |
+| **Riesgos** | (1) Permisos insuficientes del SP. Mitigación: probar con caso real. (2) Olvidar parametrizar algo y descubrirlo en cliente. Mitigación: revisión por checklist antes de cerrar el issue |
 | **Labels** | `activity`, `p0`, `core`, `flows` |
 
-### S0-6 — Completar CI/CD pipeline GitHub Actions
+### S0-6 — CI/CD GitHub Actions: validar + empaquetar + entregar al cliente
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Que `.github/workflows/ci.yml` empaquete las solutions, valide naming, y opcionalmente despliegue a QA en merge a main |
-| **Alcance** | Workflow steps: (a) instalar PAC CLI, (b) `pac solution pack` por cada solution, (c) lint de naming (regex `^pas_`), (d) lint de Power Fx con `pac power-fx`, (e) `pac solution check` para validar contra el catálogo de Microsoft, (f) artifacts subidos como release artifacts, (g) opcional: import a QA con service principal usando secret `PAC_CLIENT_SECRET` |
-| **Criterios de aceptación** | (1) Workflow corre en cada PR. (2) Lint falla si encuentra columnas sin prefijo `pas_`. (3) Artifacts visibles en la run. (4) Job opcional de deploy condicionado a `if: github.ref == 'refs/heads/main'` |
-| **Validaciones requeridas** | PR de prueba que rompa una regla (ej: columna sin prefijo) debe fallar el workflow |
-| **Riesgos** | Tiempo de ejecución largo si se incluye `solution check`. Mitigación: correrlo solo en push a main, no en cada PR |
+| **Objetivo** | Que `.github/workflows/ci.yml` empaquete las solutions, valide naming/calidad, despliegue automáticamente a **nuestro QA** y produzca un **GitHub Release con el ZIP entregable al cliente**. No hay auto-deploy a PROD (PROD vive en tenant cliente — ver [ADR-0004](../decisions/0004-entrega-cliente.md)) |
+| **Alcance** | **Workflow PR**: (a) instalar PAC CLI, (b) `pac solution pack`, (c) lint de naming (regex `^pas_`), (d) lint Power Fx, (e) `pac solution check`. **Workflow merge-to-main**: además (f) auto-import a nuestro QA con SP secret `PAC_QA_CLIENT_SECRET`, (g) smoke test en QA. **Workflow release-tag (v*)**: (h) empaquetar como Managed, (i) generar plantilla `deployment-settings.prod.template.json` (sin valores reales), (j) calcular SHA-256, (k) crear GitHub Release con todos los ZIPs + plantilla + checksums + release notes auto-generados desde CHANGELOG.md |
+| **Criterios de aceptación** | (1) Workflow PR corre verde. (2) Lint falla si encuentra columnas sin prefijo `pas_`. (3) Merge a main auto-importa a QA y corre smoke test. (4) Tag `v*` produce GitHub Release con artefactos listos para entregar al cliente. (5) Plantilla `deployment-settings.prod.template.json` tiene placeholders claros para que el cliente la rellene |
+| **Validaciones requeridas** | (a) PR de prueba con columna sin prefijo debe fallar. (b) Merge a main debe dejar QA actualizado. (c) Tag de prueba `v0.0.1-test` debe producir Release descargable |
+| **Riesgos** | (1) Tiempo de ejecución largo con `solution check`. Mitigación: correrlo solo en main y tags, no en cada PR. (2) Secret expuesto en logs. Mitigación: `secrets.PAC_QA_CLIENT_SECRET` con masking activo. (3) Release con datos de prueba contaminados. Mitigación: el job de release exporta de **una solution limpia** generada de fuentes, no de un environment activo |
 | **Labels** | `activity`, `p1`, `ci` |
 
 ### S0-7 — Plantilla canónica de Power Fx

@@ -64,8 +64,9 @@ Read-Host "  Presiona Enter para continuar"
 $envs = @(
     @{ Name = 'innova-dev'; Url = 'https://org93905a7d.crm.dynamics.com/' }
     @{ Name = 'innova-qa';  Url = 'https://org8b65c4d6.crm.dynamics.com/' }
-    # PROD aun no aprovisionado. Agregar cuando exista:
-    # @{ Name = 'innova-prod'; Url = 'https://<org>.crm.dynamics.com/' }
+    # PROD vive en el tenant del cliente, no en GTC. Este bootstrap
+    # no debe autenticar contra PROD. Ver docs/decisions/0004-entrega-cliente.md
+    # y docs/architecture/entrega-cliente.md para el flujo de entrega.
 )
 
 foreach ($env in $envs) {

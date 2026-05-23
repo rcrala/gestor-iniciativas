@@ -13,12 +13,23 @@ Asegurar que INNOVA quede operable por el equipo de soporte y por los usuarios s
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Runbook único que cubra los flujos críticos de operación post-lanzamiento: deploy a PROD, rollback, alta de usuario, baja de usuario, cambio de BU, recovery de errores comunes |
-| **Alcance** | `docs/runbooks/00-operacion-prod.md` con secciones por escenario, comandos PAC, capturas, criterios de éxito |
-| **Criterios de aceptación** | (1) Runbook cubre 10+ escenarios. (2) Validado ejecutándolo en QA. (3) Aprobado por equipo de soporte |
-| **Validaciones** | Walkthrough con equipo de soporte |
+| **Objetivo** | Runbook único que cubra los flujos críticos de operación post-lanzamiento del lado del cliente: alta de usuario, baja de usuario, cambio de BU, recovery de errores comunes, rotación de Service Principal secret, recovery de Connection References rotas |
+| **Alcance** | `docs/runbooks/00-operacion-prod.md` con secciones por escenario, comandos PAC, capturas, criterios de éxito. Escrito para que **el equipo de operaciones del cliente** pueda ejecutarlo sin acompañamiento nuestro tras el handoff |
+| **Criterios de aceptación** | (1) Runbook cubre 10+ escenarios. (2) Validado ejecutándolo en QA. (3) Aprobado por equipo de soporte del cliente |
+| **Validaciones** | Walkthrough con equipo de soporte del cliente |
 | **Riesgos** | Documentación que se desactualiza. Mitigación: revisión trimestral programada |
 | **Labels** | `activity`, `p0`, `docs` |
+
+### M14-H1b — Runbook de instalación en tenant cliente + acompañamiento primer import
+
+| Campo | Contenido |
+|---|---|
+| **Objetivo** | Garantizar que el primer import en PROD del cliente se ejecuta sin fricción y queda documentado para imports posteriores autónomos. Ver [ADR-0004](../../decisions/0004-entrega-cliente.md) y [`entrega-cliente.md`](../../architecture/entrega-cliente.md) |
+| **Alcance** | (1) Refinar `docs/architecture/entrega-cliente.md` con la experiencia del primer import real. (2) Sesión guiada con el admin Power Platform del cliente para los 10 pasos del runbook (provisión environment → BUs → SP → import 4 solutions → vincular Connection References → seed-data → reducir permisos SP → asignar roles → smoke test → aceptación firmada). (3) Generar `deployment-settings.prod.json` con valores reales del cliente (no commitear en git, entregar por canal seguro). (4) Lecciones aprendidas en `docs/runbooks/m14-handoff-cliente.md`. (5) Documento firmado de aceptación archivado |
+| **Criterios de aceptación** | (1) Import completo en PROD sin errores no resueltos. (2) Smoke test pasa los 6 ítems del checklist. (3) Cliente firma aceptación. (4) Cliente puede ejecutar el runbook para actualizaciones futuras sin nuestro acompañamiento (probado con un release de prueba) |
+| **Validaciones** | (a) Smoke test en PROD pasa. (b) Cliente ejecuta un release dummy v1.0.1 solo, sin nuestra intervención |
+| **Riesgos** | (1) Cliente sin Service Principal listo. Mitigación: validar prerrequisitos 2 semanas antes. (2) Conexiones se vinculan con cuenta personal en lugar de cuenta funcional. Mitigación: checklist explícito + validación post-import. (3) Capacidad Dataverse insuficiente. Mitigación: estimar y validar antes |
+| **Labels** | `activity`, `p0`, `docs`, `ci` |
 
 ### M14-H2 — Training para usuarios finales (por rol)
 
@@ -80,9 +91,10 @@ Ninguno nuevo.
 
 ## Definition of Done
 
-- 4 historias cerradas
+- 5 historias cerradas (M14-H1, M14-H1b, M14-H2, M14-H3, M14-H4)
 - Documentación final en `docs/runbooks/`
 - Training completado para 7 roles
 - Auditoría firmada
-- Go-live oficial declarado
+- Go-live oficial declarado por el cliente
+- Aceptación del cliente firmada
 - Post-mortem del proyecto en `docs/decisions/9999-postmortem-go-live.md`

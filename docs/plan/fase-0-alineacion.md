@@ -48,17 +48,17 @@
 | **Labels** | `activity`, `p2`, `ci` |
 | **Branch sugerido** | `issue-<id>-ci-mcp-portabilidad` |
 
-### Issue #4 — Decisión y planificación de PROD environment
+### Issue #4 — ADR-0004 estrategia de entrega al tenant del cliente
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Definir cuándo se aprovisiona el environment PROD, quién lo administra, y qué prerrequisitos tiene |
-| **Alcance** | Crear `docs/decisions/0004-aprovisionamiento-prod.md` (ADR) con: timing del aprovisionamiento (¿después de Sprint 0? ¿antes de M9?), capacidad necesaria (storage, API calls), responsable administrativo, política de backups, RTO/RPO esperados. Actualizar `scripts/bootstrap.ps1` para descomentar el perfil PROD cuando exista. Actualizar `docs/architecture/00-overview.md` con la URL real cuando se conozca |
-| **Criterios de aceptación** | (1) ADR-0004 aprobado por Tech Lead. (2) Fecha tentativa de aprovisionamiento en el roadmap. (3) Responsable asignado |
-| **Validaciones requeridas** | Revisión del ADR por Tech Lead y Patrocinador |
-| **Riesgos** | Aprobaciones administrativas en Microsoft Tenant pueden tomar más de lo previsto. Mitigación: abrir la conversación con el admin del tenant al inicio de Fase 0 |
+| **Objetivo** | Definir la estrategia completa de entrega al tenant del cliente, dado que PROD no vive en GTC sino en el tenant de Grupo Pasquí |
+| **Alcance** | Crear `docs/decisions/0004-entrega-cliente.md` (ADR) y `docs/architecture/entrega-cliente.md` (guía operativa). Actualizar `docs/architecture/00-overview.md` (sección Ambientes). Ampliar Sprint 0 issues S0-5 (Environment Variables + Deployment Settings JSON) y S0-6 (CI/CD produce GitHub Release entregable). Agregar historia M14-H1b (acompañamiento primer import en cliente). Quitar PROD de `scripts/bootstrap.ps1` |
+| **Criterios de aceptación** | (1) ADR-0004 aprobado por Tech Lead y Patrocinador. (2) `entrega-cliente.md` cubre prerrequisitos, secuencia de import, Environment Variables, Connection References, rollback. (3) Sprint 0 y M14 reflejan el modelo de entrega. (4) `bootstrap.ps1` sin referencia a PROD |
+| **Validaciones requeridas** | Revisión cruzada por Tech Lead. Validación con admin Power Platform del cliente de los prerrequisitos listados |
+| **Riesgos** | Cliente sin licencias adecuadas o sin Service Principal. Mitigación: validar prerrequisitos en sesión kickoff con el cliente |
 | **Labels** | `activity`, `p1`, `docs` |
-| **Branch sugerido** | `issue-<id>-docs-adr-prod-environment` |
+| **Branch sugerido** | `issue-<id>-docs-estrategia-entrega-cliente` |
 
 ## Orden recomendado
 
