@@ -54,6 +54,8 @@ El script valida prerrequisitos, autentica contra Entra ID y configura los perfi
 
 Este repositorio está optimizado para uso con [Claude Code](https://claude.com/code). El archivo `CLAUDE.md` contiene el contexto necesario para que Claude Code entienda la arquitectura, convenciones y flujos del proyecto.
 
+**Setup detallado de Claude Code + MCP (`code-review-graph`)**: ver [`docs/setup-mcp.md`](docs/setup-mcp.md). Incluye instrucciones para Windows nativo y WSL, y la convención de `.claude/settings.local.json` para permisos personales sin contaminar el config compartido.
+
 ```bash
 # Instalar los plugins oficiales de Microsoft Power Platform
 claude plugin install canvas-apps@power-platform-skills

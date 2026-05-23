@@ -1,13 +1,8 @@
 {
   "mcpServers": {
     "code-review-graph": {
-      "command": "/home/randal/.local/share/pipx/venvs/code-review-graph/bin/python",
-      "args": [
-        "-m",
-        "code_review_graph",
-        "serve"
-      ],
-      "cwd": "/mnt/c/Randall/azure/gestor-iniciativas",
+      "command": "code-review-graph",
+      "args": ["serve"],
       "type": "stdio"
     }
   }
