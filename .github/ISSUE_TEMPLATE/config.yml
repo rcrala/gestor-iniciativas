@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Directriz de trabajo con GitHub
+    url: https://github.com/rcrala/gestor-iniciativas/blob/main/docs/conventions/github-workflow.md
+    about: Antes de abrir un issue, repasa el flujo oficial del repo (branch, commits, PR).
+  - name: Plan del proyecto INNOVA
+    url: https://github.com/rcrala/gestor-iniciativas/blob/main/docs/plan/00-roadmap.md
+    about: Roadmap, fases y modulos. Tu issue debe encajar en uno de estos.
