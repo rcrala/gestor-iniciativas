@@ -116,6 +116,7 @@ $roles = @(
             'pas_documentoadj'    = 'CRW:B Ap:B'
             'pas_empresa'         = 'R:G'
             'pas_centrocosto'     = 'R:G'
+            'pas_departamento'    = 'R:G'
             'pas_parametro'       = 'R:G'
         }
     }
@@ -132,6 +133,7 @@ $roles = @(
             'pas_documentoadj'    = 'CRW:L Ap:L'
             'pas_empresa'         = 'R:G'
             'pas_centrocosto'     = 'R:G'
+            'pas_departamento'    = 'R:G'
             'pas_plantillacorreo' = 'R:G'
             'pas_parametro'       = 'R:G'
             'pas_miembrocomite'   = 'R:G'
@@ -150,6 +152,7 @@ $roles = @(
             'pas_documentoadj'    = 'R:G'
             'pas_empresa'         = 'R:G'
             'pas_centrocosto'     = 'R:G'
+            'pas_departamento'    = 'R:G'
             'pas_parametro'       = 'R:G'
         }
     }
@@ -166,6 +169,7 @@ $roles = @(
             'pas_documentoadj'    = 'R:L'
             'pas_empresa'         = 'R:G'
             'pas_centrocosto'     = 'R:G'
+            'pas_departamento'    = 'R:G'
             'pas_parametro'       = 'R:G'
         }
     }
@@ -182,6 +186,7 @@ $roles = @(
             'pas_documentoadj'    = 'R:L'
             'pas_empresa'         = 'R:G'
             'pas_centrocosto'     = 'R:G'
+            'pas_departamento'    = 'R:G'
             'pas_parametro'       = 'R:G'
         }
     }
@@ -198,6 +203,7 @@ $roles = @(
             'pas_documentoadj'    = 'R:G'
             'pas_empresa'         = 'R:G'
             'pas_centrocosto'     = 'R:G'
+            'pas_departamento'    = 'R:G'
             'pas_parametro'       = 'R:G'
             'pas_miembrocomite'   = 'R:G'
         }
@@ -215,6 +221,7 @@ $roles = @(
             'pas_documentoadj'    = 'R:G'
             'pas_empresa'         = 'CRWD:G Ap:G AT:G'
             'pas_centrocosto'     = 'CRWD:G Ap:G AT:G'
+            'pas_departamento'    = 'CRWD:G Ap:G AT:G'
             'pas_plantillacorreo' = 'CRWD:G Ap:G AT:G'
             'pas_parametro'       = 'CRWD:G Ap:G AT:G'
             'pas_miembrocomite'   = 'CRWD:G Ap:G AT:G'
