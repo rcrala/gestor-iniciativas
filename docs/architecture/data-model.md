@@ -1,17 +1,17 @@
 # Modelo de Datos — INNOVA
 
-> **Versión**: 1.2 (alineación con requerimientos del cliente — EPIC #27 / issue #28)
+> **Versión**: 1.3 (alineación con requerimientos del cliente — EPIC #27 / issues #28, #29)
 > **Estado**: Diseño completo para implementación. Iteraciones menores permitidas como 1.x antes de M2.
 > **Decisores**: Tech Lead, Arquitecto
 >
-> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28)
+> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28) → 1.3 (+ `pas_sistema` + bridge `pas_iniciativa_sistema` issue #29)
 
 ## Resumen
 
-INNOVA modela el ciclo completo de una iniciativa de proyecto en **13 tablas Dataverse** con prefijo `pas_`:
+INNOVA modela el ciclo completo de una iniciativa de proyecto en **15 tablas Dataverse** con prefijo `pas_`:
 
-- **7 tablas de proceso** (creadas/editadas por usuarios funcionales durante el flujo)
-- **6 tablas de configuración** (CRUD por Administrador via M11)
+- **8 tablas de proceso** (creadas/editadas por usuarios funcionales durante el flujo, incluye bridge N:M `pas_iniciativa_sistema`)
+- **7 tablas de configuración** (CRUD por Administrador via M11)
 
 Más datos tenant-specific en **Environment Variables** (ver [`entrega-cliente.md`](entrega-cliente.md)).
 
@@ -40,6 +40,9 @@ erDiagram
     pas_empresa    ||--|| businessunit      : "1:1"
     pas_centrocosto }o--|| pas_empresa      : "N:1"
     pas_departamento }o--|| pas_empresa     : "N:1 (catálogo)"
+    pas_sistema    }o--|| pas_empresa       : "N:1 (catálogo)"
+    pas_iniciativa ||--o{ pas_iniciativa_sistema : "1:N (bridge)"
+    pas_sistema    ||--o{ pas_iniciativa_sistema : "1:N (bridge)"
 
     pas_horatrabajo }o--|| pas_centrocosto  : "N:1"
     pas_horatrabajo }o--|| systemuser       : "colaborador"
@@ -65,9 +68,11 @@ erDiagram
 | `pas_horatrabajo` | **Proceso** | PMO, TI durante levantamiento/estimación/ejecución | Vacía |
 | `pas_votocomite` | **Proceso** | Miembros del Comité | Vacía |
 | `pas_documentoadj` | **Proceso** | Cualquier usuario autenticado en su fase | Vacía |
+| `pas_iniciativa_sistema` | **Proceso** (bridge N:M) | Solicitante crea al elegir sistemas en M2 | Vacía |
 | `pas_empresa` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`Empresa A/B/C`) |
 | `pas_centrocosto` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`CC-001/002/003`) |
 | `pas_departamento` | **Configuración** | M11 Administrador | Seed con departamentos placeholder por empresa (issue #28) |
+| `pas_sistema` | **Configuración** | M11 Administrador | Seed con sistemas placeholder por empresa (issue #29) |
 | `pas_plantillacorreo` | **Configuración** | M11 Administrador | Seed con 5 plantillas genéricas |
 | `pas_parametro` | **Configuración** | M11 Administrador | Seed con umbrales y tarifas placeholder |
 | `pas_miembrocomite` | **Configuración** | M11 Administrador | Seed con 3 usuarios test |
@@ -409,6 +414,45 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 
 Una iniciativa puede tener (futuro v1.3) un lookup a `pas_departamento` — se evalúa en issue #31 (G4).
 
+### `pas_sistema` — Catálogo de sistemas integrables por empresa
+
+> Agregada en v1.3 (issue #29 / G2 — alineación con requerimiento del cliente: "Sistemas a integrar: lista desplegable parametrizable, catálogo por compañía, selección múltiple").
+
+**Display name**: Sistema
+**Ownership**: Organization
+**Audit**: ON
+
+| Columna | Tipo | Required | Descripción |
+|---|---|---|---|
+| `pas_sistemaid` | Uniqueidentifier (PK) | sí | |
+| `pas_nombre` | Text(100) | sí | **Primary**. Nombre del sistema (ej. "SAP", "Salesforce") |
+| `pas_codigo` | Text(20) | no | Código opcional para integraciones externas |
+| `pas_descripcion` | Memo(1000) | no | |
+| `pas_empresa` | Lookup → pas_empresa | sí | Empresa dueña |
+| `pas_activo` | Boolean | sí | Soft delete (default: true) |
+
+### `pas_iniciativa_sistema` — Tabla puente N:M iniciativa ↔ sistema
+
+> Agregada en v1.3 (issue #29 / G2). Permite que una iniciativa con `pas_requiere_integracion = true` declare N sistemas afectados.
+
+**Display name**: Sistema de Iniciativa
+**Ownership**: User
+**Audit**: ON
+
+| Columna | Tipo | Required | Descripción |
+|---|---|---|---|
+| `pas_iniciativa_sistemaid` | Uniqueidentifier (PK) | sí | |
+| `pas_nombre` | Text(200) | sí | **Primary**. Display compuesto `{consecutivo iniciativa} - {nombre sistema}`. Llenado por flow al crear el registro |
+| `pas_iniciativa` | Lookup → pas_iniciativa | sí | Cascade Delete: si la iniciativa se elimina, sus filas bridge también |
+| `pas_sistema` | Lookup → pas_sistema | sí | Restrict Delete: protege referencias históricas; admin debe desactivar (`pas_activo=false`) en lugar de borrar |
+
+**Patrón de uso**:
+1. En M2 (Nueva Solicitud), si Solicitante marca `pas_requiere_integracion = true`, aparece un Multi-select de sistemas filtrado por empresa
+2. Por cada sistema elegido, se hace `Patch(pas_iniciativa_sistemas, Defaults(...), {pas_iniciativa: <ref>, pas_sistema: <ref>})`
+3. Para listar sistemas de una iniciativa: `Filter(pas_iniciativa_sistemas, pas_iniciativa.pas_iniciativaid = <id>)`
+
+**Por qué bridge custom y no N:M nativo de Dataverse**: las N:M nativas (`Microsoft.Dynamics.CRM.ManyToManyRelationshipMetadata`) no permiten columnas custom, ni audit trail diferenciado, ni flows que se disparen al asociar. La tabla puente custom da más control para reportería y notificaciones futuras (ej. "se eliminó esta integración el día X por usuario Y").
+
 ### `pas_plantillacorreo` — Plantillas de correo
 
 **Display name**: Plantilla de Correo
@@ -509,6 +553,9 @@ Estas reglas se implementan en Power Fx (Canvas), Power Automate (flows) y/o Bus
 | `pas_empresa` | `businessunit` | 1:1 | Restrict | BU del sistema, manejada via Admin Center |
 | `pas_centrocosto` | `pas_empresa` | N:1 | Restrict | |
 | `pas_departamento` | `pas_empresa` | N:1 | Restrict | v1.2: catálogo de departamentos filtrado por empresa |
+| `pas_sistema` | `pas_empresa` | N:1 | Restrict | v1.3: catálogo de sistemas filtrado por empresa |
+| `pas_iniciativa_sistema` | `pas_iniciativa` | N:1 | Cascade | v1.3: bridge N:M; al borrar iniciativa se limpian sus filas bridge |
+| `pas_iniciativa_sistema` | `pas_sistema` | N:1 | Restrict | v1.3: bridge N:M; protege catálogo (admin debe desactivar sistema en lugar de borrar) |
 | `pas_miembrocomite` | `systemuser` (titular) | N:1 | Restrict | |
 | `pas_miembrocomite` | `systemuser` (suplente) | N:1 | Restrict | |
 
@@ -574,7 +621,7 @@ Validación de que el modelo soporta todas las pantallas del análisis funcional
 | #7 PMO Cotizaciones | `pas_cotizacion` (create N max 3), `pas_documentoadj` (create) | Cotizar y elegir ganadora |
 | #8 Gerencia General | `pas_iniciativa` (update decisión + estado final) | Decidir |
 | Comité | `pas_votocomite` (create N), `pas_iniciativa` (update via flow) | Votar |
-| Administrador (M11) | `pas_parametro`, `pas_centrocosto`, `pas_departamento`, `pas_plantillacorreo`, `pas_miembrocomite`, `pas_empresa` (CRUD) | Gestionar catálogos |
+| Administrador (M11) | `pas_parametro`, `pas_centrocosto`, `pas_departamento`, `pas_sistema`, `pas_plantillacorreo`, `pas_miembrocomite`, `pas_empresa` (CRUD) | Gestionar catálogos |
 | Tracking "Mis Solicitudes" (M12) | `pas_iniciativa` (read filtrada) | Consultar |
 | Reportería (M13) | Todas (DirectQuery) | Visualizar |
 
@@ -596,3 +643,4 @@ Validación de que el modelo soporta todas las pantallas del análisis funcional
 | **1.0** | 2026-05-24 | Modelo completo: 12 tablas (agregada `pas_empresa`), 11 choice sets, 17 business rules, ER diagram, clasificación por origen, decisiones documentadas. Issue #12 |
 | **1.1** | 2026-05-24 | Agregada columna `pas_fecha_solicitud` a `pas_iniciativa` (issue #15) |
 | **1.2** | 2026-05-24 | Agregada tabla `pas_departamento` (catálogo por empresa). EPIC #27 / issue #28 — alineación con requerimiento del cliente G1 |
+| **1.3** | 2026-05-24 | Agregada tabla `pas_sistema` (catálogo por empresa) + bridge N:M `pas_iniciativa_sistema`. EPIC #27 / issue #29 — alineación con requerimiento del cliente G2 |

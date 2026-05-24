@@ -1,11 +1,11 @@
 # Security Roles — INNOVA
 
-> **Versión**: 1.1 (alineación con modelo v1.2 — issue #28)
+> **Versión**: 1.2 (alineación con modelo v1.3 — issue #29)
 > **Estado**: Diseño aprobado, implementado vía `scripts/setup/05-create-security-roles.ps1`
-> **Modelo de datos asociado**: [`data-model.md`](data-model.md) v1.2
+> **Modelo de datos asociado**: [`data-model.md`](data-model.md) v1.3
 > **Multi-empresa**: [`docs/decisions/0003-arquitectura-multi-empresa.md`](../decisions/0003-arquitectura-multi-empresa.md)
 >
-> **Historial**: 1.0 (148 privilegios, 12 tablas) → 1.1 (160 privilegios, 13 tablas; +`pas_departamento`)
+> **Historial**: 1.0 (148 privilegios, 12 tablas) → 1.1 (160, 13; +`pas_departamento`) → 1.2 (189, 15; +`pas_sistema` + bridge `pas_iniciativa_sistema`)
 
 ## Notación
 
@@ -27,6 +27,7 @@ Privilegios de Dataverse:
 | Tabla | Solicitante | PMO | TI | Jefatura | Gerencia | Comité | Administrador |
 |---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | CRW Ap AT B | RW Ap L | RW G | RW L | RW L | R G | R G |
+| `pas_iniciativa_sistema` | CRWD Ap AT B | CRWD Ap AT L | R G | R L | R L | R G | R G |
 | `pas_evaluacionpmo` | R L | CRWD L Ap | R G | R L | R L | R G | R G |
 | `pas_evaluacionti` | R L | R L | CRWD G | R L | R L | R G | R G |
 | `pas_cotizacion` | R L | CRWD L | R G | R L | R L | R G | R G |
@@ -36,6 +37,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | R G | R G | R G | R G | R G | R G | CRWD G |
 | `pas_centrocosto` | R G | R G | R G | R G | R G | R G | CRWD G |
 | `pas_departamento` | R G | R G | R G | R G | R G | R G | CRWD G |
+| `pas_sistema` | R G | R G | R G | R G | R G | R G | CRWD G |
 | `pas_plantillacorreo` | — | R G | — | — | — | — | CRWD G |
 | `pas_parametro` | R G | R G | R G | R G | R G | R G | CRWD G |
 | `pas_miembrocomite` | — | R G | — | — | — | R G | CRWD G |
@@ -53,6 +55,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | B | B | B (solo en Borrador) | — | B | B | B | B |
+| `pas_iniciativa_sistema` | B | B | B | B | B | B | — | — |
 | `pas_evaluacionpmo` | — | L | — | — | — | — | — | — |
 | `pas_evaluacionti` | — | L | — | — | — | — | — | — |
 | `pas_cotizacion` | — | L | — | — | — | — | — | — |
@@ -62,6 +65,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | — | G | — | — | — | — | — | — |
 | `pas_centrocosto` | — | G | — | — | — | — | — | — |
 | `pas_departamento` | — | G | — | — | — | — | — | — |
+| `pas_sistema` | — | G | — | — | — | — | — | — |
 | `pas_plantillacorreo` | — | — | — | — | — | — | — | — |
 | `pas_parametro` | — | G | — | — | — | — | — | — |
 | `pas_miembrocomite` | — | — | — | — | — | — | — | — |
@@ -81,6 +85,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | — | L | L | — | L | L | — | — |
+| `pas_iniciativa_sistema` | L | L | L | L | L | L | — | — |
 | `pas_evaluacionpmo` | L | L | L | L | L | L | — | — |
 | `pas_evaluacionti` | — | L | — | — | — | — | — | — |
 | `pas_cotizacion` | L | L | L | L | L | L | — | — |
@@ -90,6 +95,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | — | G | — | — | — | — | — | — |
 | `pas_centrocosto` | — | G | — | — | — | — | — | — |
 | `pas_departamento` | — | G | — | — | — | — | — | — |
+| `pas_sistema` | — | G | — | — | — | — | — | — |
 | `pas_plantillacorreo` | — | G | — | — | — | — | — | — |
 | `pas_parametro` | — | G | — | — | — | — | — | — |
 | `pas_miembrocomite` | — | G | — | — | — | — | — | — |
@@ -109,6 +115,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | — | G | G | — | G | G | — | — |
+| `pas_iniciativa_sistema` | — | G | — | — | — | — | — | — |
 | `pas_evaluacionpmo` | — | G | — | — | — | — | — | — |
 | `pas_evaluacionti` | G | G | G | G | G | G | — | — |
 | `pas_cotizacion` | — | G | — | — | — | — | — | — |
@@ -118,6 +125,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | — | G | — | — | — | — | — | — |
 | `pas_centrocosto` | — | G | — | — | — | — | — | — |
 | `pas_departamento` | — | G | — | — | — | — | — | — |
+| `pas_sistema` | — | G | — | — | — | — | — | — |
 | `pas_plantillacorreo` | — | — | — | — | — | — | — | — |
 | `pas_parametro` | — | G | — | — | — | — | — | — |
 | `pas_miembrocomite` | — | — | — | — | — | — | — | — |
@@ -137,6 +145,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | — | L | L | — | L | L | — | — |
+| `pas_iniciativa_sistema` | — | L | — | — | — | — | — | — |
 | `pas_evaluacionpmo` | — | L | — | — | — | — | — | — |
 | `pas_evaluacionti` | — | L | — | — | — | — | — | — |
 | `pas_cotizacion` | — | L | — | — | — | — | — | — |
@@ -146,6 +155,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | — | G | — | — | — | — | — | — |
 | `pas_centrocosto` | — | G | — | — | — | — | — | — |
 | `pas_departamento` | — | G | — | — | — | — | — | — |
+| `pas_sistema` | — | G | — | — | — | — | — | — |
 | `pas_plantillacorreo` | — | — | — | — | — | — | — | — |
 | `pas_parametro` | — | G | — | — | — | — | — | — |
 | `pas_miembrocomite` | — | — | — | — | — | — | — | — |
@@ -164,6 +174,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | — | L | L | — | L | L | — | — |
+| `pas_iniciativa_sistema` | — | L | — | — | — | — | — | — |
 | `pas_evaluacionpmo` | — | L | — | — | — | — | — | — |
 | `pas_evaluacionti` | — | L | — | — | — | — | — | — |
 | `pas_cotizacion` | — | L | — | — | — | — | — | — |
@@ -173,6 +184,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | — | G | — | — | — | — | — | — |
 | `pas_centrocosto` | — | G | — | — | — | — | — | — |
 | `pas_departamento` | — | G | — | — | — | — | — | — |
+| `pas_sistema` | — | G | — | — | — | — | — | — |
 | `pas_plantillacorreo` | — | — | — | — | — | — | — | — |
 | `pas_parametro` | — | G | — | — | — | — | — | — |
 | `pas_miembrocomite` | — | — | — | — | — | — | — | — |
@@ -191,6 +203,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | — | G | — | — | — | — | — | — |
+| `pas_iniciativa_sistema` | — | G | — | — | — | — | — | — |
 | `pas_evaluacionpmo` | — | G | — | — | — | — | — | — |
 | `pas_evaluacionti` | — | G | — | — | — | — | — | — |
 | `pas_cotizacion` | — | G | — | — | — | — | — | — |
@@ -200,6 +213,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | — | G | — | — | — | — | — | — |
 | `pas_centrocosto` | — | G | — | — | — | — | — | — |
 | `pas_departamento` | — | G | — | — | — | — | — | — |
+| `pas_sistema` | — | G | — | — | — | — | — | — |
 | `pas_plantillacorreo` | — | — | — | — | — | — | — | — |
 | `pas_parametro` | — | G | — | — | — | — | — | — |
 | `pas_miembrocomite` | — | G | — | — | — | — | — | — |
@@ -220,6 +234,7 @@ Privilegios de Dataverse:
 | Tabla | C | R | W | Del | Ap | AT | As | S |
 |---|---|---|---|---|---|---|---|---|
 | `pas_iniciativa` | — | G | — | — | — | — | — | — |
+| `pas_iniciativa_sistema` | — | G | — | — | — | — | — | — |
 | `pas_evaluacionpmo` | — | G | — | — | — | — | — | — |
 | `pas_evaluacionti` | — | G | — | — | — | — | — | — |
 | `pas_cotizacion` | — | G | — | — | — | — | — | — |
@@ -229,6 +244,7 @@ Privilegios de Dataverse:
 | `pas_empresa` | G | G | G | G | G | G | — | — |
 | `pas_centrocosto` | G | G | G | G | G | G | — | — |
 | `pas_departamento` | G | G | G | G | G | G | — | — |
+| `pas_sistema` | G | G | G | G | G | G | — | — |
 | `pas_plantillacorreo` | G | G | G | G | G | G | — | — |
 | `pas_parametro` | G | G | G | G | G | G | — | — |
 | `pas_miembrocomite` | G | G | G | G | G | G | — | — |
@@ -283,3 +299,4 @@ Cualquier cambio (agregar privilegios, ampliar scopes) debe:
 |---|---|---|
 | **1.0** | 2026-05-24 | 7 roles, 12 tablas, 148 privilegios. Issue #14 |
 | **1.1** | 2026-05-24 | +`pas_departamento` (12 privilegios nuevos → 160 total). Todos los roles obtienen R Global; Admin obtiene CRWD G + Ap G + AT G. Issue #28 / EPIC #27. **Nota**: el texto original de issue #28 indicaba "Solicitante: R Local; PMO/Admin: CRUD", pero como `pas_departamento` es OrganizationOwned, "Local" no aplica (solo Basic/Global existen para org-owned). Se siguió el patrón homólogo de `pas_centrocosto`: Admin maneja el catálogo, todos los demás roles lo consumen vía Read Global (consistente con M11 admin pattern) |
+| **1.2** | 2026-05-24 | +`pas_sistema` (catálogo, mismo patrón que `pas_departamento`) y +`pas_iniciativa_sistema` (bridge UserOwned con CRWD en Sol/PMO; R en TI/Jef/Ger/Com/Admin). 29 privilegios nuevos → 189 total. Issue #29 / EPIC #27 |
