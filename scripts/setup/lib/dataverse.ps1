@@ -218,6 +218,79 @@ function Get-DataverseEntity {
     }
 }
 
+function Get-DataverseRole {
+    <#
+    .SYNOPSIS
+        Busca un Security Role por nombre. Devuelve $null si no existe.
+    .NOTES
+        Filtra por businessunitid = root BU para evitar colision con roles asignados
+        a BUs hijas (Dataverse replica roles automaticamente a BUs hijas pero el
+        "master" vive en root).
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$Name
+    )
+    $rootBU = Get-DataverseRootBusinessUnit -Environment $Environment
+    $escaped = $Name -replace "'", "''"
+    $filter = "`$filter=name eq '$escaped' and _businessunitid_value eq $($rootBU.businessunitid)"
+    $select = "`$select=roleid,name,_businessunitid_value"
+    $result = Invoke-DataverseApi -Environment $Environment -Method GET -Path "roles?$select&$filter"
+    if ($result.value -and $result.value.Count -gt 0) {
+        return $result.value[0]
+    }
+    return $null
+}
+
+function Get-DataversePrivilegeIdByName {
+    <#
+    .SYNOPSIS
+        Devuelve el privilegeid (GUID) para un privilege por su name. Cachea resultados.
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$PrivilegeName
+    )
+    if (-not $script:PrivilegeCache) { $script:PrivilegeCache = @{} }
+    $cacheKey = "$Environment::$PrivilegeName"
+    if ($script:PrivilegeCache.ContainsKey($cacheKey)) {
+        return $script:PrivilegeCache[$cacheKey]
+    }
+    $escaped = $PrivilegeName -replace "'", "''"
+    $filter = "`$filter=name eq '$escaped'"
+    $result = Invoke-DataverseApi -Environment $Environment -Method GET -Path "privileges?`$select=privilegeid,name&$filter"
+    if ($result.value -and $result.value.Count -gt 0) {
+        $id = $result.value[0].privilegeid
+        $script:PrivilegeCache[$cacheKey] = $id
+        return $id
+    }
+    throw "Privilege '$PrivilegeName' no encontrado en $Environment"
+}
+
+function Add-DataverseRolePrivileges {
+    <#
+    .SYNOPSIS
+        Asigna una lista de privilegios a un Security Role via AddPrivilegesRole action.
+    .PARAMETER Privileges
+        Array de hashtables con keys: Name (ej 'prvReadpas_iniciativa'), Depth (Basic/Local/Deep/Global).
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$RoleId,
+        [Parameter(Mandatory)] [array]$Privileges
+    )
+    $privArray = @()
+    foreach ($p in $Privileges) {
+        $id = Get-DataversePrivilegeIdByName -Environment $Environment -PrivilegeName $p.Name
+        $privArray += @{
+            PrivilegeId = $id
+            Depth = $p.Depth
+        }
+    }
+    $body = @{ Privileges = $privArray }
+    Invoke-DataverseApi -Environment $Environment -Method POST -Path "roles($RoleId)/Microsoft.Dynamics.CRM.AddPrivilegesRole" -Body $body | Out-Null
+}
+
 function Get-DataverseAttribute {
     <#
     .SYNOPSIS
