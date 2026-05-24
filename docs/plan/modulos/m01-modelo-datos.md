@@ -16,9 +16,36 @@ Como Arquitecto, quiero un modelo de datos completo y documentado para que cualq
 
 ## Tablas Dataverse tocadas
 
-Las 11 tablas previstas en [docs/architecture/data-model.md](../../architecture/data-model.md):
+Las 11 tablas previstas en [docs/architecture/data-model.md](../../architecture/data-model.md), clasificadas por origen del dato:
 
-`pas_iniciativa`, `pas_cotizacion`, `pas_evaluacionpmo`, `pas_evaluacionti`, `pas_horatrabajo`, `pas_centrocosto`, `pas_miembrocomite`, `pas_votocomite`, `pas_documentoadj`, `pas_plantillacorreo`, `pas_parametro`
+| Tabla | Origen | CRUD por | Carga inicial |
+|---|---|---|---|
+| `pas_iniciativa` | **Proceso** | Solicitante (Create), PMO/TI/Jefatura/Gerencia/Comité (Update segun fase) | N/A (vacia) |
+| `pas_evaluacionpmo` | **Proceso** | PMO | N/A |
+| `pas_evaluacionti` | **Proceso** | TI | N/A |
+| `pas_cotizacion` | **Proceso** | PMO | N/A |
+| `pas_horatrabajo` | **Proceso** | PMO, TI | N/A |
+| `pas_votocomite` | **Proceso** | Miembros Comité | N/A |
+| `pas_documentoadj` | **Proceso** | Usuarios (metadata; archivo va a SharePoint) | N/A |
+| `pas_centrocosto` | **Configuración** | M11 Administrador | Seed con 3 placeholders |
+| `pas_plantillacorreo` | **Configuración** | M11 Administrador | Seed con 5 plantillas genericas |
+| `pas_parametro` | **Configuración** | M11 Administrador | Seed con umbrales y tarifas placeholder |
+| `pas_miembrocomite` | **Configuración** | M11 Administrador | Seed con 3 usuarios de test |
+
+**Lista de empresas del Grupo Pasquí**: opciones de modelado a decidir en S0-1:
+- Opción A: tabla `pas_empresa` con CRUD via M11
+- Opción B: Choice global `pas_empresa_choice` editado por Administrador en maker portal
+- Opción C: Business Units (ya cubre el aislamiento; sin tabla adicional)
+
+**Datos tenant-specific** (NO viven en Dataverse, viven en Environment Variables — ver [`entrega-cliente.md`](../../architecture/entrega-cliente.md)):
+- URL SharePoint del cliente
+- Correos institucionales (PMO, Comité, no-reply)
+- IDs de Teams channel
+- Tenant ID
+
+## Principio rector
+
+**Si el cliente va a querer cambiar un valor sin contratar a un desarrollador, ese valor debe ser dato (configurable via M11 o Environment Variable), nunca código.**
 
 ## Flows requeridos
 

@@ -1,12 +1,13 @@
 # M11 — Pantalla Administrador
 
 > **Pantalla**: dedicada
-> **Tablas principales**: `pas_parametro`, `pas_centrocosto`, `pas_plantillacorreo`, `pas_miembrocomite`
+> **Tablas principales**: `pas_parametro`, `pas_centrocosto`, `pas_plantillacorreo`, `pas_miembrocomite`, (potencialmente `pas_empresa`)
 > **Stream**: `canvas`
+> **Prioridad en el plan**: **alta** — paralelizable con M2 desde el cierre de Sprint 0. M11-H1 y M11-H4 son **prerequisitos para go-live** porque sin ellos el cliente no puede ajustar parámetros ni miembros del Comité tras el import.
 
 ## Objetivo de negocio
 
-Permitir al Administrador del sistema mantener los catálogos y parámetros sin necesidad de pasar por el equipo de desarrollo.
+Permitir al Administrador del sistema mantener los catálogos y parámetros sin necesidad de pasar por el equipo de desarrollo. Materializa el principio arquitectónico: **datos del cliente son configurables, no codeados** (ver [m01-modelo-datos.md](m01-modelo-datos.md#principio-rector)).
 
 ## Historias de usuario (issues GitHub)
 
@@ -64,8 +65,17 @@ Permitir al Administrador del sistema mantener los catálogos y parámetros sin 
 
 ## Dependencias previas
 
-- Sprint 0 cerrado
-- Paralelizable: puede empezar tan pronto como `innova-core` tenga las tablas
+- Sprint 0 cerrado (`innova-core` con las tablas creadas en S0-4)
+- **Paralelizable con M2 desde el día 1 del Sprint 1** — no esperar al final
+
+## Orden recomendado dentro de M11
+
+Por prioridad de go-live, no por orden numérico de historias:
+
+1. **M11-H1** (parámetros) — `p1`, **prerequisito de go-live** (cliente debe poder ajustar umbral y tarifas)
+2. **M11-H4** (miembros Comité) — `p1`, **prerequisito de go-live** (Comité no funciona sin sus miembros configurados)
+3. **M11-H3** (plantillas correo) — `p1`, mejora UX pero saltable al inicio (cliente puede vivir con plantillas seed por unas semanas)
+4. **M11-H2** (centros de costo) — `p2`, se puede gestionar via maker portal por un tiempo
 
 ## Criterios de aceptación globales del módulo
 
