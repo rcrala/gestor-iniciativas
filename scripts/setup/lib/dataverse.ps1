@@ -84,6 +84,9 @@ function Invoke-DataverseApi {
         Para POST/PATCH: hashtable o PSCustomObject (se serializa a JSON).
     .PARAMETER PreferReturn
         Si se incluye, agrega Prefer: return=representation para que POST devuelva el registro creado.
+    .PARAMETER SolutionUniqueName
+        Si se especifica, agrega header MSCRM.SolutionUniqueName para que los artefactos
+        creados (entidades, atributos, choices) queden en esa solution. Default: $null = Default Solution.
     #>
     param(
         [Parameter(Mandatory)]
@@ -99,7 +102,9 @@ function Invoke-DataverseApi {
 
         [object]$Body = $null,
 
-        [switch]$PreferReturn
+        [switch]$PreferReturn,
+
+        [string]$SolutionUniqueName
     )
 
     $token = Get-DataverseToken -Environment $Environment
@@ -115,6 +120,9 @@ function Invoke-DataverseApi {
     }
     if ($PreferReturn) {
         $headers['Prefer'] = 'return=representation'
+    }
+    if ($SolutionUniqueName) {
+        $headers['MSCRM.SolutionUniqueName'] = $SolutionUniqueName
     }
 
     $params = @{
@@ -142,6 +150,92 @@ function Invoke-DataverseApi {
         }
         $detail = if ($errBody) { $errBody } else { $errMsg }
         throw "Dataverse API call failed [$Method $Path]: $detail"
+    }
+}
+
+# ==============================================================================
+# Metadata helpers (choices, entities, attributes)
+# ==============================================================================
+
+function New-LocalizedLabel {
+    <#
+    .SYNOPSIS
+        Construye el objeto LocalizedLabel requerido por la Web API de metadata.
+    #>
+    param(
+        [Parameter(Mandatory)] [string]$Text,
+        [int]$LanguageCode = 1033  # English. Default labels en ingles, UI puede customizarse via translations
+    )
+    return @{
+        '@odata.type' = 'Microsoft.Dynamics.CRM.Label'
+        LocalizedLabels = @(
+            @{
+                '@odata.type' = 'Microsoft.Dynamics.CRM.LocalizedLabel'
+                Label = $Text
+                LanguageCode = $LanguageCode
+            }
+        )
+    }
+}
+
+function Get-DataverseGlobalOptionSet {
+    <#
+    .SYNOPSIS
+        Busca un global option set (Choice) por Name. Devuelve $null si no existe.
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$Name
+    )
+    try {
+        return Invoke-DataverseApi -Environment $Environment -Method GET -Path "GlobalOptionSetDefinitions(Name='$Name')"
+    } catch {
+        $msg = $_.Exception.Message
+        if ($msg -match '404' -or $msg -match 'Could not find' -or $msg -match 'does not exist' -or $msg -match 'ObjectDoesNotExist' -or $msg -match 'ResourceNotFound') {
+            return $null
+        }
+        throw
+    }
+}
+
+function Get-DataverseEntity {
+    <#
+    .SYNOPSIS
+        Busca una EntityDefinition por LogicalName. Devuelve $null si no existe.
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$LogicalName
+    )
+    try {
+        return Invoke-DataverseApi -Environment $Environment -Method GET -Path "EntityDefinitions(LogicalName='$LogicalName')"
+    } catch {
+        $msg = $_.Exception.Message
+        if ($msg -match '404' -or $msg -match 'Could not find' -or $msg -match 'does not exist' -or $msg -match 'ObjectDoesNotExist' -or $msg -match 'ResourceNotFound') {
+            return $null
+        }
+        throw
+    }
+}
+
+function Get-DataverseAttribute {
+    <#
+    .SYNOPSIS
+        Busca un attribute (columna) en una entidad. Devuelve $null si no existe.
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$EntityLogicalName,
+        [Parameter(Mandatory)] [string]$AttributeLogicalName
+    )
+    try {
+        return Invoke-DataverseApi -Environment $Environment -Method GET -Path "EntityDefinitions(LogicalName='$EntityLogicalName')/Attributes(LogicalName='$AttributeLogicalName')"
+    } catch {
+        $msg = $_.Exception.Message
+        if ($msg -match '404' -or $msg -match 'Could not find' -or $msg -match 'does not exist' -or $msg -match 'ObjectDoesNotExist' -or $msg -match 'ResourceNotFound') {
+            return $null
+        }
+        throw
     }
 }
 

@@ -197,6 +197,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_requiere_desarrollo` | Boolean | no | Activado por PMO si va a TI |
 | `pas_es_multi_empresa` | Boolean | no | True si involucra >1 BU (regla de escalamiento a Comité) |
 | `pas_estado` | Choice `pas_iniciativa_estado` | sí | Estado del workflow (default: Borrador) |
+| `pas_fecha_solicitud` | DateTime | no | Fecha y hora en que el Solicitante envía la iniciativa (transición de Borrador a En Evaluación PMO). Distinto a `createdon` (que es el guardado inicial). Set por flow al cambiar estado |
 | `pas_decision_jefatura` | Choice `pas_decision` | no | Aprobar / Devolver / Rechazar |
 | `pas_decision_jefatura_comentario` | Text(2000) | no | Requerido si Devolver o Rechazar |
 | `pas_fecha_decision_jefatura` | DateTime | no | Set por flow al registrar decisión |
@@ -215,7 +216,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_dias_pendiente` | Integer | no | Calculado: días desde último cambio de estado |
 | (audit) | — | auto | createdon, createdby, modifiedon, modifiedby, owninguser, owningbusinessunit |
 
-**Total**: 24 columnas custom + 7 audit/system.
+**Total**: 25 columnas custom + 7 audit/system.
 
 ### `pas_evaluacionpmo` — Evaluación PMO
 
