@@ -17,7 +17,9 @@
       "Bash(gh issue:*)",
       "Bash(gh pr:*)",
       "Bash(gh label:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(git pull *)",
+      "PowerShell(pwsh -NoProfile -File scripts/validate/run-validators.ps1 -AllFiles 2>&1 | Select-String -Pattern \"ERROR|validation.md\" -Context 0,2 | Out-String)"
     ],
     "ask": [
       "Bash(git push:*)",

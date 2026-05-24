@@ -130,6 +130,7 @@ lerna-debug.log*
 .env.*
 !.env.example
 !.env.template
+!.env.*.template
 *.pfx
 *.cer
 *.p12
