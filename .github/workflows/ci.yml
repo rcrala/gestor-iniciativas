@@ -55,6 +55,21 @@ jobs:
       - name: Test
         run: dotnet test plugins/ --no-build --configuration Release
 
+  test-samples-dotnet:
+    name: Test sample NUnit (tests/plugins/Sample.Tests)
+    runs-on: ubuntu-latest
+    if: hashFiles('tests/plugins/**/*.csproj') != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Run NUnit samples
+        run: dotnet test tests/plugins/ --nologo
+
   lint-pcf:
     name: Lint PCF Controls
     runs-on: ubuntu-latest
@@ -73,3 +88,21 @@ jobs:
           npm ci
           npm run lint
           npm run build
+
+  test-samples-pcf:
+    name: Test sample Jest (tests/pcf/sample)
+    runs-on: ubuntu-latest
+    if: hashFiles('tests/pcf/**/package.json') != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install + test sample
+        working-directory: tests/pcf/sample
+        run: |
+          npm install --no-audit --no-fund
+          npm test

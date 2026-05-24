@@ -6,6 +6,9 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), y 
 
 ## [Unreleased]
 
+### Added
+- **Framework de tests INNOVA (S0-9, issue #20)**: estrategia diferenciada por tipo de artefacto en `tests/{smoke,flows,canvas,plugins,pcf}/`. Plantilla [`tests/_template-test-plan.md`](tests/_template-test-plan.md) para test plans manuales (flows/canvas/smoke). Sample NUnit [`tests/plugins/Sample.Tests/`](tests/plugins/Sample.Tests/) que demuestra la cadena de build (15 tests pasando local, ejemplo basado en `ConsecutivoFormatter` de G7). Sample Jest [`tests/pcf/sample/`](tests/pcf/sample/) que valida tooling PCF (14 tests pasando local, ejemplo basado en `classifyEisenhower` de M-PRIO Phase 2). Decisión documentada en [ADR-0005](docs/decisions/0005-tooling-de-tests.md): **NO usar Power Apps Test Studio** durante MVP (frágil, mal versionable, no corre en CI, ROI bajo); test plans manuales con evidencia versionada en PR. Ejemplos manuales en [`tests/flows/iniciativa-creada-notificar-pmo-test-plan.md`](tests/flows/iniciativa-creada-notificar-pmo-test-plan.md) y [`tests/canvas/m02-solicitante-test-plan.md`](tests/canvas/m02-solicitante-test-plan.md). CI extendido con jobs `test-samples-dotnet` y `test-samples-pcf` que validan automáticamente los samples
+
 ### Changed
 - **Modelo v1.4**: reconciliados los 17 labels de `pas_iniciativa_estado` con el cuadro resumen del cliente (EPIC #27, issue #33). Values numéricos preservados (no había datos en DEV/QA). 16 labels actualizados via `UpdateOptionValue` API. Nueva función `Update-DataverseGlobalOptionSetLabel` en `scripts/setup/lib/dataverse.ps1`. Script `02-create-choice-sets.ps1` ahora también sincroniza labels en option sets existentes (no solo crea nuevos)
 

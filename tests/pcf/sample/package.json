@@ -1,0 +1,25 @@
+{
+  "name": "innova-pcf-sample-tests",
+  "version": "1.0.0",
+  "description": "Sample Jest setup que valida la cadena de build para tests de PCF Controls. Replicar la estructura cuando se cree el primer PCF real.",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "29.5.14",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "ts-jest": "29.2.5",
+    "typescript": "5.6.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "<rootDir>/src/**/*.test.ts",
+      "<rootDir>/src/**/*.test.tsx"
+    ],
+    "moduleFileExtensions": ["ts", "tsx", "js"]
+  }
+}
