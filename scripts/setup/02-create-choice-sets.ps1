@@ -56,25 +56,27 @@ $choices = @(
     @{
         Name = 'pas_iniciativa_estado'
         DisplayName = 'Estado de iniciativa'
-        Description = 'Estado del workflow de una iniciativa INNOVA'
+        Description = 'Estado del workflow de una iniciativa INNOVA. Labels alineados con el cuadro resumen del cliente (issue #33).'
         Options = @(
+            # Values 100000000-100000016 son los originales del Sprint 0; labels reasignados a los nombres exactos del cliente.
+            # Como no hay datos en DEV/QA todavia, podemos resignificar libremente sin migracion.
             @{ Value = 100000000; Label = 'Borrador' }
-            @{ Value = 100000001; Label = 'En Evaluacion PMO' }
-            @{ Value = 100000002; Label = 'En Evaluacion TI' }
-            @{ Value = 100000003; Label = 'Pendiente Aprobacion Jefatura' }
-            @{ Value = 100000004; Label = 'Aprobada Jefatura' }
-            @{ Value = 100000005; Label = 'En Cotizacion' }
-            @{ Value = 100000006; Label = 'En Ejecucion' }
-            @{ Value = 100000007; Label = 'Pendiente Validacion Jefatura' }
-            @{ Value = 100000008; Label = 'Validada Jefatura' }
-            @{ Value = 100000009; Label = 'Pendiente Gerencia General' }
-            @{ Value = 100000010; Label = 'Pendiente Comite' }
-            @{ Value = 100000011; Label = 'Aprobada' }
-            @{ Value = 100000012; Label = 'Rechazada' }
-            @{ Value = 100000013; Label = 'Devuelta a PMO' }
-            @{ Value = 100000014; Label = 'Devuelta a Solicitante' }
-            @{ Value = 100000015; Label = 'Cerrada Sin Continuar' }
-            @{ Value = 100000016; Label = 'Suspendida' }
+            @{ Value = 100000001; Label = 'Revision inicial PMO' }
+            @{ Value = 100000002; Label = 'Estimacion Desarrollo' }
+            @{ Value = 100000003; Label = 'Revision Estimacion de la Jefatura' }
+            @{ Value = 100000004; Label = 'Estimacion Aprobada por Jefatura' }
+            @{ Value = 100000005; Label = 'Estimacion Devuelta por Jefatura' }
+            @{ Value = 100000006; Label = 'Estimacion Rechazada por Jefatura' }
+            @{ Value = 100000007; Label = 'Revision Iniciativa Jefatura' }
+            @{ Value = 100000008; Label = 'Iniciativa Devuelta por Jefatura' }
+            @{ Value = 100000009; Label = 'En Cotizacion' }
+            @{ Value = 100000010; Label = 'Revision Gerencia de Negocio' }
+            @{ Value = 100000011; Label = 'Aprobada por Gerencia General de Negocio' }
+            @{ Value = 100000012; Label = 'Rechazada por Gerencia General de Negocio' }
+            @{ Value = 100000013; Label = 'Revision Comite de Proyectos' }
+            @{ Value = 100000014; Label = 'Aprobada' }
+            @{ Value = 100000015; Label = 'Rechazo del Comite' }
+            @{ Value = 100000016; Label = 'Cancelada' }
         )
     }
     @{
@@ -191,10 +193,48 @@ $created = 0
 $skipped = 0
 $failed = 0
 
+$updated = 0
+
 foreach ($choice in $choices) {
     $existing = Get-DataverseGlobalOptionSet -Environment $Environment -Name $choice.Name
     if ($existing) {
-        Write-Host "  [SKIP] $($choice.Name) ya existe (id: $($existing.MetadataId))" -ForegroundColor DarkYellow
+        # Sincronizar labels: para cada opcion definida, si el label actual difiere, llamar UpdateOptionValue.
+        # No agrega ni elimina opciones (eso requiere otras actions; manejar manualmente si cambia el cardinal).
+        $currentByValue = @{}
+        foreach ($existingOpt in $existing.Options) {
+            $currentByValue[[int]$existingOpt.Value] = $existingOpt.Label.UserLocalizedLabel.Label
+        }
+
+        $localUpdated = 0; $localSkipped = 0
+        foreach ($opt in $choice.Options) {
+            $v = [int]$opt.Value
+            $newLbl = $opt.Label
+            $curLbl = $currentByValue[$v]
+            if ($null -eq $curLbl) {
+                Write-Host "  [WARN] $($choice.Name): Value=$v no existe en el option set actual; skip (necesita InsertOptionValue manual)" -ForegroundColor DarkYellow
+                continue
+            }
+            if ($curLbl -eq $newLbl) {
+                $localSkipped++
+                continue
+            }
+            if ($PSCmdlet.ShouldProcess("$($choice.Name) Value=$v", "Update label '$curLbl' -> '$newLbl'")) {
+                try {
+                    Update-DataverseGlobalOptionSetLabel -Environment $Environment -OptionSetName $choice.Name -Value $v -NewLabel $newLbl
+                    Write-Host "    [UPDATE] $($choice.Name) [$v]: '$curLbl' -> '$newLbl'" -ForegroundColor Green
+                    $localUpdated++
+                } catch {
+                    Write-Host "    [FAIL] $($choice.Name) [$v]: $($_.Exception.Message)" -ForegroundColor Red
+                    $failed++
+                }
+            }
+        }
+        if ($localUpdated -gt 0) {
+            Write-Host "  [SYNCED] $($choice.Name): $localUpdated labels actualizados, $localSkipped sin cambios" -ForegroundColor Cyan
+            $updated += $localUpdated
+        } else {
+            Write-Host "  [SKIP]   $($choice.Name) ya esta sincronizado (id: $($existing.MetadataId))" -ForegroundColor DarkYellow
+        }
         $skipped++
         continue
     }
@@ -233,7 +273,7 @@ foreach ($choice in $choices) {
     }
 }
 
-Write-Host "`nResumen: Creadas=$created Skip=$skipped Failed=$failed" -ForegroundColor $(if ($failed -gt 0) { 'Red' } else { 'Cyan' })
+Write-Host "`nResumen: Creadas=$created Sincronizadas(labels)=$updated Skip=$skipped Failed=$failed" -ForegroundColor $(if ($failed -gt 0) { 'Red' } else { 'Cyan' })
 
 if ($failed -gt 0) { exit 1 }
 Write-Host "=== OK ===`n" -ForegroundColor Green
