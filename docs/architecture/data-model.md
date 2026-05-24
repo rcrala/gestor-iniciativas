@@ -85,25 +85,27 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 
 ### `pas_iniciativa_estado` (17 valores)
 
+> Labels alineados con el cuadro resumen del cliente (issue #33, v1.4). Los `Value` numéricos se preservaron del Sprint 0 — solo los labels cambiaron porque DEV/QA no tienen datos aún.
+
 | Valor | Etiqueta | Descripción |
 |---|---|---|
 | 100000000 | Borrador | Solicitante editando antes de enviar |
-| 100000001 | En Evaluación PMO | PMO está haciendo levantamiento |
-| 100000002 | En Evaluación TI | TI está estimando desarrollo |
-| 100000003 | Pendiente Aprobación Jefatura | Esperando decisión de jefatura del solicitante |
-| 100000004 | Aprobada Jefatura | Jefatura aprobó, pasa a cotizaciones |
-| 100000005 | En Cotización | PMO recopila hasta 3 cotizaciones |
-| 100000006 | En Ejecución | PMO documenta avances y horas |
-| 100000007 | Pendiente Validación Jefatura | Ejecución terminada, jefatura valida |
-| 100000008 | Validada Jefatura | Jefatura validó, escala según monto |
-| 100000009 | Pendiente Gerencia General | Bajo umbral, espera decisión de Gerencia |
-| 100000010 | Pendiente Comité | Sobre umbral o multi-empresa, espera votos |
-| 100000011 | Aprobada | Estado final positivo |
-| 100000012 | Rechazada | Estado final negativo |
-| 100000013 | Devuelta a PMO | Jefatura devolvió por correcciones |
-| 100000014 | Devuelta a Solicitante | PMO devolvió por información insuficiente |
-| 100000015 | Cerrada Sin Continuar | Solicitante o PMO decide no continuar |
-| 100000016 | Suspendida | Pausada temporalmente (admin) |
+| 100000001 | Revisión inicial PMO | PMO recibió, está haciendo levantamiento |
+| 100000002 | Estimación Desarrollo | TI está estimando esfuerzo de desarrollo |
+| 100000003 | Revisión Estimación de la Jefatura | Esperando que jefatura revise la estimación TI |
+| 100000004 | Estimación Aprobada por Jefatura | Jefatura aprobó la estimación, pasa a cotizaciones |
+| 100000005 | Estimación Devuelta por Jefatura | Jefatura devolvió la estimación a TI para ajustes |
+| 100000006 | Estimación Rechazada por Jefatura | Jefatura rechazó la estimación (cierre por costo/factibilidad) |
+| 100000007 | Revisión Iniciativa Jefatura | Esperando que jefatura revise la iniciativa (sin desarrollo) |
+| 100000008 | Iniciativa Devuelta por Jefatura | Jefatura devolvió la iniciativa al solicitante para correcciones |
+| 100000009 | En Cotización | PMO recopila hasta 3 cotizaciones |
+| 100000010 | Revisión Gerencia de Negocio | Bajo umbral, espera decisión de Gerencia |
+| 100000011 | Aprobada por Gerencia General de Negocio | Gerencia aprobó (resultado intermedio, no requiere Comité) |
+| 100000012 | Rechazada por Gerencia General de Negocio | Gerencia rechazó |
+| 100000013 | Revisión Comité de Proyectos | Sobre umbral o multi-empresa, espera votos del Comité |
+| 100000014 | Aprobada | Estado final positivo (resultado Comité o consolidado tras Gerencia) |
+| 100000015 | Rechazo del Comité | Estado final negativo desde Comité |
+| 100000016 | Cancelada | Cancelada por Solicitante o Admin |
 
 ### `pas_iniciativa_prioridad`
 | Valor | Etiqueta |
@@ -207,7 +209,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_requiere_desarrollo` | Boolean | no | Activado por PMO si va a TI |
 | `pas_es_multi_empresa` | Boolean | no | True si involucra >1 BU (regla de escalamiento a Comité) |
 | `pas_estado` | Choice `pas_iniciativa_estado` | sí | Estado del workflow (default: Borrador) |
-| `pas_fecha_solicitud` | DateTime | no | Fecha y hora en que el Solicitante envía la iniciativa (transición de Borrador a En Evaluación PMO). Distinto a `createdon` (que es el guardado inicial). Set por flow al cambiar estado |
+| `pas_fecha_solicitud` | DateTime | no | Fecha y hora en que el Solicitante envía la iniciativa (transición de Borrador a Revisión inicial PMO). Distinto a `createdon` (que es el guardado inicial). Set por flow al cambiar estado |
 | `pas_decision_jefatura` | Choice `pas_decision` | no | Aprobar / Devolver / Rechazar |
 | `pas_decision_jefatura_comentario` | Text(2000) | no | Requerido si Devolver o Rechazar |
 | `pas_fecha_decision_jefatura` | DateTime | no | Set por flow al registrar decisión |
