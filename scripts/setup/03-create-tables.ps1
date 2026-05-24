@@ -415,6 +415,18 @@ $tables = @(
         )
     }
     @{
+        LogicalName = 'pas_departamento'; SchemaName = 'pas_Departamento'
+        Display = 'Departamento'; DisplayCollection = 'Departamentos'
+        Description = 'Catalogo de departamentos por empresa (filtrado en la pantalla Nueva Solicitud por la empresa elegida)'
+        Ownership = 'OrganizationOwned'
+        PrimaryName = (Col -Type String -Name 'pas_nombre' -Display 'Nombre' -Required ApplicationRequired -MaxLength 100)
+        Columns = @(
+            (Col -Type String  -Name 'pas_codigo'      -Display 'Codigo'      -MaxLength 20 -Description 'Codigo opcional para integraciones externas')
+            (Col -Type Memo    -Name 'pas_descripcion' -Display 'Descripcion' -MaxLength 1000)
+            (Col -Type Boolean -Name 'pas_activo'      -Display 'Activo'      -Required ApplicationRequired -TrueLabel 'Si' -FalseLabel 'No' -Default $true)
+        )
+    }
+    @{
         LogicalName = 'pas_plantillacorreo'; SchemaName = 'pas_PlantillaCorreo'
         Display = 'Plantilla de Correo'; DisplayCollection = 'Plantillas de Correo'
         Description = 'Plantillas reusables para correos automatizados'

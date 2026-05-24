@@ -1,15 +1,17 @@
 # Modelo de Datos — INNOVA
 
-> **Versión**: 1.0 (Sprint 0 — issue #12)
+> **Versión**: 1.2 (alineación con requerimientos del cliente — EPIC #27 / issue #28)
 > **Estado**: Diseño completo para implementación. Iteraciones menores permitidas como 1.x antes de M2.
 > **Decisores**: Tech Lead, Arquitecto
+>
+> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28)
 
 ## Resumen
 
-INNOVA modela el ciclo completo de una iniciativa de proyecto en **12 tablas Dataverse** con prefijo `pas_`:
+INNOVA modela el ciclo completo de una iniciativa de proyecto en **13 tablas Dataverse** con prefijo `pas_`:
 
 - **7 tablas de proceso** (creadas/editadas por usuarios funcionales durante el flujo)
-- **5 tablas de configuración** (CRUD por Administrador via M11)
+- **6 tablas de configuración** (CRUD por Administrador via M11)
 
 Más datos tenant-specific en **Environment Variables** (ver [`entrega-cliente.md`](entrega-cliente.md)).
 
@@ -37,6 +39,7 @@ erDiagram
 
     pas_empresa    ||--|| businessunit      : "1:1"
     pas_centrocosto }o--|| pas_empresa      : "N:1"
+    pas_departamento }o--|| pas_empresa     : "N:1 (catálogo)"
 
     pas_horatrabajo }o--|| pas_centrocosto  : "N:1"
     pas_horatrabajo }o--|| systemuser       : "colaborador"
@@ -64,6 +67,7 @@ erDiagram
 | `pas_documentoadj` | **Proceso** | Cualquier usuario autenticado en su fase | Vacía |
 | `pas_empresa` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`Empresa A/B/C`) |
 | `pas_centrocosto` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`CC-001/002/003`) |
+| `pas_departamento` | **Configuración** | M11 Administrador | Seed con departamentos placeholder por empresa (issue #28) |
 | `pas_plantillacorreo` | **Configuración** | M11 Administrador | Seed con 5 plantillas genéricas |
 | `pas_parametro` | **Configuración** | M11 Administrador | Seed con umbrales y tarifas placeholder |
 | `pas_miembrocomite` | **Configuración** | M11 Administrador | Seed con 3 usuarios test |
@@ -383,6 +387,28 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_responsable` | Lookup → systemuser | no | Para reportería |
 | `pas_activo` | Boolean | sí | Soft delete (default: true) |
 
+### `pas_departamento` — Departamentos por empresa
+
+> Agregada en v1.2 (issue #28 / G1 — alineación con requerimiento del cliente: "Departamento: lista desplegable parametrizable acorde a la empresa elegida").
+
+**Display name**: Departamento
+**Ownership**: Organization
+**Audit**: ON
+
+| Columna | Tipo | Required | Descripción |
+|---|---|---|---|
+| `pas_departamentoid` | Uniqueidentifier (PK) | sí | |
+| `pas_nombre` | Text(100) | sí | **Primary**. Nombre del departamento |
+| `pas_codigo` | Text(20) | no | Código opcional para integraciones externas |
+| `pas_descripcion` | Memo(1000) | no | |
+| `pas_empresa` | Lookup → pas_empresa | sí | Empresa dueña. La UI filtra el dropdown por la empresa elegida |
+| `pas_activo` | Boolean | sí | Soft delete (default: true) |
+
+**Uso esperado**: la pantalla "Nueva Solicitud" (M2) muestra un dropdown "Departamento" cuyo `Items` es:
+`Filter(pas_departamentos, pas_empresa.pas_empresaid = SelectedEmpresa.pas_empresaid && pas_activo = true)`
+
+Una iniciativa puede tener (futuro v1.3) un lookup a `pas_departamento` — se evalúa en issue #31 (G4).
+
 ### `pas_plantillacorreo` — Plantillas de correo
 
 **Display name**: Plantilla de Correo
@@ -482,6 +508,7 @@ Estas reglas se implementan en Power Fx (Canvas), Power Automate (flows) y/o Bus
 | `pas_documentoadj` | `pas_iniciativa` | N:1 | Cascade | Archivos en SharePoint se conservan (responsabilidad cliente) |
 | `pas_empresa` | `businessunit` | 1:1 | Restrict | BU del sistema, manejada via Admin Center |
 | `pas_centrocosto` | `pas_empresa` | N:1 | Restrict | |
+| `pas_departamento` | `pas_empresa` | N:1 | Restrict | v1.2: catálogo de departamentos filtrado por empresa |
 | `pas_miembrocomite` | `systemuser` (titular) | N:1 | Restrict | |
 | `pas_miembrocomite` | `systemuser` (suplente) | N:1 | Restrict | |
 
@@ -547,7 +574,7 @@ Validación de que el modelo soporta todas las pantallas del análisis funcional
 | #7 PMO Cotizaciones | `pas_cotizacion` (create N max 3), `pas_documentoadj` (create) | Cotizar y elegir ganadora |
 | #8 Gerencia General | `pas_iniciativa` (update decisión + estado final) | Decidir |
 | Comité | `pas_votocomite` (create N), `pas_iniciativa` (update via flow) | Votar |
-| Administrador (M11) | `pas_parametro`, `pas_centrocosto`, `pas_plantillacorreo`, `pas_miembrocomite`, `pas_empresa` (CRUD) | Gestionar catálogos |
+| Administrador (M11) | `pas_parametro`, `pas_centrocosto`, `pas_departamento`, `pas_plantillacorreo`, `pas_miembrocomite`, `pas_empresa` (CRUD) | Gestionar catálogos |
 | Tracking "Mis Solicitudes" (M12) | `pas_iniciativa` (read filtrada) | Consultar |
 | Reportería (M13) | Todas (DirectQuery) | Visualizar |
 
@@ -567,3 +594,5 @@ Validación de que el modelo soporta todas las pantallas del análisis funcional
 |---|---|---|
 | 0.1 | 2026-05-23 | Placeholder inicial (11 tablas previstas) |
 | **1.0** | 2026-05-24 | Modelo completo: 12 tablas (agregada `pas_empresa`), 11 choice sets, 17 business rules, ER diagram, clasificación por origen, decisiones documentadas. Issue #12 |
+| **1.1** | 2026-05-24 | Agregada columna `pas_fecha_solicitud` a `pas_iniciativa` (issue #15) |
+| **1.2** | 2026-05-24 | Agregada tabla `pas_departamento` (catálogo por empresa). EPIC #27 / issue #28 — alineación con requerimiento del cliente G1 |

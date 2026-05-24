@@ -130,6 +130,8 @@ $relationships = @(
     @{ SchemaName = 'pas_documentoadj_subidopor';    ReferencingEntity = 'pas_documentoadj';   ReferencedEntity = 'systemuser';       LookupSchemaName = 'pas_Subido_Por';   LookupLogicalName = 'pas_subido_por';   LookupDisplay = 'Subido por';                  DeleteBehavior = 'Restrict' }
     # pas_centrocosto -> empresa
     @{ SchemaName = 'pas_centrocosto_empresa';       ReferencingEntity = 'pas_centrocosto';    ReferencedEntity = 'pas_empresa';      LookupSchemaName = 'pas_Empresa';      LookupLogicalName = 'pas_empresa';      LookupDisplay = 'Empresa';                     DeleteBehavior = 'Restrict' }
+    # pas_departamento -> empresa (G1 - issue #28)
+    @{ SchemaName = 'pas_departamento_empresa';      ReferencingEntity = 'pas_departamento';   ReferencedEntity = 'pas_empresa';      LookupSchemaName = 'pas_Empresa';      LookupLogicalName = 'pas_empresa';      LookupDisplay = 'Empresa';                     DeleteBehavior = 'Restrict' }
     # pas_miembrocomite -> systemuser titular y suplente
     @{ SchemaName = 'pas_miembrocomite_titular';     ReferencingEntity = 'pas_miembrocomite';  ReferencedEntity = 'systemuser';       LookupSchemaName = 'pas_Titular';      LookupLogicalName = 'pas_titular';      LookupDisplay = 'Titular';                     DeleteBehavior = 'Restrict' }
     @{ SchemaName = 'pas_miembrocomite_suplente';    ReferencingEntity = 'pas_miembrocomite';  ReferencedEntity = 'systemuser';       LookupSchemaName = 'pas_Suplente';     LookupLogicalName = 'pas_suplente';     LookupDisplay = 'Suplente';                    DeleteBehavior = 'Restrict' }
