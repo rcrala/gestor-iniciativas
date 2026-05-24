@@ -50,7 +50,7 @@ docs/plan/
 | **M8** | #7 PMO Cotizaciones | `pas_cotizacion`, `pas_documentoadj` | M3 (paralelizable) |
 | **M9** | #8 Gerencia General | (workflow + umbral) | M7, M8 |
 | **M10** | Comité de Proyectos | `pas_miembrocomite`, `pas_votocomite` | M9 (cuando escala) |
-| **M11** | Administrador | `pas_parametro`, `pas_centrocosto`, `pas_plantillacorreo` | Sprint 0 |
+| **M11** | Administrador | `pas_parametro`, `pas_centrocosto`, `pas_plantillacorreo`, `pas_miembrocomite` | Sprint 0 (paralelo con M2 — H1 y H4 son prerequisitos de go-live) |
 | **M12** | Tracking "Mis Solicitudes" (transversal) | (vista) | M2 |
 | **M13** | Reportería Power BI | (consume todas) | M6 mínimo |
 | **M14** | Cierre + runbooks + training | — | Todos |
@@ -70,10 +70,10 @@ docs/plan/
 
 ```
 Fase 0 → Sprint 0 → M2 → M3 → M5 → M6 → M7 → M9 → M10 → M13 → M14
-                          ↘ M4 (si requiere desarrollo)
-                          ↘ M8 (paralelizable desde M3)
-                          ↘ M11 (paralelizable desde Sprint 0)
-                          ↘ M12 (paralelizable desde M2)
+                     ↘ M11 (paralelo a M2 — H1 y H4 prerequisitos de go-live)
+                     ↘ M4 (si requiere desarrollo)
+                     ↘ M8 (paralelizable desde M3)
+                     ↘ M12 (paralelizable desde M2)
 ```
 
 ## Convenciones de plan
@@ -102,15 +102,26 @@ Cada actividad concreta = 1 issue. Plantilla y campos obligatorios definidos en 
 5. `CHANGELOG.md` actualizado
 6. Demo al stakeholder
 
+## Principio de configurabilidad
+
+Sprint 0 y los módulos M1-M14 **no dependen de stakeholders externos** para empezar implementación. Todo dato que el cliente pueda querer cambiar (lista de empresas, tarifas, umbrales, plantillas de correo, miembros del Comité, URLs SharePoint, IDs Teams) se modela como:
+
+- **Tabla Dataverse + CRUD via M11 Admin** (parámetros, catálogos, miembros)
+- **Environment Variables** (URLs y conexiones tenant-specific)
+- **Seed data placeholder** que se ajusta post-deploy
+
+Sprint 0 usa valores placeholder (`Empresa A/B/C`, `TarifaHoraPMO=25000`, etc.) que se cambian sin tocar código.
+
 ## Riesgos identificados al planificar
 
 | Riesgo | Mitigación |
 |---|---|
 | `WBS_INNOVA.xlsx` no está versionado — el mapeo de módulos podría no coincidir | Validar este roadmap contra el Excel original antes de empezar Sprint 0 |
-| PROD environment no aprovisionado | Issue en Fase 0 para definir fecha y responsable |
-| `.mcp.json` y `.claude/settings.json` con rutas WSL hardcodeadas | Issue en Fase 0 para resolver portabilidad |
-| ~~Inconsistencias entre README.md (menciona `develop`) y la directriz GitHub (`dev-cfg` o `main`)~~ | **Resuelto en issue #2 (PR adoptando directriz como `docs/conventions/github-workflow.md` con `main` como base)** |
-| Migración de iniciativas existentes en Excel/correo | ADR pendiente, abrir issue en Sprint 0 |
+| ~~PROD environment no aprovisionado~~ | **Resuelto en issue #5 (PR #6): PROD vive en tenant del cliente, ver ADR-0004**  |
+| ~~`.mcp.json` y `.claude/settings.json` con rutas WSL hardcodeadas~~ | **Resuelto en issue #4 (PR #9)** |
+| ~~Inconsistencias entre README.md (menciona `develop`) y la directriz GitHub (`dev-cfg` o `main`)~~ | **Resuelto en issue #2 (PR #7)** |
+| Migración de iniciativas existentes en Excel/correo | ADR pendiente, abrir issue durante Sprint 1 |
+| M11 (Admin) construido tarde y bloquea go-live | **M11-H1 y M11-H4 marcados como paralelos a M2 y prerequisitos de go-live** |
 
 ## Estado
 

@@ -4,6 +4,8 @@
 > **Prerequisito**: Fase 0 cerrada (convenciones y templates en GitHub)
 > **Objetivo**: Dejar listas las bases técnicas sobre las que se construyen todos los módulos funcionales.
 
+> **Principio**: Sprint 0 no depende de stakeholders externos. Todo dato del cliente (lista de empresas, tarifas, umbrales, plantillas de correo, miembros del Comité, URLs SharePoint) se modela como tabla + Environment Variable y se carga vía seed-data o se administra vía M11. Para Sprint 0 usamos **valores placeholder** que se ajustan después sin tocar código.
+
 ## Salidas esperadas
 
 1. Modelo de datos completo (ER, columnas, relaciones, business rules)
@@ -21,10 +23,10 @@
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Producir el diagrama ER completo con las 11 tablas previstas y todas sus columnas |
-| **Alcance** | Actualizar `docs/architecture/data-model.md` con: diagrama ER (mermaid), columnas de cada tabla (tipo, requerido, descripción), relaciones 1:N y N:N, business rules detectadas, choice sets globales con todos los valores |
-| **Criterios de aceptación** | (1) Diagrama renderiza en GitHub. (2) Cada tabla tiene tabla markdown de columnas. (3) Cada relación documenta cardinalidad y comportamiento on-delete. (4) Aprobación de Tech Lead + Functional Lead |
-| **Validaciones requeridas** | Walkthrough con stakeholders. Validar contra historias de cada pantalla |
+| **Objetivo** | Producir el diagrama ER completo con las 11 tablas previstas y todas sus columnas, **clasificando cada tabla por origen del dato** |
+| **Alcance** | Actualizar `docs/architecture/data-model.md` con: diagrama ER (mermaid), columnas de cada tabla (tipo, requerido, descripción), relaciones 1:N y N:N, business rules detectadas, choice sets globales con todos los valores. **Para cada tabla, clasificar el origen del dato**: proceso (creado por usuarios funcionales), configuración (CRUD via M11 Admin), tenant (Environment Variable). Ver matriz en [m01-modelo-datos.md](modulos/m01-modelo-datos.md) |
+| **Criterios de aceptación** | (1) Diagrama renderiza en GitHub. (2) Cada tabla tiene tabla markdown de columnas. (3) Cada relación documenta cardinalidad y comportamiento on-delete. (4) Cada tabla clasificada por origen del dato. (5) Aprobación de Tech Lead |
+| **Validaciones requeridas** | Validar contra historias de cada pantalla. Confirmar que ninguna tabla tiene datos hardcodeados que deberían ser configurables |
 | **Riesgos** | Sub-iterar el modelo cuando aparezcan reglas nuevas en módulos. Mitigación: dejar versión 1.0 y permitir 1.x antes de M2 |
 | **Labels** | `activity`, `p0`, `core`, `docs` |
 
@@ -32,11 +34,11 @@
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Implementar la jerarquía de BUs definida en ADR-0003 |
-| **Alcance** | Crear BU raíz `Grupo Pasquí`, BUs hijas por cada empresa del Grupo (lista a confirmar con stakeholder), BU transversal `Comité`. Documentar en `docs/runbooks/01-crear-business-units.md` |
-| **Criterios de aceptación** | (1) BUs visibles en Power Platform Admin Center > DEV. (2) Runbook con captura de pantalla por paso. (3) Lista de empresas confirmada por stakeholder |
-| **Validaciones requeridas** | `pac admin list` o equivalente para listar BUs |
-| **Riesgos** | Lista de empresas del Grupo no congelada. Mitigación: abrir ticket al sponsor antes de empezar |
+| **Objetivo** | Implementar la jerarquía de BUs definida en ADR-0003 con **nombres placeholder** que se renombran después vía Admin sin tocar código |
+| **Alcance** | Crear BU raíz `Grupo Pasquí`, 3 BUs hijas con nombres placeholder (`Empresa A`, `Empresa B`, `Empresa C`), BU transversal `Comité`. Documentar en `docs/runbooks/01-crear-business-units.md`. **Las BUs se pueden renombrar y agregar/quitar** desde el Power Platform Admin Center sin redeploy |
+| **Criterios de aceptación** | (1) BUs visibles en Power Platform Admin Center > DEV. (2) Runbook con captura de pantalla por paso. (3) Runbook documenta cómo agregar/renombrar/quitar BUs post-deploy |
+| **Validaciones requeridas** | Verificar que un usuario asignado a `Empresa A` solo ve datos de esa BU. Renombrar una BU y verificar que no rompe nada |
+| **Riesgos** | Eliminar BU con datos asociados deja registros huérfanos. Mitigación: en runbook, soft-delete o reasignación antes de borrar |
 | **Labels** | `activity`, `p0`, `core` |
 
 ### S0-3 — Definir 7 Security Roles
@@ -116,15 +118,15 @@
 | **Riesgos** | Falta de tooling oficial de tests para Power Automate. Mitigación: definir formato de test manual con captura/log |
 | **Labels** | `activity`, `p1`, `docs`, `flows`, `canvas` |
 
-### S0-10 — Seed data inicial para catálogos
+### S0-10 — Seed data inicial para catálogos (valores placeholder)
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Tener un script que pueble los catálogos básicos para que cualquier desarrollador pueda trabajar en su ambiente |
-| **Alcance** | Implementar `scripts/seed-data.ps1` que: cree centros de costo iniciales, plantillas de correo básicas, parámetros de sistema (umbral de escalamiento, días de recordatorio), miembros del Comité de prueba. Usar PAC CLI o Web API. Idempotente (no duplica si ya existen) |
-| **Criterios de aceptación** | (1) Script corre sin error sobre DEV vacío. (2) Re-ejecutarlo no duplica datos. (3) Datos seed documentados en `scripts/README.md` |
-| **Validaciones requeridas** | Test sobre environment limpio. Test de re-ejecución |
-| **Riesgos** | Datos seed con info sensible de empresas reales. Mitigación: usar nombres ficticios o placeholder |
+| **Objetivo** | Tener un script que pueble los catálogos básicos con **valores placeholder** para que cualquier desarrollador pueda trabajar en su ambiente. Los valores reales del cliente se cargan vía M11 (Admin) post-instalación |
+| **Alcance** | Implementar `scripts/seed-data.ps1` que cree con placeholders: 3 centros de costo (`CC-001`, `CC-002`, `CC-003`), 5 plantillas de correo básicas con texto genérico, parámetros de sistema (`UmbralEscalamientoComite = 5000000`, `TarifaHoraPMO = 25000`, `TarifaHoraTI = 35000`, `DiasRecordatorio = 3`), 3 miembros del Comité de prueba (usuarios de test del tenant GTC). Usar PAC CLI o Web API. Idempotente (no duplica si ya existen). **Mismo script corre en DEV/QA/PROD** — los valores reales se ajustan via M11 después |
+| **Criterios de aceptación** | (1) Script corre sin error sobre DEV vacío. (2) Re-ejecutarlo no duplica datos. (3) Datos seed documentados en `scripts/README.md`. (4) Todos los valores son claramente identificables como placeholder (prefijo `PLACEHOLDER-` o valor numérico round) |
+| **Validaciones requeridas** | Test sobre environment limpio. Test de re-ejecución. Test que M11 puede editar los valores cargados |
+| **Riesgos** | Que developers asuman los valores placeholder como reales y los hagan referencia desde código. Mitigación: convención de prefijos + revisión en code review |
 | **Labels** | `activity`, `p2`, `ci`, `core` |
 
 ## Orden recomendado
