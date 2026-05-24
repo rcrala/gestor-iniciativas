@@ -6,6 +6,9 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/), y 
 
 ## [Unreleased]
 
+### Changed
+- **Modelo v1.4**: reconciliados los 17 labels de `pas_iniciativa_estado` con el cuadro resumen del cliente (EPIC #27, issue #33). Values numéricos preservados (no había datos en DEV/QA). 16 labels actualizados via `UpdateOptionValue` API. Nueva función `Update-DataverseGlobalOptionSetLabel` en `scripts/setup/lib/dataverse.ps1`. Script `02-create-choice-sets.ps1` ahora también sincroniza labels en option sets existentes (no solo crea nuevos)
+
 ### Added
 - **Modelo v1.3**: nueva tabla `pas_sistema` (catálogo de sistemas integrables hijo de `pas_empresa`) + tabla puente N:M `pas_iniciativa_sistema` (UserOwned). Alineación con requerimiento del cliente G2 (EPIC #27, issue #29): "Sistemas a integrar: lista desplegable parametrizable, catálogo por compañía, selección múltiple". Bridge usa Cascade Delete hacia `pas_iniciativa` (cleanup automático) y Restrict hacia `pas_sistema` (protege catálogo). Aplicado en DEV (2 tablas + 3 relaciones + 29 privilegios nuevos → 189 totales)
 - **Modelo v1.2**: nueva tabla `pas_departamento` (catálogo de departamentos hijo de `pas_empresa`) — alineación con requerimiento del cliente G1 (EPIC #27, issue #28). Soft-delete pattern (`pas_activo`). Filtrado por empresa en la UI vía relación N:1 `pas_departamento_empresa`. Permisos: Read Global para los 7 roles + CRUD Global para `INNOVA Administrador`. Aplicado en DEV (1 tabla + 1 relación + 12 privilegios nuevos → 160 totales)

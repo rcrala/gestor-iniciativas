@@ -198,6 +198,30 @@ function Get-DataverseGlobalOptionSet {
     }
 }
 
+function Update-DataverseGlobalOptionSetLabel {
+    <#
+    .SYNOPSIS
+        Actualiza el label de una opcion existente en un Global Option Set via
+        la action UpdateOptionValue del Web API. Reemplaza completamente el label
+        (MergeLabels=false). Usar para sincronizar nombres de estados sin recrear
+        el option set (preserva referencias en columnas).
+    #>
+    param(
+        [Parameter(Mandatory)] [ValidateSet('dev','qa')] [string]$Environment,
+        [Parameter(Mandatory)] [string]$OptionSetName,
+        [Parameter(Mandatory)] [int]$Value,
+        [Parameter(Mandatory)] [string]$NewLabel,
+        [string]$SolutionUniqueName = 'innova_core'
+    )
+    $body = @{
+        OptionSetName = $OptionSetName
+        Value         = $Value
+        Label         = (New-LocalizedLabel -Text $NewLabel)
+        MergeLabels   = $false
+    }
+    Invoke-DataverseApi -Environment $Environment -Method POST -Path 'UpdateOptionValue' -Body $body -SolutionUniqueName $SolutionUniqueName | Out-Null
+}
+
 function Get-DataverseEntity {
     <#
     .SYNOPSIS
