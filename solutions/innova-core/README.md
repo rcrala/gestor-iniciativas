@@ -2,8 +2,8 @@
 
 Contiene los artefactos base de INNOVA:
 
-- 11 tablas custom (`pas_iniciativa`, `pas_cotizacion`, `pas_evaluacionpmo`, etc.)
-- 12 Choice sets globales
+- 12 tablas custom (`pas_iniciativa`, `pas_empresa`, `pas_cotizacion`, etc.)
+- 11 Choice sets globales
 - Relaciones entre tablas
 - 7 Security Roles (`pas-solicitante`, `pas-pmo`, etc.)
 - Business Units por empresa

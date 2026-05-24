@@ -16,7 +16,7 @@ Como Arquitecto, quiero un modelo de datos completo y documentado para que cualq
 
 ## Tablas Dataverse tocadas
 
-Las 11 tablas previstas en [docs/architecture/data-model.md](../../architecture/data-model.md), clasificadas por origen del dato:
+Las 12 tablas definidas en [docs/architecture/data-model.md](../../architecture/data-model.md), clasificadas por origen del dato:
 
 | Tabla | Origen | CRUD por | Carga inicial |
 |---|---|---|---|
@@ -27,15 +27,13 @@ Las 11 tablas previstas en [docs/architecture/data-model.md](../../architecture/
 | `pas_horatrabajo` | **Proceso** | PMO, TI | N/A |
 | `pas_votocomite` | **Proceso** | Miembros Comité | N/A |
 | `pas_documentoadj` | **Proceso** | Usuarios (metadata; archivo va a SharePoint) | N/A |
+| `pas_empresa` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`Empresa A/B/C`) |
 | `pas_centrocosto` | **Configuración** | M11 Administrador | Seed con 3 placeholders |
 | `pas_plantillacorreo` | **Configuración** | M11 Administrador | Seed con 5 plantillas genericas |
 | `pas_parametro` | **Configuración** | M11 Administrador | Seed con umbrales y tarifas placeholder |
 | `pas_miembrocomite` | **Configuración** | M11 Administrador | Seed con 3 usuarios de test |
 
-**Lista de empresas del Grupo Pasquí**: opciones de modelado a decidir en S0-1:
-- Opción A: tabla `pas_empresa` con CRUD via M11
-- Opción B: Choice global `pas_empresa_choice` editado por Administrador en maker portal
-- Opción C: Business Units (ya cubre el aislamiento; sin tabla adicional)
+**Lista de empresas del Grupo Pasquí**: **resuelto en S0-1 v1.0** — modelada como tabla `pas_empresa` con lookup 1:1 a `businessunit` (Opción A). Permite metadata adicional por empresa (logo, código contable, contacto principal) y CRUD via M11. Ver [`docs/architecture/data-model.md`](../../architecture/data-model.md#por-qué-pas_empresa-como-tabla-en-lugar-de-solo-bu) para el rationale.
 
 **Datos tenant-specific** (NO viven en Dataverse, viven en Environment Variables — ver [`entrega-cliente.md`](../../architecture/entrega-cliente.md)):
 - URL SharePoint del cliente

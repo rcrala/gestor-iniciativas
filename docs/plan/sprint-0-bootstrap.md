@@ -23,7 +23,7 @@
 
 | Campo | Contenido |
 |---|---|
-| **Objetivo** | Producir el diagrama ER completo con las 11 tablas previstas y todas sus columnas, **clasificando cada tabla por origen del dato** |
+| **Objetivo** | Producir el diagrama ER completo con las 12 tablas previstas y todas sus columnas, **clasificando cada tabla por origen del dato** |
 | **Alcance** | Actualizar `docs/architecture/data-model.md` con: diagrama ER (mermaid), columnas de cada tabla (tipo, requerido, descripción), relaciones 1:N y N:N, business rules detectadas, choice sets globales con todos los valores. **Para cada tabla, clasificar el origen del dato**: proceso (creado por usuarios funcionales), configuración (CRUD via M11 Admin), tenant (Environment Variable). Ver matriz en [m01-modelo-datos.md](modulos/m01-modelo-datos.md) |
 | **Criterios de aceptación** | (1) Diagrama renderiza en GitHub. (2) Cada tabla tiene tabla markdown de columnas. (3) Cada relación documenta cardinalidad y comportamiento on-delete. (4) Cada tabla clasificada por origen del dato. (5) Aprobación de Tech Lead |
 | **Validaciones requeridas** | Validar contra historias de cada pantalla. Confirmar que ninguna tabla tiene datos hardcodeados que deberían ser configurables |
