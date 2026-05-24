@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# INNOVA pre-commit hook
+# Llama a scripts/validate/run-validators.ps1 con los archivos staged.
+# Bypass: git commit --no-verify (solo en emergencia, justificar en el commit body).
+
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+# Detectar pwsh (preferido) o powershell.exe (fallback Windows)
+if command -v pwsh > /dev/null 2>&1; then
+    PWSH=pwsh
+elif command -v powershell.exe > /dev/null 2>&1; then
+    PWSH=powershell.exe
+else
+    echo "ERROR: PowerShell no encontrado. Instala PowerShell 7 (pwsh) o usa --no-verify para saltar." >&2
+    exit 1
+fi
+
+# Lista de archivos staged (Added/Copied/Modified)
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+
+echo "INNOVA pre-commit: validando archivos staged..."
+"$PWSH" -NoProfile -NonInteractive -File scripts/validate/run-validators.ps1 -StagedFiles "$STAGED"
+RC=$?
+
+if [ $RC -ne 0 ]; then
+    echo ""
+    echo "Commit BLOQUEADO por errores de validacion. Opciones:" >&2
+    echo "  1. Corregir los errores listados arriba y volver a 'git commit'" >&2
+    echo "  2. Si es emergencia: 'git commit --no-verify' (DOCUMENTAR razon en commit body)" >&2
+    exit 1
+fi
