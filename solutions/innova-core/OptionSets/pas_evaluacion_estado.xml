@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="pas_evaluacion_estado" localizedName="Estado de evaluacion" description="Usado por evaluacion PMO y TI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Estado de evaluacion" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Usado por evaluacion PMO y TI" languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="1" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="En Proceso" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="2" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Completa" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="pas_hora_tipo" localizedName="Tipo de hora trabajada" description="Origen funcional de la hora" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Tipo de hora trabajada" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Origen funcional de la hora" languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="1" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Levantamiento PMO" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="2" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Estimacion TI" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="3" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Ejecucion" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="4" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Otros" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

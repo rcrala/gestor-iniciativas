@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="pas_iniciativa_estado" localizedName="Estado de iniciativa" description="Estado del workflow de una iniciativa INNOVA" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Estado de iniciativa" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Estado del workflow de una iniciativa INNOVA" languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="100000000" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Borrador" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000001" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Revision inicial PMO" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000002" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Estimacion Desarrollo" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000003" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Revision Estimacion de la Jefatura" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000004" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Estimacion Aprobada por Jefatura" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000005" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Estimacion Devuelta por Jefatura" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000006" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Estimacion Rechazada por Jefatura" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000007" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Revision Iniciativa Jefatura" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000008" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Iniciativa Devuelta por Jefatura" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000009" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="En Cotizacion" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000010" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Revision Gerencia de Negocio" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000011" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Aprobada por Gerencia General de Negocio" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000012" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Rechazada por Gerencia General de Negocio" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000013" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Revision Comite de Proyectos" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000014" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Aprobada" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000015" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Rechazo del Comite" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000016" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Cancelada" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

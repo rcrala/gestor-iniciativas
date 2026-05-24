@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="pas_decision" localizedName="Decision de aprobacion" description="Usado por Jefatura y Gerencia" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Decision de aprobacion" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Usado por Jefatura y Gerencia" languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="1" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Aprobar" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="2" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Devolver" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="3" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Rechazar" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

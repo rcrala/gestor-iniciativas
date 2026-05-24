@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="pas_parametro_tipo" localizedName="Tipo de parametro del sistema" description="Determina cual columna de valor se usa en pas_parametro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Tipo de parametro del sistema" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Determina cual columna de valor se usa en pas_parametro" languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="1" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Texto" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="2" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Numero" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="3" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Fecha" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="4" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Booleano" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

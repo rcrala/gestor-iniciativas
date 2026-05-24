@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{bbde10cb-2157-f111-bec7-6045bd09bfa4}" name="INNOVA Administrador" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Gestiona catalogos (M11), monitorea sistema, soporte L1. NO reemplaza System Administrator</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvAppendpas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvAppendpas_Departamento" level="Global" />
+    <RolePrivilege name="prvAppendpas_Empresa" level="Global" />
+    <RolePrivilege name="prvAppendpas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvAppendpas_Parametro" level="Global" />
+    <RolePrivilege name="prvAppendpas_PlantillaCorreo" level="Global" />
+    <RolePrivilege name="prvAppendpas_Sistema" level="Global" />
+    <RolePrivilege name="prvAppendTopas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvAppendTopas_Departamento" level="Global" />
+    <RolePrivilege name="prvAppendTopas_Empresa" level="Global" />
+    <RolePrivilege name="prvAppendTopas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvAppendTopas_Parametro" level="Global" />
+    <RolePrivilege name="prvAppendTopas_PlantillaCorreo" level="Global" />
+    <RolePrivilege name="prvAppendTopas_Sistema" level="Global" />
+    <RolePrivilege name="prvCreatepas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvCreatepas_Departamento" level="Global" />
+    <RolePrivilege name="prvCreatepas_Empresa" level="Global" />
+    <RolePrivilege name="prvCreatepas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvCreatepas_Parametro" level="Global" />
+    <RolePrivilege name="prvCreatepas_PlantillaCorreo" level="Global" />
+    <RolePrivilege name="prvCreatepas_Sistema" level="Global" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvDeletepas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvDeletepas_Departamento" level="Global" />
+    <RolePrivilege name="prvDeletepas_Empresa" level="Global" />
+    <RolePrivilege name="prvDeletepas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvDeletepas_Parametro" level="Global" />
+    <RolePrivilege name="prvDeletepas_PlantillaCorreo" level="Global" />
+    <RolePrivilege name="prvDeletepas_Sistema" level="Global" />
+    <RolePrivilege name="prvReadpas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvReadpas_Cotizacion" level="Global" />
+    <RolePrivilege name="prvReadpas_Departamento" level="Global" />
+    <RolePrivilege name="prvReadpas_DocumentoAdj" level="Global" />
+    <RolePrivilege name="prvReadpas_Empresa" level="Global" />
+    <RolePrivilege name="prvReadpas_EvaluacionPMO" level="Global" />
+    <RolePrivilege name="prvReadpas_EvaluacionTI" level="Global" />
+    <RolePrivilege name="prvReadpas_HoraTrabajo" level="Global" />
+    <RolePrivilege name="prvReadpas_iniciativa" level="Global" />
+    <RolePrivilege name="prvReadpas_Iniciativa_Sistema" level="Global" />
+    <RolePrivilege name="prvReadpas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvReadpas_Parametro" level="Global" />
+    <RolePrivilege name="prvReadpas_PlantillaCorreo" level="Global" />
+    <RolePrivilege name="prvReadpas_Sistema" level="Global" />
+    <RolePrivilege name="prvReadpas_VotoComite" level="Global" />
+    <RolePrivilege name="prvReadPluginAssembly" level="Global" />
+    <RolePrivilege name="prvReadPluginType" level="Global" />
+    <RolePrivilege name="prvReadSdkMessage" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStep" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStepImage" level="Global" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvWritepas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvWritepas_Departamento" level="Global" />
+    <RolePrivilege name="prvWritepas_Empresa" level="Global" />
+    <RolePrivilege name="prvWritepas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvWritepas_Parametro" level="Global" />
+    <RolePrivilege name="prvWritepas_PlantillaCorreo" level="Global" />
+    <RolePrivilege name="prvWritepas_Sistema" level="Global" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>

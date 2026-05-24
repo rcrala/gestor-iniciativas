@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{be430497-2157-f111-bec7-6045bd09bfa4}" name="INNOVA Solicitante" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Crea iniciativas, sube documentos, hace tracking de sus solicitudes (M12)</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvAppendpas_DocumentoAdj" level="Basic" />
+    <RolePrivilege name="prvAppendpas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvAppendpas_Iniciativa_Sistema" level="Basic" />
+    <RolePrivilege name="prvAppendTopas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvAppendTopas_Iniciativa_Sistema" level="Basic" />
+    <RolePrivilege name="prvAssignpas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvCreatepas_DocumentoAdj" level="Basic" />
+    <RolePrivilege name="prvCreatepas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvCreatepas_Iniciativa_Sistema" level="Basic" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvDeletepas_Iniciativa_Sistema" level="Basic" />
+    <RolePrivilege name="prvReadpas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvReadpas_Cotizacion" level="Local" />
+    <RolePrivilege name="prvReadpas_Departamento" level="Global" />
+    <RolePrivilege name="prvReadpas_DocumentoAdj" level="Basic" />
+    <RolePrivilege name="prvReadpas_Empresa" level="Global" />
+    <RolePrivilege name="prvReadpas_EvaluacionPMO" level="Local" />
+    <RolePrivilege name="prvReadpas_EvaluacionTI" level="Local" />
+    <RolePrivilege name="prvReadpas_HoraTrabajo" level="Local" />
+    <RolePrivilege name="prvReadpas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvReadpas_Iniciativa_Sistema" level="Basic" />
+    <RolePrivilege name="prvReadpas_Parametro" level="Global" />
+    <RolePrivilege name="prvReadpas_Sistema" level="Global" />
+    <RolePrivilege name="prvReadpas_VotoComite" level="Local" />
+    <RolePrivilege name="prvReadPluginAssembly" level="Global" />
+    <RolePrivilege name="prvReadPluginType" level="Global" />
+    <RolePrivilege name="prvReadSdkMessage" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStep" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStepImage" level="Global" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvSharepas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvWritepas_DocumentoAdj" level="Basic" />
+    <RolePrivilege name="prvWritepas_iniciativa" level="Basic" />
+    <RolePrivilege name="prvWritepas_Iniciativa_Sistema" level="Basic" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>

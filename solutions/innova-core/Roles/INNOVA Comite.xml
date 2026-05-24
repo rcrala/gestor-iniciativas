@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{a1de10cb-2157-f111-bec7-6045bd09bfa4}" name="INNOVA Comite" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Vota en iniciativas escaladas (M10, cross-BU)</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvAppendpas_VotoComite" level="Global" />
+    <RolePrivilege name="prvCreatepas_VotoComite" level="Global" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvReadpas_CentroCosto" level="Global" />
+    <RolePrivilege name="prvReadpas_Cotizacion" level="Global" />
+    <RolePrivilege name="prvReadpas_Departamento" level="Global" />
+    <RolePrivilege name="prvReadpas_DocumentoAdj" level="Global" />
+    <RolePrivilege name="prvReadpas_Empresa" level="Global" />
+    <RolePrivilege name="prvReadpas_EvaluacionPMO" level="Global" />
+    <RolePrivilege name="prvReadpas_EvaluacionTI" level="Global" />
+    <RolePrivilege name="prvReadpas_HoraTrabajo" level="Global" />
+    <RolePrivilege name="prvReadpas_iniciativa" level="Global" />
+    <RolePrivilege name="prvReadpas_Iniciativa_Sistema" level="Global" />
+    <RolePrivilege name="prvReadpas_MiembroComite" level="Global" />
+    <RolePrivilege name="prvReadpas_Parametro" level="Global" />
+    <RolePrivilege name="prvReadpas_Sistema" level="Global" />
+    <RolePrivilege name="prvReadpas_VotoComite" level="Global" />
+    <RolePrivilege name="prvReadPluginAssembly" level="Global" />
+    <RolePrivilege name="prvReadPluginType" level="Global" />
+    <RolePrivilege name="prvReadSdkMessage" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStep" level="Global" />
+    <RolePrivilege name="prvReadSdkMessageProcessingStepImage" level="Global" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvWritepas_VotoComite" level="Global" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>
