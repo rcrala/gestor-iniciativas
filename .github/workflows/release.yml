@@ -1,0 +1,151 @@
+name: Release
+
+# Dispara al hacer push de un tag SemVer (v1.0.0, v0.3.1-beta, etc).
+# Genera:
+#   - ZIPs Managed de cada solution (lo que se entrega al cliente)
+#   - deployment-settings.prod.template.json (con placeholders, NO secretos)
+#   - SHA-256 checksums
+#   - GitHub Release con notas auto-generadas desde CHANGELOG.md
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'        # v1.0.0, v0.1.2-beta, etc.
+
+permissions:
+  contents: write       # crear/editar Releases
+
+jobs:
+  release:
+    name: Build managed solutions + create GitHub Release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # necesitamos historial completo para CHANGELOG
+
+      - name: Setup PAC CLI
+        uses: microsoft/powerplatform-actions/actions-install@v1
+
+      - name: Extract version from tag
+        id: ver
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag -replace '^v',''
+          "tag=$tag"           >> $env:GITHUB_OUTPUT
+          "version=$version"   >> $env:GITHUB_OUTPUT
+          Write-Host "Tag: $tag, Version: $version"
+
+      - name: Pack solutions as Managed
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path release-artifacts | Out-Null
+
+          $solutions = Get-ChildItem -Path solutions -Directory | Where-Object {
+            Test-Path (Join-Path $_.FullName 'Other/Solution.xml')
+          }
+          if (-not $solutions) {
+            Write-Host "::error::No solutions found to pack. Aborting release."
+            exit 1
+          }
+
+          foreach ($sol in $solutions) {
+            $name = $sol.Name
+            $zipPath = "release-artifacts/$name-${{ steps.ver.outputs.version }}-managed.zip"
+            Write-Host "::group::Pack Managed $name"
+            pac solution pack --folder $sol.FullName --zipfile $zipPath --packagetype Managed
+            Write-Host "::endgroup::"
+          }
+
+      - name: Generate deployment-settings.prod.template.json
+        shell: pwsh
+        run: |
+          $template = @{
+            EnvironmentVariables = @(
+              @{ SchemaName = 'pas_SharePointSiteUrl';      Value = '<<URL DE TU SHAREPOINT, ej. https://tuempresa.sharepoint.com/sites/INNOVA>>' }
+              @{ SchemaName = 'pas_PmoEmail';               Value = '<<correo del buzon PMO, ej. pmo@tuempresa.com>>' }
+              @{ SchemaName = 'pas_ComiteEmail';            Value = '<<correo del Comite, ej. comite@tuempresa.com>>' }
+              @{ SchemaName = 'pas_TeamsChannelIniciativas';Value = '<<ID del canal Teams para notificaciones; ver runbook>>' }
+              @{ SchemaName = 'pas_DiasRecordatorio';       Value = '3' }
+              @{ SchemaName = 'pas_UmbralEscalamientoComite';Value = '10000' }
+            )
+            ConnectionReferences = @(
+              @{ LogicalName = 'cr_innova_dataverse';      ConnectionId = '<<rellenar tras crear conexion Dataverse en tu env>>' }
+              @{ LogicalName = 'cr_innova_outlook';        ConnectionId = '<<rellenar tras crear conexion Outlook>>' }
+              @{ LogicalName = 'cr_innova_sharepoint';     ConnectionId = '<<rellenar tras crear conexion SharePoint>>' }
+              @{ LogicalName = 'cr_innova_teams';          ConnectionId = '<<rellenar tras crear conexion Teams>>' }
+              @{ LogicalName = 'cr_innova_office365users'; ConnectionId = '<<rellenar tras crear conexion Office365 Users>>' }
+            )
+          }
+          $template | ConvertTo-Json -Depth 5 | Out-File `
+            -FilePath "release-artifacts/deployment-settings.prod.template.json" -Encoding UTF8
+          Write-Host "deployment-settings.prod.template.json generado"
+
+      - name: Compute SHA-256 checksums
+        shell: pwsh
+        run: |
+          $sw = [System.IO.StreamWriter]::new("release-artifacts/SHA256SUMS.txt")
+          try {
+            Get-ChildItem release-artifacts/*.zip,release-artifacts/*.json | Sort-Object Name | ForEach-Object {
+              $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+              $sw.WriteLine("$hash  $($_.Name)")
+              Write-Host "$hash  $($_.Name)"
+            }
+          } finally { $sw.Dispose() }
+
+      - name: Extract release notes from CHANGELOG
+        id: notes
+        shell: pwsh
+        run: |
+          # Toma la seccion del CHANGELOG.md correspondiente a la version, o usa [Unreleased]
+          $version = "${{ steps.ver.outputs.version }}"
+          $content = Get-Content -Raw CHANGELOG.md
+          $pattern = "(?ms)^##\s+\[?(?:$([regex]::Escape($version))|Unreleased)\]?.*?(?=^##\s+\[|\z)"
+          $match = [regex]::Match($content, $pattern)
+          if ($match.Success) {
+            $notes = $match.Value.Trim()
+          } else {
+            $notes = "Release ${{ steps.ver.outputs.tag }}. Ver CHANGELOG.md."
+          }
+
+          # Agregar instrucciones standard al footer
+          $footer = @"
+
+          ---
+
+          ## Instrucciones de instalacion en tu tenant
+
+          1. Descargar los ZIPs y el archivo ``deployment-settings.prod.template.json``
+          2. Rellenar la plantilla con los valores reales de tu environment (URLs SharePoint, correos, etc.)
+          3. Renombrarla a ``deployment-settings.prod.json``
+          4. Importar las solutions en orden:
+             ``pac solution import --path innova-core-${{ steps.ver.outputs.version }}-managed.zip --settings-file deployment-settings.prod.json``
+             ``pac solution import --path innova-canvas-${{ steps.ver.outputs.version }}-managed.zip --settings-file deployment-settings.prod.json``
+             ``pac solution import --path innova-flows-${{ steps.ver.outputs.version }}-managed.zip --settings-file deployment-settings.prod.json``
+          5. Verificar checksums contra ``SHA256SUMS.txt``
+          6. Ver runbook completo: ``docs/runbooks/04-deploy-release-cliente.md``
+
+          ## Notas importantes
+
+          - PROD vive en tu tenant. No tenemos acceso ni hacemos auto-deploy (ver ADR-0004)
+          - Connection References estan vacias post-import — debes crearlas en tu environment y reasignar
+          - Service Principal debe crearse en tu tenant con permisos de System Customizer + Application User
+          "@
+
+          # Escribir a archivo para usarlo en el siguiente step
+          ($notes + $footer) | Out-File -FilePath release-notes.md -Encoding UTF8
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: INNOVA ${{ steps.ver.outputs.tag }}
+          body_path: release-notes.md
+          files: |
+            release-artifacts/*.zip
+            release-artifacts/*.json
+            release-artifacts/SHA256SUMS.txt
+          draft: false
+          prerelease: ${{ contains(steps.ver.outputs.version, '-') }}

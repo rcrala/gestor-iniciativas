@@ -130,10 +130,11 @@ function Test-JsonValid {
 
 function Test-NoSecrets {
     param([string[]]$Files)
-    # Excluir el propio validador (los patterns regex de abajo matchean su propio codigo)
+    # Excluir el propio validador y su documentacion (los patterns regex matchean ejemplos doc)
     $codeFiles = $Files |
         Where-Object { $_ -match '\.(ps1|psm1|json|md|ya?ml|cs|ts|tsx|js)$' } |
-        Where-Object { $_ -notmatch 'scripts[\\/]validate[\\/]run-validators\.ps1$' }
+        Where-Object { $_ -notmatch 'scripts[\\/]validate[\\/]run-validators\.ps1$' } |
+        Where-Object { $_ -notmatch 'docs[\\/]conventions[\\/]validation\.md$' }
     if ($codeFiles.Count -eq 0) { return }
     Write-Host "[3/4] Secret detection ($($codeFiles.Count) archivos)..." -ForegroundColor Cyan
 
@@ -228,6 +229,35 @@ function Test-Conventions {
             if ($f -match $pat) {
                 Add-Issue -Severity 'ERROR' -File $f -Message "Archivo sensible no debe commitearse. Agregar a .gitignore y revocar si ya esta en historia"
             }
+        }
+    }
+
+    # 4e: naming Dataverse en solutions/ unpacked. Entities, OptionSets, Roles deben tener prefix pas_
+    # (excepto componentes de sistema que vienen automaticamente con el solution: SystemUser, general, etc.)
+    $systemWhitelist = @(
+        '^SystemUser$',           # entity tipo systemuser viene siempre con role/relationship dependencies
+        '^general$',               # OrganizationSettings 'general' es la unica setting standard
+        '^Customizations\.xml$'    # archivo raiz del solution
+    )
+
+    foreach ($f in $Files) {
+        if ($f -notmatch '^solutions[\\/][^\\/]+[\\/](Entities|OptionSets|Roles|CanvasApps)[\\/]') { continue }
+        $parts = $f -split '[\\/]'
+        # solutions/<solution>/Entities/<EntityName>/...   -> parts[3] = EntityName
+        if ($parts.Count -lt 4) { continue }
+        $componentName = $parts[3]
+
+        $isWhitelisted = $false
+        foreach ($wl in $systemWhitelist) { if ($componentName -match $wl) { $isWhitelisted = $true; break } }
+        if ($isWhitelisted) { continue }
+
+        # Roles de INNOVA tienen prefix "INNOVA " (no pas_) — son seguros
+        if ($parts[2] -eq 'Roles' -and $componentName -match '^INNOVA ') { continue }
+
+        # CanvasApps tienen nombre tipo pas_<guid> — aceptamos pas_ tambien
+        # Entities/OptionSets deben empezar con pas_ (case-insensitive porque Dataverse PascalCase)
+        if ($componentName -notmatch '^pas_') {
+            Add-Issue -Severity 'WARN' -File $f -Message "Componente '$componentName' en solutions/ no tiene prefix 'pas_' o no esta whitelisted. Revisar naming convention (docs/conventions/dataverse-naming.md)"
         }
     }
 }
