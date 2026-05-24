@@ -223,34 +223,104 @@ Out-of-scope del MVP. Cuando aplique:
 
 **No es que el SDD esté mal** — está escrito agnóstico. Solo hay que dejarlo claro con el cliente.
 
-## Preguntas para el cliente (C7-C12)
+## Preguntas para el cliente (respondidas 2026-05-24)
 
-| # | Pregunta | Razón |
+| # | Pregunta | Respuesta del cliente | Decisión |
+|---|---|---|---|
+| C7 | ¿`pas_prioridad` actual (P1/P2/P3 jefatura) se mantiene o reemplaza? | **Conceptos separados**. La prioridad actual es decisión de jefatura; el scoring es para empresa/grupo | Mantener ambos. Son ortogonales (ver "Decisiones tomadas" abajo) |
+| C8 | ¿Quién captura `urgencia`, `importancia`, `impacto_negocio`, `esfuerzo_tecnico`? | **Ambos roles** capturan, distribuidos por conocimiento | Solicitante (M2): urgencia, importancia. PMO (M3): impacto_negocio, esfuerzo_tecnico, alineacion_estrategica. TI (M4): puede refinar esfuerzo_tecnico |
+| C9 | ¿`priorityScore` se recalcula live o batch? | **Live**, pero quiere entender mi razón para considerar batch | **Live con debounce de 30s**: flow trigger en update + `Delay 30s` coalesce ediciones rápidas |
+| C10 | ¿3 engines son vistas del mismo dato o procesos distintos? | **Procesos distintos** (usan propiedades diferentes) | 3 columnas calculadas + 3 lógicas independientes + **1 pantalla M-PRIO unificada** que las muestra juntas. Cross-reference opcional permitido |
+| C11 | ¿Entiende que vamos en Power Platform (no React/FastAPI)? | **Confirmado: Power Platform** | El SDD se interpreta como spec funcional, no técnico |
+| C12 | ¿Prioridad relativa al EPIC #27? | **Phase 2 post-MVP** | No abrir EPIC ahora. Agregar al roadmap como módulo M-PRIO posterior a M2-M14 |
+
+## Decisiones tomadas (basadas en C7-C12)
+
+### D1. Separación de `pas_prioridad` vs scoring (C7)
+
+Razón: son ortogonales en propósito y consumidor.
+
+| Concepto | Cuándo | Quién lo usa | Acción que dispara |
+|---|---|---|---|
+| `pas_prioridad` (P1/P2/P3) | M5 al aprobar | Jefatura inmediata, PMO para ordenar cola | "Qué hago primero esta semana" |
+| `score_prioridad` + cuadrantes Eisenhower/I-E | M3/M4 al evaluar | Gerencia/Comité (visión portafolio) | "Dónde invertimos como organización" |
+
+Una iniciativa puede ser **P1 (urgente operativamente) con score bajo (poco valor estratégico)**, y viceversa. Si los unimos, perdemos esa información.
+
+### D2. Captura distribuida por conocimiento (C8)
+
+| Rol | Inputs que captura | Cuándo |
 |---|---|---|
-| C7 | ¿`pas_prioridad` actual (P1/P2/P3 asignada por Jefatura) se mantiene o reemplaza con el sistema de scoring nuevo? | Coexisten 2 conceptos de "prioridad" |
-| C8 | ¿Quién captura `urgencia`, `importancia`, `impacto_negocio`, `esfuerzo_tecnico`? ¿Solicitante en M2 o PMO en M3 o ambos? | Determina dónde van los inputs en la UI |
-| C9 | ¿Cuándo se recalcula `priorityScore`? Live (al cambiar campo) o batch (al cerrar etapa)? | Live = flow trigger en cada update; batch = scheduled |
-| C10 | ¿Los 3 engines (Eisenhower, Impact-Effort, Scoring configurable) son vistas paralelas del mismo dato o tres procesos distintos? El SDD los presenta separados pero podrían compartir inputs | Define si hay 3 columnas calculadas o 1 |
-| C11 | ¿Entiende el cliente que vamos a implementar los conceptos del SDD en Power Platform (no en React/FastAPI/PostgreSQL como propone el SDD)? | Confirmación explícita de scope técnico |
-| C12 | ¿Prioridad relativa al EPIC #27? Opciones: (a) bloquea M2-M14 hasta que esto exista (b) paralelo a M2-M14 (c) Phase 2 (post-MVP) | Decisión de roadmap |
+| Solicitante | `pas_urgencia` (1-5), `pas_importancia` (1-5) | M2 (Nueva Solicitud) — sabe el costo de oportunidad para su área |
+| PMO | `pas_impacto_negocio` (1-10), `pas_esfuerzo_tecnico` (1-10), `pas_alineacion_estrategica` (1-10) | M3 (Evaluación PMO) — tiene visión objetiva del portafolio |
+| TI | refina `pas_esfuerzo_tecnico` | M4 (Estimación TI) — datos finales tras spike técnico |
+| Admin M11 | criterios de Configurable Scoring + pesos | Cualquier momento |
 
-## Recomendación de plan
+**Cuándo está cada engine disponible**:
+- **Eisenhower**: tan pronto Solicitante envía (M2 → Revisión inicial PMO). Datos de solicitante son suficientes.
+- **Impact-Effort**: tras Evaluación PMO completada (M3). Score = impacto/esfuerzo.
+- **Configurable Scoring**: cuando todas las criterias activas tienen valor. Si un criterio no se ha capturado, el score parcial se muestra con flag "incompleto".
 
-**Si el cliente confirma C7-C12**:
+### D3. Recálculo live con debounce de 30s (C9)
 
-1. **Abrir EPIC nuevo** `M-PRIO Initiative Prioritization Engine` (paralelo al #27, no bloqueante)
-2. **Issues hijos** (basados en GPs):
-   - GP1 — Columnas nuevas en `pas_iniciativa` (4-7 columnas)
-   - GP2 — Tabla `pas_criterio_priorizacion`
-   - GP3 — Tabla bridge `pas_iniciativa_score`
+Implementación:
+- Flow trigger: `When pas_iniciativa updated`, filter: scope a campos de scoring
+- Primer paso del flow: `Delay 30s`
+- Tras delay: re-query el registro (estado final) + calcular
+- Si el flow ya está corriendo para ese iniciativaId, el segundo trigger lo coalesce
+
+Razones para considerar batch (rechazadas):
+1. **Coste API**: cada `Patch` dispara flow → llamada Dataverse. 5 ediciones rápidas = 5 recálculos cuando 1 bastaba. → Debounce resuelve.
+2. **Throttling**: Dataverse ~20k requests/día por usuario en producción. → Debounce reduce ~5x.
+3. **Race**: PMO actualiza impacto + esfuerzo en mismo Patch → flow live dispara 2 veces. → Debounce los coalesce.
+4. **UX**: ver score cambiar 5 veces seguidas distrae. → Debounce muestra solo el resultado final.
+
+### D4. 3 procesos distintos, 1 pantalla unificada (C10)
+
+3 columnas calculadas separadas en `pas_iniciativa`:
+- `pas_cuadrante_eisenhower` (Choice)
+- `pas_clasificacion_ie` (Choice) + `pas_score_ie` (Decimal = impacto/esfuerzo)
+- `pas_score_total_ponderado` (Decimal = Σ valor × peso)
+
+3 lógicas independientes en el flow helper (cada bloque se puede activar/desactivar via parámetro):
+- `EisenhowerEnabled = true/false` en `pas_parametro`
+- `ImpactEffortEnabled = true/false`
+- `ConfigurableScoringEnabled = true/false`
+
+1 pantalla unificada M-PRIO con:
+- Matriz Eisenhower 2×2 (PCF Control)
+- Bubble chart Impact-Effort (PCF Control)
+- Tabla de ranking por score total (Canvas Gallery)
+- Toggle entre las 3 vistas
+
+**Cross-reference opcional**: un criterio del Configurable Scoring puede llamarse "Bonus Quick Win" con valor preseteado +1 si `pas_clasificacion_ie = QUICK_WIN`. Da flexibilidad sin acoplar las lógicas.
+
+### D5. M-PRIO va a Phase 2 post-MVP (C12)
+
+No se abre EPIC ahora. Se agrega al roadmap. Implementación esperada: tras estabilizar M2-M14 y tener al menos 1 sprint de uso real en producción para validar requisitos reales de priorización.
+
+## Plan diferido (Phase 2 post-MVP)
+
+Dado C12 = Phase 2 post-MVP, M-PRIO **NO se implementa ahora**. Se agrega al roadmap como módulo posterior a M2-M14. Cuando llegue el momento:
+
+1. **Abrir EPIC** `M-PRIO Initiative Prioritization Engine`
+2. **Issues hijos** (basados en GPs documentados arriba):
+   - GP1 — Columnas nuevas en `pas_iniciativa` (8 columnas)
+   - GP2 — Tabla `pas_criterio_priorizacion` (OrganizationOwned)
+   - GP3 — Tabla bridge `pas_iniciativa_score` (UserOwned, Cascade hacia iniciativa)
    - GP4 — Choices `pas_cuadrante_eisenhower` + `pas_clasificacion_ie`
-   - GP5 — Flow helper `Calcular Priorizacion`
-   - GP6 — Validación suma pesos (plugin C# o Business Rule)
-   - GP7 — Pantalla M-PRIO en Canvas App + 2 PCF Controls (matriz + bubble)
+   - GP5 — Flow helper `Calcular Priorizacion` (live + debounce 30s, 3 lógicas independientes)
+   - GP6 — Validación suma pesos = 1.0 (plugin C# pre-validate)
+   - GP7 — Pantalla M-PRIO en Canvas App + 2 PCF Controls (matriz Eisenhower 2×2 + bubble I-E)
    - GP8 — Dashboard Power BI de priorización
-   - GP9 (futuro) — Events / webhooks
+   - GP9 (Phase 3) — Events / webhooks / AI recommendations
+
 3. **Esfuerzo estimado**: 1-2 sprints (3-4 semanas con 1 dev)
-4. **Sin dependencia con EPIC #27** — puede arrancar tan pronto el cliente confirme, en paralelo
+
+4. **Pre-requisitos antes de empezar**:
+   - M2-M14 estabilizados en producción
+   - Al menos 1 sprint de uso real para validar requisitos reales (puede que `pas_prioridad` simple sea suficiente y los 3 engines sean over-engineering — validar con datos)
+   - Confirmar con cliente si los pesos y criterios siguen siendo los mismos o evolucionaron
 
 ## Referencias
 

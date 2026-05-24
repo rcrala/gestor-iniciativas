@@ -4,11 +4,12 @@
 
 ## Resumen ejecutivo
 
-INNOVA se entrega en **3 grandes bloques** secuenciados:
+INNOVA se entrega en **3 grandes bloques** secuenciados, más **Phase 2 post-MVP** para extensiones:
 
 1. **Fase 0 — Alineación** (1 semana). Convenciones, GitHub workflow, plantillas, decisiones pendientes.
 2. **Sprint 0 — Bootstrap técnico** (2 semanas). Modelo de datos, Business Units, security roles, solutions skeleton, CI/CD.
 3. **Sprints funcionales — Módulos M1-M14** (14-18 semanas según paralelización). Una pantalla/capa por módulo.
+4. **Phase 2 post-MVP** — Extensiones validadas con uso real en producción.
 
 Las **Fases transversales F1-F6** (ALM, seguridad, notificaciones, reportería, documentación, performance) corren en paralelo a los módulos.
 
@@ -74,7 +75,20 @@ Fase 0 → Sprint 0 → M2 → M3 → M5 → M6 → M7 → M9 → M10 → M13 �
                      ↘ M4 (si requiere desarrollo)
                      ↘ M8 (paralelizable desde M3)
                      ↘ M12 (paralelizable desde M2)
+
+Phase 2 post-MVP:
+  ↘ M-PRIO Initiative Prioritization Engine (Eisenhower + Impact-Effort + Configurable Scoring)
 ```
+
+## Phase 2 post-MVP (módulos diferidos)
+
+Funcionalidades que el cliente solicitó pero se difieren hasta consolidar el MVP con uso real en producción.
+
+| Módulo | Origen | Análisis | Esfuerzo estimado | Pre-requisitos |
+|---|---|---|---|---|
+| **M-PRIO** Initiative Prioritization Engine | Cliente, SDD 2026-05-24 | [`docs/01-Requeriments/20260524-Funcionalidad-Prioridades/analisis-priorizacion-vs-modelo.md`](../01-Requeriments/20260524-Funcionalidad-Prioridades/analisis-priorizacion-vs-modelo.md) | 1-2 sprints (3-4 semanas, 1 dev) | M2-M14 estabilizados + 1 sprint de uso real para validar que el scoring complejo se necesita vs `pas_prioridad` simple |
+
+**Razón del diferimiento**: el cliente confirmó C12 = Phase 2 post-MVP. Implementar antes de tener datos reales arriesga over-engineering (puede que `pas_prioridad` P1/P2/P3 sea suficiente para Gerencia/Comité).
 
 ## Convenciones de plan
 
