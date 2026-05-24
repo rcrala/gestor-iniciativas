@@ -1,10 +1,10 @@
 # Modelo de Datos — INNOVA
 
-> **Versión**: 1.3 (alineación con requerimientos del cliente — EPIC #27 / issues #28, #29)
+> **Versión**: 1.5 (alineación con requerimientos del cliente — EPIC #27 / issues #28, #29, #33, #34)
 > **Estado**: Diseño completo para implementación. Iteraciones menores permitidas como 1.x antes de M2.
 > **Decisores**: Tech Lead, Arquitecto
 >
-> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28) → 1.3 (+ `pas_sistema` + bridge `pas_iniciativa_sistema` issue #29)
+> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28) → 1.3 (+ `pas_sistema` + bridge `pas_iniciativa_sistema` issue #29) → 1.4 (reconciliación de labels `pas_iniciativa_estado` issue #33) → 1.5 (+ `pas_codigo_corto` en empresa + `pas_consecutivo_secuencia` en iniciativa para nuevo formato consecutivo COA-AAAA-NNN, issue #34)
 
 ## Resumen
 
@@ -20,7 +20,7 @@ Decisiones clave de este modelo:
 - **Empresas modeladas como tabla** `pas_empresa` + lookup a Business Unit del sistema (decisión ADR-0003 ampliada)
 - **Versionado por audit nativo de Dataverse** en v1.0; `pas_iniciativa_snapshot` se evaluará en v1.x si el negocio lo requiere
 - **Currency requerido** en toda columna money; default `CRC` (colones), parametrizable
-- **`pas_consecutivo`** generado por flow helper con lock (formato `INI-{año}-{seq:00000}`)
+- **`pas_consecutivo`** generado por flow helper con lock (formato `<codigo-empresa>-<año>-<seq:000>`, ej. `COA-2026-001`). Algoritmo y validaciones en [`numeracion-consecutivos.md`](numeracion-consecutivos.md)
 
 ## Diagrama ER
 
@@ -85,25 +85,27 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 
 ### `pas_iniciativa_estado` (17 valores)
 
+> Labels alineados con el cuadro resumen del cliente (issue #33, v1.4). Los `Value` numéricos se preservaron del Sprint 0 — solo los labels cambiaron porque DEV/QA no tienen datos aún.
+
 | Valor | Etiqueta | Descripción |
 |---|---|---|
 | 100000000 | Borrador | Solicitante editando antes de enviar |
-| 100000001 | En Evaluación PMO | PMO está haciendo levantamiento |
-| 100000002 | En Evaluación TI | TI está estimando desarrollo |
-| 100000003 | Pendiente Aprobación Jefatura | Esperando decisión de jefatura del solicitante |
-| 100000004 | Aprobada Jefatura | Jefatura aprobó, pasa a cotizaciones |
-| 100000005 | En Cotización | PMO recopila hasta 3 cotizaciones |
-| 100000006 | En Ejecución | PMO documenta avances y horas |
-| 100000007 | Pendiente Validación Jefatura | Ejecución terminada, jefatura valida |
-| 100000008 | Validada Jefatura | Jefatura validó, escala según monto |
-| 100000009 | Pendiente Gerencia General | Bajo umbral, espera decisión de Gerencia |
-| 100000010 | Pendiente Comité | Sobre umbral o multi-empresa, espera votos |
-| 100000011 | Aprobada | Estado final positivo |
-| 100000012 | Rechazada | Estado final negativo |
-| 100000013 | Devuelta a PMO | Jefatura devolvió por correcciones |
-| 100000014 | Devuelta a Solicitante | PMO devolvió por información insuficiente |
-| 100000015 | Cerrada Sin Continuar | Solicitante o PMO decide no continuar |
-| 100000016 | Suspendida | Pausada temporalmente (admin) |
+| 100000001 | Revisión inicial PMO | PMO recibió, está haciendo levantamiento |
+| 100000002 | Estimación Desarrollo | TI está estimando esfuerzo de desarrollo |
+| 100000003 | Revisión Estimación de la Jefatura | Esperando que jefatura revise la estimación TI |
+| 100000004 | Estimación Aprobada por Jefatura | Jefatura aprobó la estimación, pasa a cotizaciones |
+| 100000005 | Estimación Devuelta por Jefatura | Jefatura devolvió la estimación a TI para ajustes |
+| 100000006 | Estimación Rechazada por Jefatura | Jefatura rechazó la estimación (cierre por costo/factibilidad) |
+| 100000007 | Revisión Iniciativa Jefatura | Esperando que jefatura revise la iniciativa (sin desarrollo) |
+| 100000008 | Iniciativa Devuelta por Jefatura | Jefatura devolvió la iniciativa al solicitante para correcciones |
+| 100000009 | En Cotización | PMO recopila hasta 3 cotizaciones |
+| 100000010 | Revisión Gerencia de Negocio | Bajo umbral, espera decisión de Gerencia |
+| 100000011 | Aprobada por Gerencia General de Negocio | Gerencia aprobó (resultado intermedio, no requiere Comité) |
+| 100000012 | Rechazada por Gerencia General de Negocio | Gerencia rechazó |
+| 100000013 | Revisión Comité de Proyectos | Sobre umbral o multi-empresa, espera votos del Comité |
+| 100000014 | Aprobada | Estado final positivo (resultado Comité o consolidado tras Gerencia) |
+| 100000015 | Rechazo del Comité | Estado final negativo desde Comité |
+| 100000016 | Cancelada | Cancelada por Solicitante o Admin |
 
 ### `pas_iniciativa_prioridad`
 | Valor | Etiqueta |
@@ -192,7 +194,8 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | Columna | Tipo | Required | Descripción |
 |---|---|---|---|
 | `pas_iniciativaid` | Uniqueidentifier (PK) | sí | Generado por Dataverse |
-| `pas_consecutivo` | Text(20) | sí | Formato `INI-{año}-{seq:00000}`. Único. Generado por flow helper con lock |
+| `pas_consecutivo` | Text(20) | sí | Formato `<codigo_corto_empresa>-{año}-{seq:000}` (ej. `COA-2026-001`). Único. Generado por flow helper con `Concurrency Control=1`. Ver [`numeracion-consecutivos.md`](numeracion-consecutivos.md) |
+| `pas_consecutivo_secuencia` | Integer | no | v1.5: secuencia numérica aislada (0-999999) usada para componer `pas_consecutivo`. Permite calcular el siguiente sin parsear el string |
 | `pas_titulo` | Text(200) | sí | Título corto de la iniciativa |
 | `pas_descripcion` | Text(2000) | sí | Descripción inicial del Solicitante |
 | `pas_descripcion_ampliada` | Text(4000) | no | Descripción ampliada por PMO durante levantamiento |
@@ -206,7 +209,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_requiere_desarrollo` | Boolean | no | Activado por PMO si va a TI |
 | `pas_es_multi_empresa` | Boolean | no | True si involucra >1 BU (regla de escalamiento a Comité) |
 | `pas_estado` | Choice `pas_iniciativa_estado` | sí | Estado del workflow (default: Borrador) |
-| `pas_fecha_solicitud` | DateTime | no | Fecha y hora en que el Solicitante envía la iniciativa (transición de Borrador a En Evaluación PMO). Distinto a `createdon` (que es el guardado inicial). Set por flow al cambiar estado |
+| `pas_fecha_solicitud` | DateTime | no | Fecha y hora en que el Solicitante envía la iniciativa (transición de Borrador a Revisión inicial PMO). Distinto a `createdon` (que es el guardado inicial). Set por flow al cambiar estado |
 | `pas_decision_jefatura` | Choice `pas_decision` | no | Aprobar / Devolver / Rechazar |
 | `pas_decision_jefatura_comentario` | Text(2000) | no | Requerido si Devolver o Rechazar |
 | `pas_fecha_decision_jefatura` | DateTime | no | Set por flow al registrar decisión |
@@ -221,7 +224,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_roi_porcentaje` | Decimal(2) | no | Calculado: (ahorro − costo) / costo × 100 |
 | `pas_resumen_ejecucion` | Text(4000) | no | Capturado en pantalla #5 al cerrar ejecución |
 | `pas_fecha_terminacion_ejecucion` | DateTime | no | Set al pasar a "Pendiente Validación Jefatura" |
-| `pas_anio` | Integer | no | Calculado de createdon, índice para reportes |
+| `pas_anio` | Integer | no | Año (2024-2100) usado por el algoritmo de consecutivo. Se llena por flow al enviar (Borrador → Revisión inicial PMO). Índice para reportes anuales |
 | `pas_dias_pendiente` | Integer | no | Calculado: días desde último cambio de estado |
 | (audit) | — | auto | createdon, createdby, modifiedon, modifiedby, owninguser, owningbusinessunit |
 
@@ -368,7 +371,8 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 |---|---|---|---|
 | `pas_empresaid` | Uniqueidentifier (PK) | sí | |
 | `pas_nombre` | Text(200) | sí | Razón social completa |
-| `pas_nombre_corto` | Text(50) | sí | Abreviatura para UI |
+| `pas_nombre_corto` | Text(50) | sí | Abreviatura para UI (display, ej. "Pasquí Industrial" → "Pasquí Ind.") |
+| `pas_codigo_corto` | Text(3) | sí | v1.5: prefijo de 3 letras ASCII MAYÚSCULAS para consecutivo de iniciativas (ej. "COA"). Validado en UI/flow `^[A-Z]{3}$`. Único. Ver [`numeracion-consecutivos.md`](numeracion-consecutivos.md) |
 | `pas_codigo_contable` | Text(20) | no | Para integración con ERP |
 | `pas_business_unit` | Lookup → businessunit | sí | BU del sistema que segmenta los datos. **No editable después de creación** (cambiar BU = workflow especial admin) |
 | `pas_logo` | Image | no | Logo para reportes |
@@ -514,7 +518,7 @@ Estas reglas se implementan en Power Fx (Canvas), Power Automate (flows) y/o Bus
 
 | # | Regla | Implementación sugerida |
 |---|---|---|
-| BR-1 | `pas_consecutivo` único, formato `INI-{año}-{seq:00000}` | Flow helper con lock (semáforo en `pas_parametro.UltimoConsecutivo`) |
+| BR-1 | `pas_consecutivo` único, formato `<codigo_corto>-{año}-{seq:000}` por empresa+año (ej. `COA-2026-001`) | Flow `INNOVA - Helper - Generar Consecutivo` con `Concurrency Control=1`. Ver [`numeracion-consecutivos.md`](numeracion-consecutivos.md) |
 | BR-2 | Máximo 3 cotizaciones por iniciativa | Validación UI en Canvas + business rule Dataverse |
 | BR-3 | Solo 1 cotización ganadora por iniciativa | Flow trigger en `pas_cotizacion` Update; opcional plugin C# |
 | BR-4 | Cotización ganadora requiere `pas_justificacion_ganadora` | Business Rule Dataverse |
@@ -644,3 +648,5 @@ Validación de que el modelo soporta todas las pantallas del análisis funcional
 | **1.1** | 2026-05-24 | Agregada columna `pas_fecha_solicitud` a `pas_iniciativa` (issue #15) |
 | **1.2** | 2026-05-24 | Agregada tabla `pas_departamento` (catálogo por empresa). EPIC #27 / issue #28 — alineación con requerimiento del cliente G1 |
 | **1.3** | 2026-05-24 | Agregada tabla `pas_sistema` (catálogo por empresa) + bridge N:M `pas_iniciativa_sistema`. EPIC #27 / issue #29 — alineación con requerimiento del cliente G2 |
+| **1.4** | 2026-05-24 | Sincronizados los 17 labels de `pas_iniciativa_estado` con los nombres exactos del cuadro resumen del cliente. EPIC #27 / issue #33 — G6 |
+| **1.5** | 2026-05-24 | Agregada columna `pas_codigo_corto` a `pas_empresa` (3 letras ASCII upper) + `pas_consecutivo_secuencia` a `pas_iniciativa` (Integer). Nuevo formato consecutivo `<codigo>-{año}-{seq:000}` (ej. `COA-2026-001`). Algoritmo documentado en `docs/architecture/numeracion-consecutivos.md`. EPIC #27 / issue #34 — G7 |

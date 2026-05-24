@@ -286,6 +286,7 @@ $tables = @(
             (Col -Type DateTime -Name 'pas_fecha_terminacion_ejecucion'  -Display 'Fecha terminacion ejecucion'  -Behavior 'UserLocal' -Format 'DateAndTime')
             (Col -Type Integer  -Name 'pas_anio'                         -Display 'Ano'                          -Min 2024 -Max 2100)
             (Col -Type Integer  -Name 'pas_dias_pendiente'               -Display 'Dias pendiente'               -Min 0 -Max 100000)
+            (Col -Type Integer  -Name 'pas_consecutivo_secuencia'        -Display 'Consecutivo secuencia'        -Min 0 -Max 999999 -Description 'G7: secuencia numerica por empresa+ano usada para componer pas_consecutivo (formato COA-AAAA-NNN). Persistir aparte evita race conditions al calcular el siguiente numero')
         )
     }
     @{
@@ -397,6 +398,7 @@ $tables = @(
         PrimaryName = (Col -Type String -Name 'pas_nombre' -Display 'Razon social' -Required ApplicationRequired -MaxLength 200)
         Columns = @(
             (Col -Type String  -Name 'pas_nombre_corto'         -Display 'Nombre corto'         -Required ApplicationRequired -MaxLength 50)
+            (Col -Type String  -Name 'pas_codigo_corto'         -Display 'Codigo corto'         -Required ApplicationRequired -MaxLength 3 -Description 'G7: prefijo de 3 letras ASCII en MAYUSCULAS usado en el consecutivo de iniciativas formato COA-AAAA-NNN. Validar formato en UI/flow')
             (Col -Type String  -Name 'pas_codigo_contable'      -Display 'Codigo contable'      -MaxLength 20)
             (Col -Type String  -Name 'pas_correo_corporativo'   -Display 'Correo corporativo'   -MaxLength 100 -Format 'Email')
             (Col -Type Boolean -Name 'pas_activa'               -Display 'Activa'               -Required ApplicationRequired -TrueLabel 'Si' -FalseLabel 'No' -Default $true)
