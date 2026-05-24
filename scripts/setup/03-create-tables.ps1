@@ -427,6 +427,26 @@ $tables = @(
         )
     }
     @{
+        LogicalName = 'pas_sistema'; SchemaName = 'pas_Sistema'
+        Display = 'Sistema'; DisplayCollection = 'Sistemas'
+        Description = 'Catalogo de sistemas integrables por empresa. Usado en pas_iniciativa cuando pas_requiere_integracion=true'
+        Ownership = 'OrganizationOwned'
+        PrimaryName = (Col -Type String -Name 'pas_nombre' -Display 'Nombre' -Required ApplicationRequired -MaxLength 100)
+        Columns = @(
+            (Col -Type String  -Name 'pas_codigo'      -Display 'Codigo'      -MaxLength 20 -Description 'Codigo opcional para integraciones externas')
+            (Col -Type Memo    -Name 'pas_descripcion' -Display 'Descripcion' -MaxLength 1000)
+            (Col -Type Boolean -Name 'pas_activo'      -Display 'Activo'      -Required ApplicationRequired -TrueLabel 'Si' -FalseLabel 'No' -Default $true)
+        )
+    }
+    @{
+        LogicalName = 'pas_iniciativa_sistema'; SchemaName = 'pas_Iniciativa_Sistema'
+        Display = 'Sistema de Iniciativa'; DisplayCollection = 'Sistemas de Iniciativa'
+        Description = 'Tabla puente N:M entre pas_iniciativa y pas_sistema. Una iniciativa puede integrar con N sistemas'
+        Ownership = 'UserOwned'
+        PrimaryName = (Col -Type String -Name 'pas_nombre' -Display 'Nombre' -Required ApplicationRequired -MaxLength 200 -Description 'Display compuesto: consecutivo iniciativa + nombre sistema. Llenado por flow al crear el registro')
+        Columns = @()
+    }
+    @{
         LogicalName = 'pas_plantillacorreo'; SchemaName = 'pas_PlantillaCorreo'
         Display = 'Plantilla de Correo'; DisplayCollection = 'Plantillas de Correo'
         Description = 'Plantillas reusables para correos automatizados'
