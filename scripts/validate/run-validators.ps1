@@ -115,7 +115,9 @@ function Test-JsonValid {
     Write-Host "[2/4] JSON validity ($($jsonFiles.Count) archivos)..." -ForegroundColor Cyan
     foreach ($f in $jsonFiles) {
         try {
-            $null = Get-Content -Raw -Path $f -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            # Usar -AsHashtable para tolerar JSONs con property names vacios (validos pero
+            # no soportados por el converter default). Ejemplo: package-lock.json de npm.
+            $null = Get-Content -Raw -Path $f -ErrorAction Stop | ConvertFrom-Json -AsHashtable -ErrorAction Stop
         } catch {
             Add-Issue -Severity 'ERROR' -File $f -Message "JSON invalido: $($_.Exception.Message)"
         }
