@@ -7,6 +7,17 @@ on:
     branches: [ main ]
 
 jobs:
+  validate-scripts:
+    name: Validate scripts and docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run INNOVA validators (full repo scan)
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -NonInteractive -File scripts/validate/run-validators.ps1 -AllFiles
+
   validate-solutions:
     name: Validate Power Platform Solutions
     runs-on: windows-latest
