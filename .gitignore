@@ -22,6 +22,12 @@
 solutions/**/bin/
 solutions/**/obj/
 
+# Canvas Apps: archivos transientes / regenerables al hacer pac canvas download
+**/Src/_EditorState.pa.yaml
+**/AppCheckerResult.sarif
+# Area de trabajo temporal para pac canvas download/unpack
+.work/
+
 # -----------------------------------------------------------------------------
 # .NET (plugins de Dataverse)
 # -----------------------------------------------------------------------------
