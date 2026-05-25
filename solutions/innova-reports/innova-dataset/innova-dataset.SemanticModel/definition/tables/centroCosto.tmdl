@@ -1,0 +1,43 @@
+/// Dimension: centros de costo (hijo de empresa).
+table 'centroCosto'
+
+	column pas_centrocostoid
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: pas_centrocostoid
+		summarizeBy: none
+
+	column nombre
+		dataType: string
+		sourceColumn: pas_nombre
+		summarizeBy: none
+
+	column codigo
+		dataType: string
+		sourceColumn: pas_codigo
+		summarizeBy: none
+
+	column empresaId
+		dataType: string
+		sourceColumn: _pas_empresa_value
+		summarizeBy: none
+		isHidden
+
+	column activo
+		dataType: boolean
+		sourceColumn: pas_activo
+		formatString: "True/False"
+		summarizeBy: none
+
+	partition 'centroCosto' = m
+		mode: import
+		source = ```
+				let
+				    url = "https://org93905a7d.crm.dynamics.com",
+				    Source = OData.Feed(url & "/api/data/v9.2/pas_centrocostos?$select=pas_centrocostoid,pas_nombre,pas_codigo,pas_activo,_pas_empresa_value", null, [Implementation="2.0"])
+				in
+				    Source
+			```
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,16 @@
+model Model
+	culture: es-CR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-CR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+ref table 'iniciativa'
+ref table 'empresa'
+ref table 'centroCosto'
+ref table 'departamento'
+ref table 'estados'
+ref table 'Calendar'
+
+ref cultureInfo es-CR

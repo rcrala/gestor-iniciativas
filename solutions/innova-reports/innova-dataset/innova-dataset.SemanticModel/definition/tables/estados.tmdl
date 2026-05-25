@@ -1,0 +1,59 @@
+/// Lookup: codigo de estado -> label legible.
+/// Tabla calculada (no source) basada en pas_iniciativa_estado option set.
+/// Mantener sincronizada con docs/architecture/estados-iniciativa.md y EstadoIniciativa.cs
+table 'estados'
+
+	column codigo
+		dataType: int64
+		summarizeBy: none
+		isKey
+		sourceColumn: codigo
+
+	column label
+		dataType: string
+		summarizeBy: none
+		sourceColumn: label
+		sortByColumn: orden
+
+	column orden
+		dataType: int64
+		summarizeBy: none
+		isHidden
+		sourceColumn: orden
+
+	column categoria
+		dataType: string
+		summarizeBy: none
+		sourceColumn: categoria
+
+	partition 'estados' = m
+		mode: import
+		source = ```
+				let
+				    Origen = #table(
+				        type table [codigo = Int64.Type, label = text, orden = Int64.Type, categoria = text],
+				        {
+				            {100000000, "Borrador",                                  1,  "Inicial"},
+				            {100000001, "Revision inicial PMO",                     2,  "Evaluacion"},
+				            {100000002, "Estimacion Desarrollo",                    3,  "Estimacion"},
+				            {100000003, "Revision Estimacion de la Jefatura",       4,  "Estimacion"},
+				            {100000004, "Estimacion Aprobada por Jefatura",         5,  "Estimacion"},
+				            {100000005, "Estimacion Devuelta por Jefatura",         6,  "Estimacion"},
+				            {100000006, "Estimacion Rechazada por Jefatura",        7,  "Terminal"},
+				            {100000007, "Revision Iniciativa Jefatura",             8,  "Aprobacion"},
+				            {100000008, "Iniciativa Devuelta por Jefatura",         9,  "Aprobacion"},
+				            {100000009, "En Cotizacion",                            10, "Cotizacion"},
+				            {100000010, "Revision Gerencia de Negocio",             11, "Aprobacion"},
+				            {100000011, "Aprobada por Gerencia General de Negocio", 12, "Aprobacion"},
+				            {100000012, "Rechazada por Gerencia General de Negocio",13, "Terminal"},
+				            {100000013, "Revision Comite de Proyectos",             14, "Comite"},
+				            {100000014, "Aprobada",                                 15, "Terminal"},
+				            {100000015, "Rechazo del Comite",                       16, "Terminal"},
+				            {100000016, "Cancelada",                                17, "Terminal"}
+				        }
+				    )
+				in
+				    Origen
+			```
+
+	annotation PBI_ResultType = Table

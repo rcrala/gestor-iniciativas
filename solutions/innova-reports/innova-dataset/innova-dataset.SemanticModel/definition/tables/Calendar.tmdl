@@ -1,0 +1,81 @@
+/// Tabla de fechas (date dimension). Cubre 2024-01-01 a 2030-12-31.
+/// Usada para filtros temporales y analisis time-intelligence.
+table Calendar
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		summarizeBy: none
+		sourceColumn: Date
+		formatString: Short Date
+
+	column Anio
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column Trimestre
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Trimestre
+
+	column MesNumero
+		dataType: int64
+		summarizeBy: none
+		isHidden
+		sourceColumn: MesNumero
+
+	column Mes
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Mes
+		sortByColumn: MesNumero
+
+	column AnioMes
+		dataType: string
+		summarizeBy: none
+		sourceColumn: AnioMes
+		sortByColumn: AnioMesNumero
+
+	column AnioMesNumero
+		dataType: int64
+		summarizeBy: none
+		isHidden
+		sourceColumn: AnioMesNumero
+
+	column DiaDeSemana
+		dataType: string
+		summarizeBy: none
+		sourceColumn: DiaDeSemana
+		sortByColumn: DiaDeSemanaNumero
+
+	column DiaDeSemanaNumero
+		dataType: int64
+		summarizeBy: none
+		isHidden
+		sourceColumn: DiaDeSemanaNumero
+
+	partition 'Calendar' = m
+		mode: import
+		source = ```
+				let
+				    FechaInicio = #date(2024, 1, 1),
+				    FechaFin = #date(2030, 12, 31),
+				    DiasTotales = Duration.Days(FechaFin - FechaInicio) + 1,
+				    ListaFechas = List.Dates(FechaInicio, DiasTotales, #duration(1, 0, 0, 0)),
+				    Tabla = Table.FromList(ListaFechas, Splitter.SplitByNothing(), {"Date"}),
+				    ConTipos = Table.TransformColumnTypes(Tabla, {{"Date", type date}}),
+				    Anio = Table.AddColumn(ConTipos, "Anio", each Date.Year([Date]), Int64.Type),
+				    Trimestre = Table.AddColumn(Anio, "Trimestre", each Date.QuarterOfYear([Date]), Int64.Type),
+				    MesNumero = Table.AddColumn(Trimestre, "MesNumero", each Date.Month([Date]), Int64.Type),
+				    Mes = Table.AddColumn(MesNumero, "Mes", each Date.MonthName([Date], "es-CR"), type text),
+				    AnioMesNumero = Table.AddColumn(Mes, "AnioMesNumero", each [Anio] * 100 + [MesNumero], Int64.Type),
+				    AnioMes = Table.AddColumn(AnioMesNumero, "AnioMes", each Number.ToText([Anio]) & "-" & Text.PadStart(Number.ToText([MesNumero]), 2, "0"), type text),
+				    DiaDeSemanaNumero = Table.AddColumn(AnioMes, "DiaDeSemanaNumero", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type),
+				    DiaDeSemana = Table.AddColumn(DiaDeSemanaNumero, "DiaDeSemana", each Date.DayOfWeekName([Date], "es-CR"), type text)
+				in
+				    DiaDeSemana
+			```
+
+	annotation PBI_ResultType = Table

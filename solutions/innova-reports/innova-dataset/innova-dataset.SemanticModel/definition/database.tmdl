@@ -1,0 +1,4 @@
+database
+	compatibilityLevel: 1567
+
+annotation PBI_QueryOrder = ["iniciativa","empresa","centroCosto","departamento","estados","Calendar"]

@@ -1,0 +1,38 @@
+/// Dimension: departamentos organizacionales (hijo de empresa).
+table 'departamento'
+
+	column pas_departamentoid
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: pas_departamentoid
+		summarizeBy: none
+
+	column nombre
+		dataType: string
+		sourceColumn: pas_nombre
+		summarizeBy: none
+
+	column empresaId
+		dataType: string
+		sourceColumn: _pas_empresa_value
+		summarizeBy: none
+		isHidden
+
+	column activo
+		dataType: boolean
+		sourceColumn: pas_activo
+		formatString: "True/False"
+		summarizeBy: none
+
+	partition 'departamento' = m
+		mode: import
+		source = ```
+				let
+				    url = "https://org93905a7d.crm.dynamics.com",
+				    Source = OData.Feed(url & "/api/data/v9.2/pas_departamentos?$select=pas_departamentoid,pas_nombre,pas_activo,_pas_empresa_value", null, [Implementation="2.0"])
+				in
+				    Source
+			```
+
+	annotation PBI_ResultType = Table
