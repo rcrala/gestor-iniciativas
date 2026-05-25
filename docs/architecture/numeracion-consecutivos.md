@@ -1,7 +1,9 @@
 # Algoritmo de consecutivo de iniciativas — INNOVA
 
-> **Versión**: 1.0 (issue #34 / G7 — EPIC #27)
-> **Estado**: Diseño aprobado. Implementación del flow helper queda pendiente para Sprint posterior (referenciado por S0-8 #19).
+> **Versión**: 1.1 (issue #34 / G7 — EPIC #27)
+> **Estado**: **Implementado como Plug-in C#** (`IniciativaPreCreatePlugin`) deployado en DEV. Smoke test passing. Ver [`plugins/Pasqui.Innova.Plugins/Iniciativa/IniciativaPreCreatePlugin.cs`](../../plugins/Pasqui.Innova.Plugins/Iniciativa/IniciativaPreCreatePlugin.cs).
+>
+> **Cambio de Opción A → Opción B**: la decisión original era Power Automate con `Concurrency Control=1`. Se cambió a Plug-in C# porque (1) implementable end-to-end via código sin portal, (2) menor latencia, (3) ventana de race-condition más pequeña (mismo transaction), (4) tests unit-testables.
 
 ## Formato
 
@@ -58,39 +60,47 @@ SALIDA:  consecutivo (string), secuencia (int)
 6. Devolver (consecutivo, nuevaSeq)
 ```
 
-## Estrategia anti race-condition
+## Estrategia anti race-condition (implementada)
 
-Dataverse no provee transacciones de aislamiento. Para evitar consecutivos duplicados cuando dos iniciativas se envían simultáneamente:
+Dataverse no provee transacciones de aislamiento configurables, pero los plug-ins en **Stage 20 (PreOperation)** corren DENTRO del transaction del Create, lo que minimiza la ventana entre `Max()` y el `Insert`.
 
-### Opción A (recomendada): Power Automate `Concurrency Control = 1`
+### Implementación actual: Plug-in C# Pre-Create
 
-En el flow helper `INNOVA - Helper - Generar Consecutivo`:
+`IniciativaPreCreatePlugin` registrado en DEV con:
+- **Mode**: Synchronous
+- **Stage**: 20 (PreOperation, transactional)
+- **Message**: Create
+- **Entity**: pas_iniciativa
+- **Filter**: ninguno (corre en todo Create)
 
-- **Settings → Concurrency Control → On → Degree of Parallelism: 1**
+El plug-in:
+1. Filtra por mensaje Create + entidad pas_iniciativa
+2. Si target ya trae `pas_consecutivo` no vacío → respeta (idempotencia para imports)
+3. Resuelve `empresa.pas_codigo_corto` via `Retrieve`
+4. Valida regex `^[A-Z]{3}$` en codigo_corto (throw `InvalidPluginExecutionException` si inválido)
+5. Calcula MAX(pas_consecutivo_secuencia) WHERE empresa=X AND anio=Y → siguiente = max+1 (o 1 si no hay)
+6. Si siguiente > 999 → throw "límite alcanzado"
+7. Mutta target con pas_consecutivo, pas_consecutivo_secuencia, pas_anio
+8. El Insert del transaction usa esos valores
 
-Esto serializa todas las ejecuciones del flow. Throughput suficiente (< 1 iniciativa/segundo esperado).
+### Ventana de race-condition residual
 
-Trade-off: una llamada bloquea brevemente las siguientes — aceptable.
+Entre el `RetrieveMultiple(Max)` y el commit del Insert puede haber otro Create concurrente que vea el mismo Max. Para throughput < 1 iniciativa/segundo (esperado en INNOVA) esto NUNCA va a pasar en la práctica. Si en el futuro pasa:
 
-### Opción B (futuro, si throughput aumenta): Plugin C# con `LockManager`
+**Opción de mitigación (no implementada)**: agregar unique constraint a nivel de entidad sobre `(pas_empresa, pas_anio, pas_consecutivo_secuencia)`. El segundo Insert fallaría con DuplicateRecord; agregar retry loop en el plug-in (max 3 reintentos con delay 50ms).
 
-Si las iniciativas superan ~10/segundo, migrar a un plugin que use `System.Threading.SemaphoreSlim` por `empresaId+año` y haga el cálculo + insert en una sola transacción Dataverse vía `OrganizationServiceContext.SaveChanges()`.
+### Opciones rechazadas
 
-### Opción C (rechazada): SQL custom function
+- **Power Automate con Concurrency=1**: más latencia, dependencia del flow runtime, harder to unit-test
+- **SQL custom function (TDS endpoint)**: rompe portabilidad al tenant del cliente
 
-Dataverse no expone `INSERT ... SELECT MAX() FROM ... FOR UPDATE` directamente. Habría que usar SQL TDS endpoint, lo cual rompe portabilidad al tenant del cliente.
+## Tests
 
-## Flow helper
+- **Unit tests** (`plugins/Pasqui.Innova.Plugins.Tests/ConsecutivoFormatterTests.cs`): 28 tests del formatter puro
+- **Logic tests** (`IniciativaPreCreatePluginTests.cs`): 17 tests con fakes de `IOrganizationService` que cubren los 6 casos del runbook (sección "Pruebas mínimas") + idempotencia + errores
+- **Smoke test E2E** (`scripts/plugins/smoke-test-consecutivo.ps1`): crea iniciativa via API en DEV, verifica consecutivo asignado, formato regex, year correcto; auto-cleanup post-validación
 
-**Nombre**: `INNOVA - Helper - Generar Consecutivo`
-**Tipo**: Child flow
-**Trigger**: Manual / Child flow trigger
-**Inputs**: `iniciativaId` (string GUID)
-**Outputs**: `consecutivo` (string), `secuencia` (integer)
-**Concurrency**: 1 (Settings)
-**Run-after policy**: ninguna externa (el caller decide)
-
-Implementación pendiente para sprint posterior — referenciado por S0-8 (#19).
+Total: **45 tests passing** local + smoke test PASS en DEV.
 
 ## Validaciones de entrada (en M11 Admin)
 
