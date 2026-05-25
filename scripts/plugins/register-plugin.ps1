@@ -1,28 +1,25 @@
 #Requires -Version 7.0
 <#
 .SYNOPSIS
-    Registra un plug-in assembly de INNOVA en Dataverse via Web API (SP).
+    Registra todos los plug-ins de INNOVA en Dataverse via Web API (SP).
 
 .DESCRIPTION
-    1. Carga el DLL del plug-in (assumed built)
-    2. Lee Name, Version, PublicKeyToken via reflection
-    3. POSTea PluginAssembly (sandbox isolation)
-    4. POSTea PluginType para cada clase pasada en -PluginTypes
-    5. POSTea SdkMessageProcessingStep para cada step pasado en -Steps
-    6. Verifica el resultado
+    Data-driven: el array $TypesManifest declara que types registrar y que steps
+    crear para cada uno. Idempotente: actualiza Content del PluginAssembly si ya
+    existe; salta PluginType y Step si ya estan creados (busqueda por name).
 
-    Idempotente: si el assembly ya existe (por Name) y la version coincide, hace UPDATE
-    del Content y reusa el id. Si la version cambia, recrea.
+    Tambien crea SdkMessageProcessingStepImage (Pre-Image) cuando un step lo
+    declara — necesario para Update steps que dependen de valores actuales no
+    incluidos en el target.
 
 .PARAMETER Environment
     'dev' o 'qa'. Default 'dev'.
 
 .PARAMETER AssemblyPath
-    Path al DLL del plug-in. Default: el de IniciativaPreCreatePlugin en bin/Release.
+    Path al DLL. Default: el de bin/Release/netstandard2.0/.
 
 .EXAMPLE
     pwsh ./scripts/plugins/register-plugin.ps1
-    Registra Pasqui.Innova.Plugins con sus steps default (IniciativaPreCreatePlugin -> pas_iniciativa Create Pre).
 #>
 [CmdletBinding()]
 param(
@@ -34,6 +31,63 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# === Manifest de types + steps a registrar ===
+$TypesManifest = @(
+    @{
+        TypeName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaPreCreatePlugin'
+        FriendlyName = 'INNOVA - Iniciativa Pre-Create (consecutivo)'
+        Description = 'Asigna pas_consecutivo automaticamente al crear una iniciativa. Ver docs/architecture/numeracion-consecutivos.md'
+        Steps = @(
+            @{
+                StepName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaPreCreatePlugin: Create of pas_iniciativa'
+                Description = 'Pre-operation Create de pas_iniciativa: asigna pas_consecutivo, pas_consecutivo_secuencia, pas_anio'
+                Message = 'Create'
+                EntityName = 'pas_iniciativa'
+                Stage = 20
+                Mode = 0
+                Rank = 1
+                FilteringAttributes = $null
+                PreImages = @()
+            }
+        )
+    },
+    @{
+        TypeName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaRoiPlugin'
+        FriendlyName = 'INNOVA - Iniciativa ROI (auto-calculo)'
+        Description = 'Calcula pas_roi_porcentaje = (ahorro - monto) / monto * 100 en Create/Update de pas_iniciativa'
+        Steps = @(
+            @{
+                StepName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaRoiPlugin: Create of pas_iniciativa'
+                Description = 'Pre-operation Create: calcula ROI cuando se pasa monto + ahorro'
+                Message = 'Create'
+                EntityName = 'pas_iniciativa'
+                Stage = 20
+                Mode = 0
+                Rank = 2  # despues del consecutivo
+                FilteringAttributes = $null
+                PreImages = @()
+            },
+            @{
+                StepName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaRoiPlugin: Update of pas_iniciativa'
+                Description = 'Pre-operation Update: recalcula ROI cuando cambia monto o ahorro'
+                Message = 'Update'
+                EntityName = 'pas_iniciativa'
+                Stage = 20
+                Mode = 0
+                Rank = 1
+                FilteringAttributes = 'pas_monto_estimado,pas_ahorro_anual_estimado'
+                PreImages = @(
+                    @{
+                        ImageName = 'PreImage'
+                        ImageType = 0   # 0=PreImage, 1=PostImage, 2=Both
+                        Attributes = 'pas_monto_estimado,pas_ahorro_anual_estimado,pas_roi_porcentaje'
+                    }
+                )
+            }
+        )
+    }
+)
+
 # === 1. Cargar .env ===
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $envFile = Join-Path $repoRoot ".env.$Environment"
@@ -44,7 +98,7 @@ Get-Content $envFile | Where-Object { $_ -and -not $_.StartsWith('#') -and $_ -m
 }
 $envUrl = $envVars["INNOVA_$($Environment.ToUpper())_URL"].TrimEnd('/')
 
-Write-Host "`n=== INNOVA: Registrar plug-in en $($Environment.ToUpper()) ===" -ForegroundColor Cyan
+Write-Host "`n=== INNOVA: Registrar plug-ins en $($Environment.ToUpper()) ===" -ForegroundColor Cyan
 
 # === 2. Resolver path del assembly ===
 $dllPath = if ([System.IO.Path]::IsPathRooted($AssemblyPath)) { $AssemblyPath } else { Join-Path $repoRoot $AssemblyPath }
@@ -54,24 +108,18 @@ if (-not (Test-Path $dllPath)) {
 $dllInfo = Get-Item $dllPath
 Write-Host "  DLL: $dllPath ($([Math]::Round($dllInfo.Length/1KB,1)) KB, mtime $($dllInfo.LastWriteTime))" -ForegroundColor DarkGray
 
-# === 3. Reflection: leer AssemblyName ===
-Add-Type -AssemblyName 'System.Reflection'
+# === 3. Reflection ===
 $asmName = [System.Reflection.AssemblyName]::GetAssemblyName($dllPath)
 $asmSimpleName = $asmName.Name
 $asmVersion = $asmName.Version.ToString()
 $asmCulture = if ($asmName.CultureName) { $asmName.CultureName } else { 'neutral' }
 $pkBytes = $asmName.GetPublicKeyToken()
 $asmPublicKeyToken = ($pkBytes | ForEach-Object { '{0:x2}' -f $_ }) -join ''
-Write-Host "  Name:    $asmSimpleName" -ForegroundColor DarkGray
-Write-Host "  Version: $asmVersion" -ForegroundColor DarkGray
-Write-Host "  Culture: $asmCulture" -ForegroundColor DarkGray
-Write-Host "  PublicKeyToken: $asmPublicKeyToken" -ForegroundColor DarkGray
+Write-Host "  Name: $asmSimpleName, Version: $asmVersion, PKT: $asmPublicKeyToken" -ForegroundColor DarkGray
 
 if ([string]::IsNullOrEmpty($asmPublicKeyToken)) {
-    throw "Assembly no esta firmado (no tiene strong name). Verificar SignAssembly=true y SNK valido."
+    throw "Assembly no esta firmado. Verificar SignAssembly=true y SNK valido."
 }
-
-# Content base64 del DLL
 $dllBytes = [System.IO.File]::ReadAllBytes($dllPath)
 $contentBase64 = [Convert]::ToBase64String($dllBytes)
 
@@ -95,21 +143,20 @@ $hWrite = $h.Clone()
 $hWrite['Content-Type'] = 'application/json; charset=utf-8'
 $hWrite['MSCRM.SolutionUniqueName'] = 'innova_core'
 
-# === 5. PluginAssembly: crear o actualizar ===
-Write-Host "`n[1/4] PluginAssembly..." -ForegroundColor Yellow
-
+# === 5. PluginAssembly ===
+Write-Host "`n[1/N] PluginAssembly..." -ForegroundColor Yellow
 $existing = Invoke-RestMethod -Uri "$apiBase/pluginassemblies?`$filter=name eq '$asmSimpleName'&`$select=pluginassemblyid,version" -Headers $h
 if ($existing.value.Count -gt 0) {
     $pluginAssemblyId = $existing.value[0].pluginassemblyid
-    Write-Host "  Existe (id $pluginAssemblyId, version actual $($existing.value[0].version)). Actualizando Content..." -ForegroundColor DarkGray
+    Write-Host "  Existe (id $pluginAssemblyId). Actualizando Content..." -ForegroundColor DarkGray
     $updateBody = @{ content = $contentBase64; version = $asmVersion } | ConvertTo-Json
     Invoke-RestMethod -Uri "$apiBase/pluginassemblies($pluginAssemblyId)" -Method PATCH -Headers $hWrite -Body $updateBody | Out-Null
-    Write-Host "  Actualizado" -ForegroundColor Green
+    Write-Host "  Content actualizado" -ForegroundColor Green
 } else {
     $createBody = @{
         name = $asmSimpleName
-        sourcetype = 0           # 0=Database
-        isolationmode = 2        # 2=Sandbox
+        sourcetype = 0           # Database
+        isolationmode = 2        # Sandbox
         culture = $asmCulture
         version = $asmVersion
         publickeytoken = $asmPublicKeyToken
@@ -121,82 +168,102 @@ if ($existing.value.Count -gt 0) {
     Write-Host "  Creado: $pluginAssemblyId" -ForegroundColor Green
 }
 
-# === 6. PluginType: IniciativaPreCreatePlugin ===
-Write-Host "`n[2/4] PluginType..." -ForegroundColor Yellow
+# === 6. Loop sobre el manifest ===
+$msgIdCache = @{}
+$filterIdCache = @{}
 
-$pluginTypeName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaPreCreatePlugin'
-$friendlyName = 'INNOVA - Iniciativa Pre-Create (asignar consecutivo)'
-
-$existingType = Invoke-RestMethod -Uri "$apiBase/plugintypes?`$filter=typename eq '$pluginTypeName' and _pluginassemblyid_value eq $pluginAssemblyId&`$select=plugintypeid" -Headers $h
-if ($existingType.value.Count -gt 0) {
-    $pluginTypeId = $existingType.value[0].plugintypeid
-    Write-Host "  Existe: $pluginTypeId" -ForegroundColor DarkGray
-} else {
-    $typeBody = @{
-        typename = $pluginTypeName
-        friendlyname = $friendlyName
-        name = $pluginTypeName
-        description = 'Asigna pas_consecutivo automaticamente al crear una iniciativa. Ver docs/architecture/numeracion-consecutivos.md'
-        'pluginassemblyid@odata.bind' = "/pluginassemblies($pluginAssemblyId)"
-    } | ConvertTo-Json
-    $resp = Invoke-WebRequest -Uri "$apiBase/plugintypes" -Method POST -Headers $hWrite -Body $typeBody
-    $pluginTypeId = ($resp.Headers['OData-EntityId'] -join '') -replace '.*plugintypes\(','' -replace '\).*',''
-    Write-Host "  Creado: $pluginTypeId" -ForegroundColor Green
+function Get-MessageId([string]$message) {
+    if ($msgIdCache.ContainsKey($message)) { return $msgIdCache[$message] }
+    $res = Invoke-RestMethod -Uri "$apiBase/sdkmessages?`$filter=name eq '$message'&`$select=sdkmessageid" -Headers $h
+    if ($res.value.Count -eq 0) { throw "SdkMessage '$message' no encontrado" }
+    $msgIdCache[$message] = $res.value[0].sdkmessageid
+    return $msgIdCache[$message]
 }
 
-# === 7. SdkMessageProcessingStep: pas_iniciativa.Create.Pre.Sync ===
-Write-Host "`n[3/4] SdkMessageProcessingStep..." -ForegroundColor Yellow
-
-# Lookup SdkMessage 'Create'
-$msgRes = Invoke-RestMethod -Uri "$apiBase/sdkmessages?`$filter=name eq 'Create'&`$select=sdkmessageid" -Headers $h
-$createMessageId = $msgRes.value[0].sdkmessageid
-Write-Host "  Create message id: $createMessageId" -ForegroundColor DarkGray
-
-# Lookup SdkMessageFilter para pas_iniciativa + Create
-$filterRes = Invoke-RestMethod -Uri "$apiBase/sdkmessagefilters?`$filter=primaryobjecttypecode eq 'pas_iniciativa' and _sdkmessageid_value eq $createMessageId&`$select=sdkmessagefilterid" -Headers $h
-if ($filterRes.value.Count -eq 0) {
-    throw "No existe SdkMessageFilter para pas_iniciativa.Create. La entidad debe existir en DEV antes de registrar el plug-in."
-}
-$messageFilterId = $filterRes.value[0].sdkmessagefilterid
-Write-Host "  Filter (pas_iniciativa.Create) id: $messageFilterId" -ForegroundColor DarkGray
-
-# Verificar si ya hay un step de este plugin para este mensaje
-$stepName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaPreCreatePlugin: Create of pas_iniciativa'
-$existingStep = Invoke-RestMethod -Uri "$apiBase/sdkmessageprocessingsteps?`$filter=name eq '$stepName'&`$select=sdkmessageprocessingstepid,statecode" -Headers $h
-if ($existingStep.value.Count -gt 0) {
-    $stepId = $existingStep.value[0].sdkmessageprocessingstepid
-    Write-Host "  Step existe: $stepId (state=$($existingStep.value[0].statecode))" -ForegroundColor DarkGray
-} else {
-    $stepBody = @{
-        name = $stepName
-        description = 'Pre-operation Create de pas_iniciativa: asigna pas_consecutivo, pas_consecutivo_secuencia y pas_anio'
-        mode = 0                 # 0=Synchronous
-        stage = 20               # 10=PreValidation, 20=PreOperation, 40=PostOperation
-        rank = 1
-        statecode = 0            # 0=Enabled
-        statuscode = 1           # 1=Enabled
-        asyncautodelete = $false
-        configuration = ''
-        'eventhandler_plugintype@odata.bind' = "/plugintypes($pluginTypeId)"
-        'sdkmessageid@odata.bind' = "/sdkmessages($createMessageId)"
-        'sdkmessagefilterid@odata.bind' = "/sdkmessagefilters($messageFilterId)"
-    } | ConvertTo-Json
-    $resp = Invoke-WebRequest -Uri "$apiBase/sdkmessageprocessingsteps" -Method POST -Headers $hWrite -Body $stepBody
-    $stepId = ($resp.Headers['OData-EntityId'] -join '') -replace '.*sdkmessageprocessingsteps\(','' -replace '\).*',''
-    Write-Host "  Step creado: $stepId" -ForegroundColor Green
+function Get-FilterId([string]$entityName, [string]$messageId) {
+    $key = "$entityName|$messageId"
+    if ($filterIdCache.ContainsKey($key)) { return $filterIdCache[$key] }
+    $res = Invoke-RestMethod -Uri "$apiBase/sdkmessagefilters?`$filter=primaryobjecttypecode eq '$entityName' and _sdkmessageid_value eq $messageId&`$select=sdkmessagefilterid" -Headers $h
+    if ($res.value.Count -eq 0) { throw "SdkMessageFilter para $entityName + msg $messageId no encontrado" }
+    $filterIdCache[$key] = $res.value[0].sdkmessagefilterid
+    return $filterIdCache[$key]
 }
 
-# === 8. Verificacion ===
-Write-Host "`n[4/4] Verificacion..." -ForegroundColor Yellow
-$verify = Invoke-RestMethod -Uri "$apiBase/sdkmessageprocessingsteps($stepId)?`$select=name,stage,mode,statecode,rank" -Headers $h
-Write-Host "  Step: $($verify.name)" -ForegroundColor White
-Write-Host "    stage:  $($verify.stage) (20=PreOperation)" -ForegroundColor DarkGray
-Write-Host "    mode:   $($verify.mode) (0=Sync)" -ForegroundColor DarkGray
-Write-Host "    state:  $($verify.statecode) (0=Enabled)" -ForegroundColor DarkGray
-Write-Host "    rank:   $($verify.rank)" -ForegroundColor DarkGray
+$typeIdx = 0
+foreach ($typeDef in $TypesManifest) {
+    $typeIdx++
+    Write-Host ("`n[Type {0}/{1}] {2}..." -f $typeIdx, $TypesManifest.Count, $typeDef.TypeName) -ForegroundColor Yellow
 
-Write-Host "`n=== Listo. Plug-in registrado y activo en $($Environment.ToUpper()) ===" -ForegroundColor Green
-Write-Host "Smoke test: crear una iniciativa via API debe asignar consecutivo automaticamente." -ForegroundColor DarkGray
-Write-Host "  PluginAssembly: $pluginAssemblyId" -ForegroundColor DarkGray
-Write-Host "  PluginType:     $pluginTypeId" -ForegroundColor DarkGray
-Write-Host "  Step:           $stepId" -ForegroundColor DarkGray
+    # PluginType
+    $existingType = Invoke-RestMethod -Uri "$apiBase/plugintypes?`$filter=typename eq '$($typeDef.TypeName)' and _pluginassemblyid_value eq $pluginAssemblyId&`$select=plugintypeid" -Headers $h
+    if ($existingType.value.Count -gt 0) {
+        $pluginTypeId = $existingType.value[0].plugintypeid
+        Write-Host "  PluginType existe: $pluginTypeId" -ForegroundColor DarkGray
+    } else {
+        $typeBody = @{
+            typename = $typeDef.TypeName
+            friendlyname = $typeDef.FriendlyName
+            name = $typeDef.TypeName
+            description = $typeDef.Description
+            'pluginassemblyid@odata.bind' = "/pluginassemblies($pluginAssemblyId)"
+        } | ConvertTo-Json
+        $resp = Invoke-WebRequest -Uri "$apiBase/plugintypes" -Method POST -Headers $hWrite -Body $typeBody
+        $pluginTypeId = ($resp.Headers['OData-EntityId'] -join '') -replace '.*plugintypes\(','' -replace '\).*',''
+        Write-Host "  PluginType creado: $pluginTypeId" -ForegroundColor Green
+    }
+
+    # Steps
+    foreach ($stepDef in $typeDef.Steps) {
+        $messageId = Get-MessageId $stepDef.Message
+        $filterId = Get-FilterId $stepDef.EntityName $messageId
+
+        $existingStep = Invoke-RestMethod -Uri "$apiBase/sdkmessageprocessingsteps?`$filter=name eq '$($stepDef.StepName)'&`$select=sdkmessageprocessingstepid" -Headers $h
+        if ($existingStep.value.Count -gt 0) {
+            $stepId = $existingStep.value[0].sdkmessageprocessingstepid
+            Write-Host ("  Step '{0}' existe: {1}" -f $stepDef.Message, $stepId) -ForegroundColor DarkGray
+        } else {
+            $stepBody = [ordered]@{
+                name = $stepDef.StepName
+                description = $stepDef.Description
+                mode = $stepDef.Mode
+                stage = $stepDef.Stage
+                rank = $stepDef.Rank
+                statecode = 0
+                statuscode = 1
+                asyncautodelete = $false
+                configuration = ''
+                'eventhandler_plugintype@odata.bind' = "/plugintypes($pluginTypeId)"
+                'sdkmessageid@odata.bind' = "/sdkmessages($messageId)"
+                'sdkmessagefilterid@odata.bind' = "/sdkmessagefilters($filterId)"
+            }
+            if ($stepDef.FilteringAttributes) {
+                $stepBody['filteringattributes'] = $stepDef.FilteringAttributes
+            }
+            $resp = Invoke-WebRequest -Uri "$apiBase/sdkmessageprocessingsteps" -Method POST -Headers $hWrite -Body ($stepBody | ConvertTo-Json)
+            $stepId = ($resp.Headers['OData-EntityId'] -join '') -replace '.*sdkmessageprocessingsteps\(','' -replace '\).*',''
+            Write-Host ("  Step '{0}' creado: {1}" -f $stepDef.Message, $stepId) -ForegroundColor Green
+        }
+
+        # PreImages
+        foreach ($imgDef in $stepDef.PreImages) {
+            $existingImg = Invoke-RestMethod -Uri "$apiBase/sdkmessageprocessingstepimages?`$filter=name eq '$($imgDef.ImageName)' and _sdkmessageprocessingstepid_value eq $stepId&`$select=sdkmessageprocessingstepimageid" -Headers $h
+            if ($existingImg.value.Count -gt 0) {
+                Write-Host ("    Image '{0}' existe" -f $imgDef.ImageName) -ForegroundColor DarkGray
+            } else {
+                $imgBody = @{
+                    name = $imgDef.ImageName
+                    entityalias = $imgDef.ImageName
+                    imagetype = $imgDef.ImageType
+                    attributes = $imgDef.Attributes
+                    messagepropertyname = 'Target'
+                    'sdkmessageprocessingstepid@odata.bind' = "/sdkmessageprocessingsteps($stepId)"
+                } | ConvertTo-Json
+                Invoke-RestMethod -Uri "$apiBase/sdkmessageprocessingstepimages" -Method POST -Headers $hWrite -Body $imgBody | Out-Null
+                Write-Host ("    Image '{0}' creada" -f $imgDef.ImageName) -ForegroundColor Green
+            }
+        }
+    }
+}
+
+Write-Host "`n=== Listo. $($TypesManifest.Count) types registrados/actualizados en $($Environment.ToUpper()) ===" -ForegroundColor Green
+Write-Host "PluginAssembly: $pluginAssemblyId" -ForegroundColor DarkGray
