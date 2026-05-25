@@ -1,0 +1,37 @@
+/// Dimension: empresas del Grupo Pasqui.
+table 'empresa'
+
+	column pas_empresaid
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: pas_empresaid
+		summarizeBy: none
+
+	column nombre
+		dataType: string
+		sourceColumn: pas_nombre
+		summarizeBy: none
+
+	column codigoCorto
+		dataType: string
+		sourceColumn: pas_codigo_corto
+		summarizeBy: none
+
+	column activa
+		dataType: boolean
+		sourceColumn: pas_activa
+		formatString: "True/False"
+		summarizeBy: none
+
+	partition 'empresa' = m
+		mode: import
+		source = ```
+				let
+				    url = "https://org93905a7d.crm.dynamics.com",
+				    Source = OData.Feed(url & "/api/data/v9.2/pas_empresas?$select=pas_empresaid,pas_nombre,pas_codigo_corto,pas_activa", null, [Implementation="2.0"])
+				in
+				    Source
+			```
+
+	annotation PBI_ResultType = Table

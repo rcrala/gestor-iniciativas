@@ -1,0 +1,39 @@
+/// Relaciones del modelo estrella INNOVA.
+/// iniciativa es la fact; el resto son dims.
+
+relationship iniciativa_empresa
+	fromColumn: iniciativa.empresaId
+	toColumn: empresa.pas_empresaid
+	crossFilteringBehavior: oneDirection
+
+relationship iniciativa_centroCosto
+	fromColumn: iniciativa.centroCostoId
+	toColumn: centroCosto.pas_centrocostoid
+	crossFilteringBehavior: oneDirection
+
+relationship iniciativa_estados
+	fromColumn: iniciativa.estadoCodigo
+	toColumn: estados.codigo
+	crossFilteringBehavior: oneDirection
+
+relationship iniciativa_calendar_fechaCreacion
+	fromColumn: iniciativa.fechaCreacion
+	toColumn: Calendar.Date
+	crossFilteringBehavior: oneDirection
+	isActive
+
+relationship iniciativa_calendar_fechaSolicitud
+	fromColumn: iniciativa.fechaSolicitud
+	toColumn: Calendar.Date
+	crossFilteringBehavior: oneDirection
+	isActive: false
+
+relationship centroCosto_empresa
+	fromColumn: centroCosto.empresaId
+	toColumn: empresa.pas_empresaid
+	crossFilteringBehavior: oneDirection
+
+relationship departamento_empresa
+	fromColumn: departamento.empresaId
+	toColumn: empresa.pas_empresaid
+	crossFilteringBehavior: oneDirection

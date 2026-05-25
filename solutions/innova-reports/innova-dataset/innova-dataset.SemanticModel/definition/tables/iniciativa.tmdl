@@ -1,0 +1,156 @@
+/// Tabla de hechos: iniciativas registradas en INNOVA.
+/// Source: pas_iniciativa via OData Feed Dataverse.
+table 'iniciativa'
+
+	column pas_iniciativaid
+		dataType: string
+		isHidden
+		isKey
+		sourceColumn: pas_iniciativaid
+		summarizeBy: none
+
+	column consecutivo
+		dataType: string
+		sourceColumn: pas_consecutivo
+		summarizeBy: none
+		annotation SummarizationSetBy = Automatic
+
+	column titulo
+		dataType: string
+		sourceColumn: pas_titulo
+		summarizeBy: none
+
+	column estadoCodigo
+		dataType: int64
+		sourceColumn: pas_estado
+		summarizeBy: none
+		isHidden
+		annotation SummarizationSetBy = Automatic
+
+	column anio
+		dataType: int64
+		sourceColumn: pas_anio
+		summarizeBy: none
+		annotation SummarizationSetBy = Automatic
+
+	column montoEstimado
+		dataType: decimal
+		sourceColumn: pas_monto_estimado
+		formatString: "\$#,0.00;(\$#,0.00);\$#,0.00"
+		summarizeBy: sum
+		annotation SummarizationSetBy = Automatic
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column ahorroAnualEstimado
+		dataType: decimal
+		sourceColumn: pas_ahorro_anual_estimado
+		formatString: "\$#,0.00;(\$#,0.00);\$#,0.00"
+		summarizeBy: sum
+		annotation SummarizationSetBy = Automatic
+
+	column roiPorcentaje
+		dataType: decimal
+		sourceColumn: pas_roi_porcentaje
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		summarizeBy: average
+		annotation SummarizationSetBy = Automatic
+
+	column esMultiEmpresa
+		dataType: boolean
+		sourceColumn: pas_es_multi_empresa
+		formatString: "True/False"
+		summarizeBy: none
+
+	column requiereDesarrollo
+		dataType: boolean
+		sourceColumn: pas_requiere_desarrollo
+		formatString: "True/False"
+		summarizeBy: none
+
+	column fechaSolicitud
+		dataType: dateTime
+		sourceColumn: pas_fecha_solicitud
+		formatString: Short Date
+		summarizeBy: none
+
+	column fechaCreacion
+		dataType: dateTime
+		sourceColumn: createdon
+		formatString: Short Date
+		summarizeBy: none
+
+	column empresaId
+		dataType: string
+		sourceColumn: _pas_empresa_value
+		summarizeBy: none
+		isHidden
+
+	column centroCostoId
+		dataType: string
+		sourceColumn: _pas_centrocosto_value
+		summarizeBy: none
+		isHidden
+
+	/// Cantidad total de iniciativas en el filtro actual.
+	measure 'Total Iniciativas' = COUNTROWS('iniciativa')
+		formatString: #,0
+
+	/// Suma del monto estimado en el filtro actual.
+	measure 'Monto Estimado Total' = SUM('iniciativa'[montoEstimado])
+		formatString: "\$#,0;(\$#,0);\$#,0"
+
+	/// Suma del ahorro anual estimado.
+	measure 'Ahorro Anual Total' = SUM('iniciativa'[ahorroAnualEstimado])
+		formatString: "\$#,0;(\$#,0);\$#,0"
+
+	/// ROI promedio ponderado por monto (no simple average de columnas).
+	measure 'ROI Promedio Ponderado' =
+			DIVIDE(
+				SUM('iniciativa'[ahorroAnualEstimado]) - SUM('iniciativa'[montoEstimado]),
+				SUM('iniciativa'[montoEstimado])
+			) * 100
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+
+	/// Cantidad de iniciativas en estado Aprobada (100000014).
+	measure 'Iniciativas Aprobadas' =
+			CALCULATE(
+				COUNTROWS('iniciativa'),
+				'iniciativa'[estadoCodigo] = 100000014
+			)
+		formatString: #,0
+
+	/// Tasa de aprobacion: aprobadas / total.
+	measure 'Tasa de Aprobacion' =
+			DIVIDE(
+				[Iniciativas Aprobadas],
+				[Total Iniciativas]
+			) * 100
+		formatString: 0.0\ %
+
+	/// Cantidad de iniciativas canceladas (100000016).
+	measure 'Iniciativas Canceladas' =
+			CALCULATE(
+				COUNTROWS('iniciativa'),
+				'iniciativa'[estadoCodigo] = 100000016
+			)
+		formatString: #,0
+
+	/// Cantidad de iniciativas multi-empresa.
+	measure 'Iniciativas Multi-Empresa' =
+			CALCULATE(
+				COUNTROWS('iniciativa'),
+				'iniciativa'[esMultiEmpresa] = TRUE()
+			)
+		formatString: #,0
+
+	partition 'iniciativa' = m
+		mode: import
+		source = ```
+				let
+				    url = "https://org93905a7d.crm.dynamics.com",
+				    Source = OData.Feed(url & "/api/data/v9.2/pas_iniciativas?$select=pas_iniciativaid,pas_consecutivo,pas_titulo,pas_estado,pas_anio,pas_monto_estimado,pas_ahorro_anual_estimado,pas_roi_porcentaje,pas_es_multi_empresa,pas_requiere_desarrollo,pas_fecha_solicitud,createdon,_pas_empresa_value,_pas_centrocosto_value", null, [Implementation="2.0"])
+				in
+				    Source
+			```
+
+	annotation PBI_ResultType = Table

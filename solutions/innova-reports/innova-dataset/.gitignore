@@ -1,0 +1,11 @@
+# Cache local de Power BI Desktop
+.pbi/
+*.pbix.tmp
+*.tmdb
+
+# Archivos generados al abrir el pbip
+*/cache.abf
+*/cache.abf.tmp
+
+# State local del usuario (no debe ir al repo)
+*/localSettings.json

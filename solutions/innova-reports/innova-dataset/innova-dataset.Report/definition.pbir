@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "datasetReference": {
+    "byPath": {
+      "path": "../innova-dataset.SemanticModel"
+    },
+    "byConnection": null
+  }
+}
