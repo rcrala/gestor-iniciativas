@@ -1,0 +1,42 @@
+<!--
+  iniciativa_creada_pmo - Notificacion al PMO de nueva iniciativa pendiente
+  Variables: {consecutivo}, {titulo}, {solicitante}, {urlIniciativa}
+-->
+<table cellpadding="0" cellspacing="0" border="0" width="600" align="center" style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; background:#f8f8f8; border-collapse:collapse;">
+  <tr>
+    <td bgcolor="#5C2D91" style="padding: 24px; color: #ffffff; font-size: 18px; line-height: 1.4;">
+      <strong style="letter-spacing: 1px;">INNOVA</strong> &middot; Plataforma de Iniciativas
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 32px 24px; background: #ffffff; color: #333333; font-size: 14px; line-height: 1.6;">
+      <h2 style="margin: 0 0 16px 0; font-size: 18px; color: #5C2D91;">Nueva iniciativa requiere tu evaluacion</h2>
+      <p style="margin: 0 0 16px 0;">Hola,</p>
+      <p style="margin: 0 0 16px 0;"><strong>{solicitante}</strong> registro una iniciativa nueva que esta pendiente de revision inicial por parte del PMO. Por favor revisala dentro de los siguientes <strong>2 dias habiles</strong> para mantener el flujo del workflow.</p>
+      <table cellpadding="10" cellspacing="0" border="0" width="100%" style="margin: 16px 0; background: #f5f5f5; border-collapse:collapse;">
+        <tr>
+          <td width="35%" style="color:#666;"><strong>Consecutivo</strong></td>
+          <td><span style="font-family: 'Consolas', monospace; background:#fff; padding:2px 8px; border-radius:3px;">{consecutivo}</span></td>
+        </tr>
+        <tr>
+          <td style="color:#666;"><strong>Titulo</strong></td>
+          <td>{titulo}</td>
+        </tr>
+        <tr>
+          <td style="color:#666;"><strong>Solicitante</strong></td>
+          <td>{solicitante}</td>
+        </tr>
+      </table>
+      <p style="margin: 24px 0;">
+        <a href="{urlIniciativa}" style="background: #5C2D91; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: 600;">Ver iniciativa</a>
+      </p>
+      <p style="margin: 16px 0 0 0; color: #666; font-size: 12px;">Si el boton no funciona, copia este enlace en tu navegador:<br/>{urlIniciativa}</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 16px 24px; background: #f0f0f0; color: #888; font-size: 12px; line-height: 1.5;">
+      Correo automatico generado por INNOVA &middot; No responder a esta direccion.<br/>
+      INNOVA - Grupo Pasqui &middot; Costa Rica
+    </td>
+  </tr>
+</table>
