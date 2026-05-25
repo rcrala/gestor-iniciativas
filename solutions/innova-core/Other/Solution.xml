@@ -13,33 +13,35 @@
       <LocalizedNames>
         <LocalizedName description="Pasqui" languagecode="1033" />
       </LocalizedNames>
-      <Descriptions />
+      <Descriptions>
+        <Description description="Pasqui" languagecode="1033" />
+      </Descriptions>
       <EMailAddress>randall@gtc-cr.com</EMailAddress>
       <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
       <CustomizationPrefix>pas</CustomizationPrefix>
-      <CustomizationOptionValuePrefix>88978</CustomizationOptionValuePrefix>
+      <CustomizationOptionValuePrefix>90574</CustomizationOptionValuePrefix>
       <Addresses>
         <Address>
           <AddressNumber>1</AddressNumber>
           <AddressTypeCode>1</AddressTypeCode>
-          <City>Flores</City>
+          <City xsi:nil="true"></City>
           <County xsi:nil="true"></County>
-          <Country>Costa Rica</Country>
+          <Country xsi:nil="true"></Country>
           <Fax xsi:nil="true"></Fax>
           <FreightTermsCode xsi:nil="true"></FreightTermsCode>
           <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
           <Latitude xsi:nil="true"></Latitude>
-          <Line1>Urbanizacion las carretas casa 7E</Line1>
+          <Line1 xsi:nil="true"></Line1>
           <Line2 xsi:nil="true"></Line2>
           <Line3 xsi:nil="true"></Line3>
           <Longitude xsi:nil="true"></Longitude>
           <Name xsi:nil="true"></Name>
-          <PostalCode>40803</PostalCode>
+          <PostalCode xsi:nil="true"></PostalCode>
           <PostOfficeBox xsi:nil="true"></PostOfficeBox>
           <PrimaryContactName xsi:nil="true"></PrimaryContactName>
           <ShippingMethodCode>1</ShippingMethodCode>
-          <StateOrProvince>Heredia</StateOrProvince>
-          <Telephone1>88802032</Telephone1>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
           <Telephone2 xsi:nil="true"></Telephone2>
           <Telephone3 xsi:nil="true"></Telephone3>
           <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
@@ -79,6 +81,7 @@
     </Publisher>
     <RootComponents>
       <RootComponent type="1" schemaName="pas_centrocosto" behavior="0" />
+      <RootComponent type="1" schemaName="pas_colaboradorcosto" behavior="0" />
       <RootComponent type="1" schemaName="pas_cotizacion" behavior="0" />
       <RootComponent type="1" schemaName="pas_departamento" behavior="0" />
       <RootComponent type="1" schemaName="pas_documentoadj" behavior="0" />
@@ -102,6 +105,10 @@
       <RootComponent type="20" id="{be430497-2157-f111-bec7-6045bd09bfa4}" behavior="0" />
       <RootComponent type="20" id="{db3856bd-2157-f111-bec7-6045bd09bfa4}" behavior="0" />
       <RootComponent type="300" schemaName="pas_innovapatronespowerfxreferencia_4960d" behavior="0" />
+      <RootComponent type="61" schemaName="pas_iniciativas_app_icon" behavior="0" />
+      <RootComponent type="62" schemaName="innova__iniciativas_9d178128" behavior="0" />
+      <RootComponent type="62" schemaName="pas_iniciativas_app_sitemap" behavior="0" />
+      <RootComponent type="80" schemaName="innova__iniciativas_9d178128" behavior="0" />
       <RootComponent type="9" schemaName="pas_cotizacion_tipo" behavior="0" />
       <RootComponent type="9" schemaName="pas_decision" behavior="0" />
       <RootComponent type="9" schemaName="pas_documento_tipo" behavior="0" />
@@ -114,11 +121,27 @@
       <RootComponent type="9" schemaName="pas_iniciativa_prioridad" behavior="0" />
       <RootComponent type="9" schemaName="pas_parametro_tipo" behavior="0" />
       <RootComponent type="9" schemaName="pas_voto" behavior="0" />
+      <RootComponent type="91" id="{fa19e670-d457-f111-bec7-6045bd09bfa4}" schemaName="Pasqui.Innova.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=325f2d7fee382dd0" behavior="0" />
+      <RootComponent type="92" id="{6127bc01-ea57-f111-bec7-6045bd09bfa4}" behavior="0" />
+      <RootComponent type="92" id="{8676bb07-ea57-f111-bec7-6045bd09bfa4}" behavior="0" />
+      <RootComponent type="92" id="{fe19e670-d457-f111-bec7-6045bd09bfa4}" behavior="0" />
     </RootComponents>
     <MissingDependencies>
       <MissingDependency>
         <Required type="1" schemaName="systemuser" displayName="SystemUser" parentSchemaName="" solution="msdyn_PowerAdminSettingsEmail (2.2.3384.3)" />
         <Dependent type="1" schemaName="systemuser" displayName="SystemUser" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/Images/AppModule_Default_Icon.png" displayName="msdyn_/Images/AppModule_Default_Icon.png" solution="AppModuleWebResources (2.5)">
+          <package appName="AppModule Web Resources Package" version="2.5">AppModuleWebResources (2.5)</package>
+        </Required>
+        <Dependent type="80" schemaName="innova__iniciativas_9d178128" displayName="INNOVA - Iniciativas" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="SettingDefinition" displayName="AppChannel" solution="msdyn_AppFrameworkInfraExtensions (1.0.0.16)" id.uniquename="AppChannel">
+          <package appName="PowerAppsAppFramework Package" version="1.0.0.25">PowerAppsAppFramework_Anchor (1.0.0.25)</package>
+        </Required>
+        <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=innova__iniciativas_9d178128,settingdefinitionid.uniquename=AppChannel" id.parentappmoduleid.uniquename="innova__iniciativas_9d178128" id.settingdefinitionid.uniquename="AppChannel" />
       </MissingDependency>
     </MissingDependencies>
   </SolutionManifest>

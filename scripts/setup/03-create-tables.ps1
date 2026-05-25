@@ -203,18 +203,36 @@ function Build-PicklistAttribute {
     }
 }
 
+function Build-MultiSelectPicklistAttribute {
+    param($Col)
+    # G5 (issue #32): MultiSelectPicklist permite seleccionar varios valores. Usa el mismo binding
+    # a GlobalOptionSet que Picklist, pero el @odata.type es distinto.
+    $gos = Get-DataverseGlobalOptionSet -Environment $script:CurrentEnvironment -Name $Col.GlobalChoice
+    if (-not $gos) { throw "Global option set '$($Col.GlobalChoice)' no encontrado. Ejecuta 02-create-choice-sets.ps1 primero." }
+    return @{
+        '@odata.type' = 'Microsoft.Dynamics.CRM.MultiSelectPicklistAttributeMetadata'
+        SchemaName    = $Col.SchemaName
+        LogicalName   = $Col.LogicalName
+        DisplayName   = (New-LocalizedLabel -Text $Col.Display)
+        Description   = (New-LocalizedLabel -Text (Get-Desc $Col))
+        RequiredLevel = (Build-RequiredLevel $Col.Required)
+        'GlobalOptionSet@odata.bind' = "/GlobalOptionSetDefinitions($($gos.MetadataId))"
+    }
+}
+
 function Build-Attribute {
     param($Col)
     switch ($Col.Type) {
-        'String'   { return (Build-StringAttribute   $Col) }
-        'Memo'     { return (Build-MemoAttribute     $Col) }
-        'Integer'  { return (Build-IntegerAttribute  $Col) }
-        'Decimal'  { return (Build-DecimalAttribute  $Col) }
-        'Money'    { return (Build-MoneyAttribute    $Col) }
-        'Boolean'  { return (Build-BooleanAttribute  $Col) }
-        'DateTime' { return (Build-DateTimeAttribute $Col) }
-        'Picklist' { return (Build-PicklistAttribute $Col) }
-        default    { throw "Tipo no soportado en script: $($Col.Type)" }
+        'String'              { return (Build-StringAttribute             $Col) }
+        'Memo'                { return (Build-MemoAttribute               $Col) }
+        'Integer'             { return (Build-IntegerAttribute            $Col) }
+        'Decimal'             { return (Build-DecimalAttribute            $Col) }
+        'Money'               { return (Build-MoneyAttribute              $Col) }
+        'Boolean'             { return (Build-BooleanAttribute            $Col) }
+        'DateTime'            { return (Build-DateTimeAttribute           $Col) }
+        'Picklist'            { return (Build-PicklistAttribute           $Col) }
+        'MultiSelectPicklist' { return (Build-MultiSelectPicklistAttribute $Col) }
+        default               { throw "Tipo no soportado en script: $($Col.Type)" }
     }
 }
 
@@ -265,7 +283,7 @@ $tables = @(
             (Col -Type String   -Name 'pas_titulo'                       -Display 'Titulo'                       -Required ApplicationRequired -MaxLength 200)
             (Col -Type Memo     -Name 'pas_descripcion'                  -Display 'Descripcion'                  -Required ApplicationRequired -MaxLength 2000)
             (Col -Type Memo     -Name 'pas_descripcion_ampliada'         -Display 'Descripcion ampliada'         -MaxLength 4000)
-            (Col -Type Picklist -Name 'pas_clasificacion'                -Display 'Clasificacion'                -GlobalChoice 'pas_iniciativa_clasificacion')
+            (Col -Type MultiSelectPicklist -Name 'pas_clasificacion'     -Display 'Clasificacion'                -GlobalChoice 'pas_iniciativa_clasificacion' -Description 'G5 (issue #32): multi-select; el cliente puede marcar varias categorias (Regulatoria/Operativa/Estrategica/Tecnologia)')
             (Col -Type Picklist -Name 'pas_complejidad'                  -Display 'Complejidad'                  -GlobalChoice 'pas_iniciativa_complejidad')
             (Col -Type Picklist -Name 'pas_prioridad'                    -Display 'Prioridad'                    -GlobalChoice 'pas_iniciativa_prioridad')
             (Col -Type Picklist -Name 'pas_estado'                       -Display 'Estado'                       -GlobalChoice 'pas_iniciativa_estado' -Required ApplicationRequired)
@@ -287,6 +305,11 @@ $tables = @(
             (Col -Type Integer  -Name 'pas_anio'                         -Display 'Ano'                          -Min 2024 -Max 2100)
             (Col -Type Integer  -Name 'pas_dias_pendiente'               -Display 'Dias pendiente'               -Min 0 -Max 100000)
             (Col -Type Integer  -Name 'pas_consecutivo_secuencia'        -Display 'Consecutivo secuencia'        -Min 0 -Max 999999 -Description 'G7: secuencia numerica por empresa+ano usada para componer pas_consecutivo (formato COA-AAAA-NNN). Persistir aparte evita race conditions al calcular el siguiente numero')
+            # ----- G4 (issue #31): campos requeridos por el cliente -----
+            (Col -Type Memo     -Name 'pas_justificacion'                -Display 'Justificacion de la iniciativa'      -MaxLength 2000 -Description 'G4: por que se solicita la iniciativa. Capturado por Solicitante en M2. Texto libre')
+            (Col -Type Memo     -Name 'pas_beneficios_estrategicos'      -Display 'Beneficios estrategicos esperados'   -MaxLength 2000 -Description 'G4: beneficios cualitativos/cuantitativos esperados al implementar la iniciativa. Capturado por Solicitante en M2')
+            (Col -Type Boolean  -Name 'pas_requiere_integracion'         -Display 'Requiere integracion entre sistemas' -TrueLabel 'Si' -FalseLabel 'No' -Description 'G4: si true, en M2 se habilita el multi-select de pas_sistema (bridge pas_iniciativa_sistema)')
+            (Col -Type Money    -Name 'pas_costo_actual_proceso'         -Display 'Costo actual del proceso'            -Description 'G4: costo monetario del proceso actual (sin la iniciativa implementada). Capturado por PMO en M3 segun clarificacion C1 del cliente. No es suma automatica de pas_colaboradorcosto sino captura manual del PMO')
         )
     }
     @{
@@ -296,7 +319,7 @@ $tables = @(
         Ownership = 'UserOwned'
         PrimaryName = (Col -Type String -Name 'pas_nombre' -Display 'Nombre' -Required ApplicationRequired -MaxLength 200 -Description 'Display compuesto: consecutivo iniciativa + evaluador')
         Columns = @(
-            (Col -Type Picklist -Name 'pas_clasificacion_pmo' -Display 'Clasificacion PMO' -GlobalChoice 'pas_iniciativa_clasificacion')
+            (Col -Type MultiSelectPicklist -Name 'pas_clasificacion_pmo' -Display 'Clasificacion PMO' -GlobalChoice 'pas_iniciativa_clasificacion' -Description 'G5 (issue #32): multi-select; el PMO puede confirmar/ajustar varias categorias evaluadas')
             (Col -Type Picklist -Name 'pas_complejidad_pmo'   -Display 'Complejidad PMO'   -GlobalChoice 'pas_iniciativa_complejidad')
             (Col -Type Decimal  -Name 'pas_horas_levantamiento' -Display 'Horas de levantamiento' -Precision 2 -Min 0 -Max 10000)
             (Col -Type Money    -Name 'pas_tarifa_aplicada'   -Display 'Tarifa hora aplicada (snapshot)')
@@ -373,6 +396,19 @@ $tables = @(
             (Col -Type Memo     -Name 'pas_comentario'  -Display 'Comentario'  -Required ApplicationRequired -MaxLength 2000)
             (Col -Type DateTime -Name 'pas_fecha_voto'  -Display 'Fecha voto'  -Behavior 'UserLocal' -Format 'DateAndTime')
             (Col -Type Boolean  -Name 'pas_es_suplente' -Display 'Es voto de suplente' -TrueLabel 'Si' -FalseLabel 'No')
+        )
+    }
+    @{
+        LogicalName = 'pas_colaboradorcosto'; SchemaName = 'pas_ColaboradorCosto'
+        Display = 'Colaborador Costo'; DisplayCollection = 'Colaboradores Costo'
+        Description = 'G3 (issue #30): tabla dinamica de la pantalla M2 Solicitante que registra colaboradores que invierten tiempo en el proceso actual (sin la iniciativa). N filas por iniciativa'
+        Ownership = 'UserOwned'
+        PrimaryName = (Col -Type String -Name 'pas_nombre_colaborador' -Display 'Nombre del colaborador' -Required ApplicationRequired -MaxLength 200 -Description 'Texto libre. Puede ser empleado externo al sistema; por eso no es lookup a systemuser')
+        Columns = @(
+            (Col -Type String  -Name 'pas_puesto'              -Display 'Puesto del colaborador'                       -MaxLength 200 -Description 'Cargo/rol del colaborador en el proceso actual')
+            (Col -Type Decimal -Name 'pas_horas_mensuales'     -Display 'Horas mensuales en el proceso actual'         -Precision 2 -Min 0 -Max 10000 -Description 'Horas que el colaborador invierte en el proceso actual mensualmente. Insumo para que PMO calcule el costo actual del proceso')
+            (Col -Type Memo    -Name 'pas_descripcion_aporte'  -Display 'Descripcion del aporte'                       -MaxLength 1000 -Description 'Opcional: que hace el colaborador en el proceso actual')
+            (Col -Type Boolean -Name 'pas_activo'              -Display 'Activo'                                       -Required ApplicationRequired -TrueLabel 'Si' -FalseLabel 'No' -Default $true -Description 'Soft delete: permite ocultar una fila sin borrarla')
         )
     }
     @{

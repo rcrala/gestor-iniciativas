@@ -1,16 +1,16 @@
 # Modelo de Datos — INNOVA
 
-> **Versión**: 1.5 (alineación con requerimientos del cliente — EPIC #27 / issues #28, #29, #33, #34)
+> **Versión**: 1.6 (cierre EPIC #27 — issues #30, #31, #32)
 > **Estado**: Diseño completo para implementación. Iteraciones menores permitidas como 1.x antes de M2.
 > **Decisores**: Tech Lead, Arquitecto
 >
-> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28) → 1.3 (+ `pas_sistema` + bridge `pas_iniciativa_sistema` issue #29) → 1.4 (reconciliación de labels `pas_iniciativa_estado` issue #33) → 1.5 (+ `pas_codigo_corto` en empresa + `pas_consecutivo_secuencia` en iniciativa para nuevo formato consecutivo COA-AAAA-NNN, issue #34)
+> **Historial de versiones**: 1.0 (Sprint 0 issue #12) → 1.1 (+ `pas_fecha_solicitud`) → 1.2 (+ `pas_departamento` issue #28) → 1.3 (+ `pas_sistema` + bridge `pas_iniciativa_sistema` issue #29) → 1.4 (reconciliación de labels `pas_iniciativa_estado` issue #33) → 1.5 (+ `pas_codigo_corto` en empresa + `pas_consecutivo_secuencia` en iniciativa para nuevo formato consecutivo COA-AAAA-NNN, issue #34) → **1.6 (+ tabla `pas_colaboradorcosto` issue #30 + 4 campos en `pas_iniciativa` issue #31 + `pas_clasificacion` y `pas_clasificacion_pmo` convertidos a MultiSelect con 4 opciones del cliente issue #32)**
 
 ## Resumen
 
-INNOVA modela el ciclo completo de una iniciativa de proyecto en **15 tablas Dataverse** con prefijo `pas_`:
+INNOVA modela el ciclo completo de una iniciativa de proyecto en **16 tablas Dataverse** con prefijo `pas_`:
 
-- **8 tablas de proceso** (creadas/editadas por usuarios funcionales durante el flujo, incluye bridge N:M `pas_iniciativa_sistema`)
+- **9 tablas de proceso** (creadas/editadas por usuarios funcionales durante el flujo, incluye bridge N:M `pas_iniciativa_sistema` y la nueva `pas_colaboradorcosto`)
 - **7 tablas de configuración** (CRUD por Administrador via M11)
 
 Más datos tenant-specific en **Environment Variables** (ver [`entrega-cliente.md`](entrega-cliente.md)).
@@ -32,6 +32,7 @@ erDiagram
     pas_iniciativa ||--o{ pas_horatrabajo   : "1:N"
     pas_iniciativa ||--o{ pas_votocomite    : "1:N"
     pas_iniciativa ||--o{ pas_documentoadj  : "1:N"
+    pas_iniciativa ||--o{ pas_colaboradorcosto : "1:N (proceso actual)"
     pas_iniciativa }o--|| pas_empresa       : "N:1"
     pas_iniciativa }o--|| pas_centrocosto   : "N:1"
     pas_iniciativa }o--|| systemuser        : "solicitante"
@@ -69,6 +70,7 @@ erDiagram
 | `pas_votocomite` | **Proceso** | Miembros del Comité | Vacía |
 | `pas_documentoadj` | **Proceso** | Cualquier usuario autenticado en su fase | Vacía |
 | `pas_iniciativa_sistema` | **Proceso** (bridge N:M) | Solicitante crea al elegir sistemas en M2 | Vacía |
+| `pas_colaboradorcosto` | **Proceso** | Solicitante crea/edita filas en M2 (tabla dinámica del proceso actual) | Vacía |
 | `pas_empresa` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`Empresa A/B/C`) |
 | `pas_centrocosto` | **Configuración** | M11 Administrador | Seed con 3 placeholders (`CC-001/002/003`) |
 | `pas_departamento` | **Configuración** | M11 Administrador | Seed con departamentos placeholder por empresa (issue #28) |
@@ -123,14 +125,15 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | 4 | Muy Alta |
 
 ### `pas_iniciativa_clasificacion`
+
+> v1.6 (issue #32 / G5): reducido a las 4 opciones del cliente. Consumido como **MultiSelect** por `pas_iniciativa.pas_clasificacion` y `pas_evaluacionpmo.pas_clasificacion_pmo`. Valores 3 y 4 preservados del Sprint 0 (re-etiquetados); 7 y 8 nuevos; 1, 2, 5, 6 eliminados por el script `migrate-pas-clasificacion-to-multiselect.ps1`.
+
 | Valor | Etiqueta |
 |---|---|
-| 1 | Mejora de proceso |
-| 2 | Nuevo proceso |
-| 3 | Cumplimiento regulatorio |
-| 4 | Tecnología / Sistemas |
-| 5 | Infraestructura |
-| 6 | Otro |
+| 3 | Regulatoria |
+| 4 | Tecnología |
+| 7 | Operativa |
+| 8 | Estratégica |
 
 ### `pas_cotizacion_tipo`
 | Valor | Etiqueta |
@@ -203,7 +206,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_patrocinador` | Lookup → systemuser | no | Ejecutivo que respalda |
 | `pas_empresa` | Lookup → pas_empresa | sí | Empresa del Grupo Pasquí dueña de la iniciativa |
 | `pas_centrocosto` | Lookup → pas_centrocosto | sí | Centro de costo principal |
-| `pas_clasificacion` | Choice `pas_iniciativa_clasificacion` | no | Asignada por PMO en evaluación |
+| `pas_clasificacion` | **MultiSelect** `pas_iniciativa_clasificacion` | no | Capturada por Solicitante en M2 (puede marcar 1-N de: Regulatoria, Operativa, Estratégica, Tecnología). v1.6 / G5 / #32 |
 | `pas_complejidad` | Choice `pas_iniciativa_complejidad` | no | Asignada por PMO en evaluación |
 | `pas_prioridad` | Choice `pas_iniciativa_prioridad` | no | Asignada por Jefatura al aprobar |
 | `pas_requiere_desarrollo` | Boolean | no | Activado por PMO si va a TI |
@@ -226,9 +229,13 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_fecha_terminacion_ejecucion` | DateTime | no | Set al pasar a "Pendiente Validación Jefatura" |
 | `pas_anio` | Integer | no | Año (2024-2100) usado por el algoritmo de consecutivo. Se llena por flow al enviar (Borrador → Revisión inicial PMO). Índice para reportes anuales |
 | `pas_dias_pendiente` | Integer | no | Calculado: días desde último cambio de estado |
+| `pas_justificacion` | Memo(2000) | no | v1.6 / G4 / #31: por qué se solicita la iniciativa. Capturado por Solicitante en M2 |
+| `pas_beneficios_estrategicos` | Memo(2000) | no | v1.6 / G4 / #31: beneficios cualitativos/cuantitativos esperados. Capturado por Solicitante en M2 |
+| `pas_requiere_integracion` | Boolean | no | v1.6 / G4 / #31: si true, habilita el multi-select de `pas_sistema` en M2 (bridge `pas_iniciativa_sistema`) |
+| `pas_costo_actual_proceso` | Money | no | v1.6 / G4 / #31: costo monetario del proceso actual sin la iniciativa. Capturado **manualmente por PMO** en M3 (clarificación C1 del cliente — no es suma automática de `pas_colaboradorcosto`) |
 | (audit) | — | auto | createdon, createdby, modifiedon, modifiedby, owninguser, owningbusinessunit |
 
-**Total**: 25 columnas custom + 7 audit/system.
+**Total**: 29 columnas custom + 7 audit/system.
 
 ### `pas_evaluacionpmo` — Evaluación PMO
 
@@ -241,7 +248,7 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_evaluacionpmoid` | Uniqueidentifier (PK) | sí | |
 | `pas_iniciativa` | Lookup → pas_iniciativa | sí | 1:0..1 (alternate key para enforcement) |
 | `pas_evaluador` | Lookup → systemuser | sí | Quien hace la evaluación |
-| `pas_clasificacion_pmo` | Choice `pas_iniciativa_clasificacion` | sí | |
+| `pas_clasificacion_pmo` | **MultiSelect** `pas_iniciativa_clasificacion` | sí | v1.6 / G5 / #32: PMO puede confirmar/ajustar varias categorías evaluadas |
 | `pas_complejidad_pmo` | Choice `pas_iniciativa_complejidad` | sí | |
 | `pas_horas_levantamiento` | Decimal(2) | sí | |
 | `pas_tarifa_aplicada` | Money | no | Snapshot de `TarifaHoraPMO` al momento (auditoría) |
@@ -337,6 +344,30 @@ Todos los choice sets son **globales** (no per-tabla) para poder reusarse.
 | `pas_comentario` | Text(2000) | sí | Justificación del voto (obligatoria) |
 | `pas_fecha_voto` | DateTime | sí | Set por flow al guardar |
 | `pas_es_suplente` | Boolean | no | True si votó el suplente del titular |
+
+### `pas_colaboradorcosto` — Colaboradores del proceso actual
+
+> Agregada en v1.6 (issue #30 / G3 — alineación con requerimiento del cliente: "Tabla dinámica en pantalla Solicitante con columnas Nombre / Puesto / Horas invertidas en proceso actual").
+
+**Display name**: Colaborador Costo
+**Ownership**: User
+**Audit**: ON
+
+| Columna | Tipo | Required | Descripción |
+|---|---|---|---|
+| `pas_colaboradorcostoid` | Uniqueidentifier (PK) | sí | |
+| `pas_nombre_colaborador` | Text(200) | sí | **Primary**. Texto libre — puede ser empleado externo al sistema, por eso NO es lookup a `systemuser` |
+| `pas_iniciativa` | Lookup → pas_iniciativa | sí | Cascade Delete: las filas no tienen sentido sin la iniciativa padre |
+| `pas_puesto` | Text(200) | no | Cargo/rol del colaborador en el proceso actual |
+| `pas_horas_mensuales` | Decimal(2) | no | Horas que el colaborador invierte mensualmente en el proceso actual. Insumo para que PMO calcule `pas_iniciativa.pas_costo_actual_proceso` |
+| `pas_descripcion_aporte` | Memo(1000) | no | Opcional: qué hace el colaborador en el proceso actual |
+| `pas_activo` | Boolean | sí | Soft delete (default: true) |
+
+**Patrón de uso en M2**:
+
+1. Solicitante hace `Patch(pas_colaboradorcostos, Defaults(...), {pas_iniciativa: <ref>, pas_nombre_colaborador: "...", ...})` por cada fila agregada
+2. Para listar: `Filter(pas_colaboradorcostos, pas_iniciativa.pas_iniciativaid = <id> && pas_activo = true)`
+3. En M3, el PMO ve estas filas como referencia pero captura **manualmente** el costo total en `pas_iniciativa.pas_costo_actual_proceso` (clarificación C1 del cliente; no se suma automáticamente)
 
 ### `pas_documentoadj` — Metadata de adjuntos
 
@@ -554,6 +585,7 @@ Estas reglas se implementan en Power Fx (Canvas), Power Automate (flows) y/o Bus
 | `pas_votocomite` | `pas_iniciativa` | N:1 | Cascade | |
 | `pas_votocomite` | `pas_miembrocomite` | N:1 | Restrict | |
 | `pas_documentoadj` | `pas_iniciativa` | N:1 | Cascade | Archivos en SharePoint se conservan (responsabilidad cliente) |
+| `pas_colaboradorcosto` | `pas_iniciativa` | N:1 | Cascade | v1.6: filas dependen totalmente de la iniciativa padre |
 | `pas_empresa` | `businessunit` | 1:1 | Restrict | BU del sistema, manejada via Admin Center |
 | `pas_centrocosto` | `pas_empresa` | N:1 | Restrict | |
 | `pas_departamento` | `pas_empresa` | N:1 | Restrict | v1.2: catálogo de departamentos filtrado por empresa |
@@ -650,3 +682,4 @@ Validación de que el modelo soporta todas las pantallas del análisis funcional
 | **1.3** | 2026-05-24 | Agregada tabla `pas_sistema` (catálogo por empresa) + bridge N:M `pas_iniciativa_sistema`. EPIC #27 / issue #29 — alineación con requerimiento del cliente G2 |
 | **1.4** | 2026-05-24 | Sincronizados los 17 labels de `pas_iniciativa_estado` con los nombres exactos del cuadro resumen del cliente. EPIC #27 / issue #33 — G6 |
 | **1.5** | 2026-05-24 | Agregada columna `pas_codigo_corto` a `pas_empresa` (3 letras ASCII upper) + `pas_consecutivo_secuencia` a `pas_iniciativa` (Integer). Nuevo formato consecutivo `<codigo>-{año}-{seq:000}` (ej. `COA-2026-001`). Algoritmo documentado en `docs/architecture/numeracion-consecutivos.md`. EPIC #27 / issue #34 — G7 |
+| **1.6** | 2026-05-25 | **Cierre EPIC #27**. Agregada tabla `pas_colaboradorcosto` (tabla dinámica del proceso actual en M2, issue #30 / G3). Agregadas 4 columnas a `pas_iniciativa`: `pas_justificacion`, `pas_beneficios_estrategicos`, `pas_requiere_integracion`, `pas_costo_actual_proceso` (issue #31 / G4). Convertidas `pas_iniciativa.pas_clasificacion` y `pas_evaluacionpmo.pas_clasificacion_pmo` de Picklist a MultiSelectPicklist, con las 4 opciones del cliente: Regulatoria, Operativa, Estratégica, Tecnología (issue #32 / G5). Script destructivo `migrate-pas-clasificacion-to-multiselect.ps1` agregado para la migración del cambio de tipo |

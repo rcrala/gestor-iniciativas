@@ -103,14 +103,15 @@ $choices = @(
     @{
         Name = 'pas_iniciativa_clasificacion'
         DisplayName = 'Clasificacion de iniciativa'
-        Description = 'Categoria funcional de la iniciativa'
+        Description = 'Categoria funcional de la iniciativa. G5 (issue #32): reducido a las 4 opciones del cliente y consumido como MultiSelect (pas_clasificacion y pas_clasificacion_pmo)'
         Options = @(
-            @{ Value = 1; Label = 'Mejora de proceso' }
-            @{ Value = 2; Label = 'Nuevo proceso' }
-            @{ Value = 3; Label = 'Cumplimiento regulatorio' }
-            @{ Value = 4; Label = 'Tecnologia / Sistemas' }
-            @{ Value = 5; Label = 'Infraestructura' }
-            @{ Value = 6; Label = 'Otro' }
+            # G5 - issue #32: cliente pidio exactamente estas 4 (Regulatoria, Operativa, Estrategica, Tecnologia)
+            # Conservamos valores 3 y 4 del Sprint 0 (relabel a Regulatoria/Tecnologia) y agregamos 7 (Operativa) y 8 (Estrategica)
+            # Los valores 1,2,5,6 obsoletos los borra el script de migracion migrate-pas-clasificacion-to-multiselect.ps1
+            @{ Value = 3; Label = 'Regulatoria' }
+            @{ Value = 4; Label = 'Tecnologia' }
+            @{ Value = 7; Label = 'Operativa' }
+            @{ Value = 8; Label = 'Estrategica' }
         )
     }
     @{

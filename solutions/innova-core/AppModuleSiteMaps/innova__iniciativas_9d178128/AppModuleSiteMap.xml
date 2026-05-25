@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModuleSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SiteMapUniqueName>innova__iniciativas_9d178128</SiteMapUniqueName>
+  <EnableCollapsibleGroups>False</EnableCollapsibleGroups>
+  <ShowHome>True</ShowHome>
+  <ShowPinned>True</ShowPinned>
+  <ShowRecents>True</ShowRecents>
+  <SiteMap IntroducedVersion="7.0.0.0">
+    <Area Id="area_innova__iniciativas_9d178128" ShowGroups="true" ResourceId="SitemapDesigner.NewArea" IntroducedVersion="7.0.0.0">
+      <Titles>
+        <Title Title="Main" LCID="1033" />
+      </Titles>
+    </Area>
+  </SiteMap>
+  <LocalizedNames>
+    <LocalizedName description="INNOVA - Iniciativas" languagecode="1033" />
+  </LocalizedNames>
+</AppModuleSiteMap>

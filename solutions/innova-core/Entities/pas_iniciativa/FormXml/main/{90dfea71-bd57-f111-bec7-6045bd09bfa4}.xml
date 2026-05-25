@@ -1,0 +1,421 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{90dfea71-bd57-f111-bec7-6045bd09bfa4}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{fa45dcb6-b03f-4790-b68d-4eceb93c6d21}" IsUserDefined="1">
+          <labels>
+            <label description="Resumen" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{8dc06beb-9a91-4156-9867-71a4d6d24115}">
+                  <labels>
+                    <label description="Identidad" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{ed9240bb-d5ab-4ad3-b3f9-d9741c1fe46a}">
+                        <labels>
+                          <label description="Titulo" languagecode="1033" />
+                        </labels>
+                        <control id="pas_titulo" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_titulo" />
+                      </cell>
+                      <cell id="{92a34b05-dd8b-4550-8ae9-e609b45b010a}">
+                        <labels>
+                          <label description="Consecutivo" languagecode="1033" />
+                        </labels>
+                        <control id="pas_consecutivo" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_consecutivo" disabled="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bab08907-8699-423a-a035-d573606c72d0}">
+                        <labels>
+                          <label description="Estado" languagecode="1033" />
+                        </labels>
+                        <control id="pas_estado" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="pas_estado" />
+                      </cell>
+                      <cell id="{fc306272-a5da-4ebf-8bb6-2dd132eada24}">
+                        <labels>
+                          <label description="Prioridad" languagecode="1033" />
+                        </labels>
+                        <control id="pas_prioridad" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="pas_prioridad" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{691ff8aa-979c-4e83-ac9e-eaa79cfeb65f}">
+                  <labels>
+                    <label description="Contexto del negocio" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{7032ba83-4b43-e361-c041-83515e166d94}" showlabel="true" locklevel="0">
+                        <labels>
+                          <label description="Clasificacion" languagecode="1033" />
+                        </labels>
+                        <control id="pas_clasificacion" classid="{4AA28AB7-9C13-4F57-A73D-AD894D048B5F}" datafieldname="pas_clasificacion" disabled="false" />
+                      </cell>
+                      <cell id="{0b35579c-afe0-4176-a94e-0df25b2a2df5}">
+                        <labels>
+                          <label description="Complejidad" languagecode="1033" />
+                        </labels>
+                        <control id="pas_complejidad" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="pas_complejidad" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{aefb43cc-0bd5-42bc-91b8-284a9970c771}">
+                        <labels>
+                          <label description="Empresa" languagecode="1033" />
+                        </labels>
+                        <control id="pas_empresa" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="pas_empresa" />
+                      </cell>
+                      <cell id="{90994d45-366f-44bb-9c1b-2a2be974e540}">
+                        <labels>
+                          <label description="Centro de costo" languagecode="1033" />
+                        </labels>
+                        <control id="pas_centrocosto" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="pas_centrocosto" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{4f40323a-8826-4234-b50a-e8d3278c94e1}">
+                        <labels>
+                          <label description="Multi-empresa" languagecode="1033" />
+                        </labels>
+                        <control id="pas_es_multi_empresa" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="pas_es_multi_empresa" />
+                      </cell>
+                      <cell id="{cf918b02-fff8-4e04-a1bf-7ebae0f8cd0c}">
+                        <labels>
+                          <label description="Anio" languagecode="1033" />
+                        </labels>
+                        <control id="pas_anio" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_anio" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{5ec53193-4571-4e78-ba7f-8f620c3e2c73}">
+                  <labels>
+                    <label description="Personas" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{c28abc28-318d-4e7a-98cb-1ab2f33bdb94}">
+                        <labels>
+                          <label description="Solicitante" languagecode="1033" />
+                        </labels>
+                        <control id="pas_solicitante" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="pas_solicitante" />
+                      </cell>
+                      <cell id="{07035d16-2d12-4c1a-9357-62887a0c02bb}">
+                        <labels>
+                          <label description="Patrocinador" languagecode="1033" />
+                        </labels>
+                        <control id="pas_patrocinador" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="pas_patrocinador" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" columns="1" IsUserDefined="1" id="{ec3b5320-1919-41e0-8842-cb9ad4d77cd7}">
+                  <labels>
+                    <label description="Descripcion" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{cfa87311-dd2b-405e-a2b7-4abaf9726ef5}">
+                        <labels>
+                          <label description="Descripcion" languagecode="1033" />
+                        </labels>
+                        <control id="pas_descripcion" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="pas_descripcion" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f23cc56f-87ab-4fd6-9d37-aad580a3b67f}">
+                        <labels>
+                          <label description="Descripcion ampliada" languagecode="1033" />
+                        </labels>
+                        <control id="pas_descripcion_ampliada" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="pas_descripcion_ampliada" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab verticallayout="true" id="{318ce4ed-7aaf-4f4d-8448-10af5724dd96}" IsUserDefined="1">
+          <labels>
+            <label description="Aprobaciones" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{c0e841ef-8b92-4517-91d7-03278876fb18}">
+                  <labels>
+                    <label description="Decision Jefatura" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{8e6447ed-1fd2-4a8a-a939-9db5b14650c7}">
+                        <labels>
+                          <label description="Decision Jefatura" languagecode="1033" />
+                        </labels>
+                        <control id="pas_decision_jefatura" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="pas_decision_jefatura" />
+                      </cell>
+                      <cell id="{ba900791-4cbe-46cd-80e8-6d838a0bb62d}">
+                        <labels>
+                          <label description="Fecha decision Jefatura" languagecode="1033" />
+                        </labels>
+                        <control id="pas_fecha_decision_jefatura" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="pas_fecha_decision_jefatura" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{4ef95fef-7c7b-4a36-bd6a-9211ed1003c8}">
+                        <labels>
+                          <label description="Comentario Jefatura" languagecode="1033" />
+                        </labels>
+                        <control id="pas_decision_jefatura_comentario" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="pas_decision_jefatura_comentario" />
+                      </cell>
+                      <cell id="{25ed0493-069a-443e-bf11-89c55c2dc7bc}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{5029ad55-c8aa-4201-a6cc-bcb385e1b6b9}">
+                  <labels>
+                    <label description="Decision Gerencia" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{703cbb28-7aa5-49e7-829d-4d6e12ed8112}">
+                        <labels>
+                          <label description="Decision Gerencia" languagecode="1033" />
+                        </labels>
+                        <control id="pas_decision_gerencia" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="pas_decision_gerencia" />
+                      </cell>
+                      <cell id="{b72a773a-3f23-4467-abc4-da94bfa085c7}">
+                        <labels>
+                          <label description="Fecha decision Gerencia" languagecode="1033" />
+                        </labels>
+                        <control id="pas_fecha_decision_gerencia" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="pas_fecha_decision_gerencia" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b9a48f86-073a-4d63-97e4-96fa9d11d56f}">
+                        <labels>
+                          <label description="Comentario Gerencia" languagecode="1033" />
+                        </labels>
+                        <control id="pas_decision_gerencia_comentario" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="pas_decision_gerencia_comentario" />
+                      </cell>
+                      <cell id="{2166e91d-0225-4e4e-981c-c760e1dc4df1}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab verticallayout="true" id="{a51bd93c-8d07-4bb8-940c-3d0e80ff8db9}" IsUserDefined="1">
+          <labels>
+            <label description="Estimacion" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{d6dc2f57-7d2d-4b35-be01-db5b458322ba}">
+                  <labels>
+                    <label description="Estimacion economica" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{8a8acb01-f562-46bd-b062-0d1b56ba4d84}">
+                        <labels>
+                          <label description="Monto estimado" languagecode="1033" />
+                        </labels>
+                        <control id="pas_monto_estimado" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_monto_estimado" />
+                      </cell>
+                      <cell id="{97ee9aa4-1bf5-4c9f-97a6-52ffb80326ec}">
+                        <labels>
+                          <label description="Ahorro anual estimado" languagecode="1033" />
+                        </labels>
+                        <control id="pas_ahorro_anual_estimado" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_ahorro_anual_estimado" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{c4ec6b32-fd20-41dc-bedb-a7dca7e99878}">
+                        <labels>
+                          <label description="ROI %" languagecode="1033" />
+                        </labels>
+                        <control id="pas_roi_porcentaje" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_roi_porcentaje" />
+                      </cell>
+                      <cell id="{fb4300a5-f933-4ba0-aa52-d40b98c73310}">
+                        <labels>
+                          <label description="Requiere desarrollo" languagecode="1033" />
+                        </labels>
+                        <control id="pas_requiere_desarrollo" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="pas_requiere_desarrollo" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab verticallayout="true" id="{2da5bea4-676e-4fe2-b745-7fb55ffe437a}" IsUserDefined="1">
+          <labels>
+            <label description="Ejecucion" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="true" showbar="false" columns="11" IsUserDefined="1" id="{940999cd-a5c3-4bfb-aa66-cd0bcfa20c24}">
+                  <labels>
+                    <label description="Fechas clave" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{f5a68c0a-d23b-49e3-9aa1-75cfee4218ce}">
+                        <labels>
+                          <label description="Fecha solicitud" languagecode="1033" />
+                        </labels>
+                        <control id="pas_fecha_solicitud" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="pas_fecha_solicitud" disabled="true" />
+                      </cell>
+                      <cell id="{492c6625-f03b-4fd4-a053-28de52636e90}">
+                        <labels>
+                          <label description="Fecha cierre Comite" languagecode="1033" />
+                        </labels>
+                        <control id="pas_fecha_cierre_comite" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="pas_fecha_cierre_comite" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{196c3a47-eff3-4871-b826-f2de9b74333c}">
+                        <labels>
+                          <label description="Fecha terminacion ejecucion" languagecode="1033" />
+                        </labels>
+                        <control id="pas_fecha_terminacion_ejecucion" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="pas_fecha_terminacion_ejecucion" />
+                      </cell>
+                      <cell id="{71322024-fd6c-48a3-ba32-c022187bb57e}">
+                        <labels>
+                          <label description="Dias pendiente" languagecode="1033" />
+                        </labels>
+                        <control id="pas_dias_pendiente" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="pas_dias_pendiente" disabled="true" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section showlabel="true" showbar="false" columns="1" IsUserDefined="1" id="{18ce036e-7cf6-439c-b436-1cc2bf02a2ee}">
+                  <labels>
+                    <label description="Ejecucion" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{082a4080-0dbb-4a57-a5f4-46068b5b33a2}">
+                        <labels>
+                          <label description="Resumen de ejecucion" languagecode="1033" />
+                        </labels>
+                        <control id="pas_resumen_ejecucion" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="pas_resumen_ejecucion" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{66de9ae3-216d-496b-8071-2c26eb78fe6a}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{0342030c-2200-4d1d-965e-d519ae64f2ca}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{f3342f4d-dc99-41f4-9aad-2d15deda5157}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{b96acae0-69d5-44a1-bd22-0dd8ac1455aa}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{f4f16a12-8eae-4488-8d73-459ca803e773}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{c18346b4-83b1-480d-b86d-a2cc0001c8dc}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{800ac78e-e9da-47d3-bf35-7fb93c6f9d42}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{17736e64-cbda-49af-a7a5-dba925d828a5}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <Navigation>
+        <NavBar></NavBar>
+        <NavBarAreas>
+          <NavBarArea Id="Info">
+            <Titles>
+              <Title LCID="1033" Text="Common" />
+            </Titles>
+          </NavBarArea>
+          <NavBarArea Id="Sales">
+            <Titles>
+              <Title LCID="1033" Text="Sales" />
+            </Titles>
+          </NavBarArea>
+          <NavBarArea Id="Service">
+            <Titles>
+              <Title LCID="1033" Text="Service" />
+            </Titles>
+          </NavBarArea>
+          <NavBarArea Id="Marketing">
+            <Titles>
+              <Title LCID="1033" Text="Marketing" />
+            </Titles>
+          </NavBarArea>
+          <NavBarArea Id="ProcessCenter">
+            <Titles>
+              <Title LCID="1033" Text="Process Sessions" />
+            </Titles>
+          </NavBarArea>
+        </NavBarAreas>
+      </Navigation>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="INNOVA - Iniciativa - Formulario Principal" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Formulario principal de Iniciativa - INNOVA (generado via Web API, S0-MVP)" languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name LocalizedName="Evaluacion PMO" OriginalName="Evaluacion PMO">pas_EvaluacionPMO</Name>
+  <Name LocalizedName="Colaborador Costo" OriginalName="Colaborador Costo">pas_ColaboradorCosto</Name>
   <EntityInfo>
-    <entity Name="pas_EvaluacionPMO">
+    <entity Name="pas_ColaboradorCosto">
       <LocalizedNames>
-        <LocalizedName description="Evaluacion PMO" languagecode="1033" />
+        <LocalizedName description="Colaborador Costo" languagecode="1033" />
       </LocalizedNames>
       <LocalizedCollectionNames>
-        <LocalizedCollectionName description="Evaluaciones PMO" languagecode="1033" />
+        <LocalizedCollectionName description="Colaboradores Costo" languagecode="1033" />
       </LocalizedCollectionNames>
       <Descriptions>
-        <Description description="Levantamiento y evaluacion del PMO para una iniciativa" languagecode="1033" />
+        <Description description="G3 (issue #30): tabla dinamica de la pantalla M2 Solicitante que registra colaboradores que invierten tiempo en el proceso actual (sin la iniciativa). N filas por iniciativa" languagecode="1033" />
       </Descriptions>
       <attributes>
         <attribute PhysicalName="CreatedBy">
@@ -129,46 +129,6 @@
           </displaynames>
           <Descriptions>
             <Description description="Unique identifier of the delegate user who created the record." languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="ExchangeRate">
-          <Type>decimal</Type>
-          <Name>exchangerate</Name>
-          <LogicalName>exchangerate</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>disabled</ImeMode>
-          <ValidForUpdateApi>0</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>0</ValidForCreateApi>
-          <IsCustomField>0</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <MinValue>1E-10</MinValue>
-          <MaxValue>100000000000</MaxValue>
-          <Accuracy>12</Accuracy>
-          <displaynames>
-            <displayname description="Exchange Rate" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Exchange rate for the currency associated with the entity with respect to the base currency." languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="ImportSequenceNumber">
@@ -528,169 +488,10 @@
             <Description description="Unique identifier for the user that owns the record." languagecode="1033" />
           </Descriptions>
         </attribute>
-        <attribute PhysicalName="pas_Clasificacion_PMO">
-          <Type>multiselectpicklist</Type>
-          <Name>pas_clasificacion_pmo</Name>
-          <LogicalName>pas_clasificacion_pmo</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>auto</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <OptionSetName>pas_iniciativa_clasificacion</OptionSetName>
-          <displaynames>
-            <displayname description="Clasificacion PMO" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="G5: multi-select; el PMO puede confirmar/ajustar varias categorias evaluadas" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Complejidad_Pmo">
-          <Type>picklist</Type>
-          <Name>pas_complejidad_pmo</Name>
-          <LogicalName>pas_complejidad_pmo</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>auto</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <OptionSetName>pas_iniciativa_complejidad</OptionSetName>
-          <displaynames>
-            <displayname description="Complejidad PMO" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Complejidad PMO" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Costo_Levantamiento">
-          <Type>money</Type>
-          <Name>pas_costo_levantamiento</Name>
-          <LogicalName>pas_costo_levantamiento</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>disabled</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <MinValue>0</MinValue>
-          <MaxValue>1000000000000</MaxValue>
-          <Accuracy>2</Accuracy>
-          <AccuracySource>2</AccuracySource>
-          <displaynames>
-            <displayname description="Costo de levantamiento (calculado)" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Costo de levantamiento (calculado)" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_costo_levantamiento_Base">
-          <Type>money</Type>
-          <Name>pas_costo_levantamiento_base</Name>
-          <LogicalName>pas_costo_levantamiento_base</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>disabled</ImeMode>
-          <ValidForUpdateApi>0</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>0</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <MinValue>-922337203685477</MinValue>
-          <MaxValue>922337203685477</MaxValue>
-          <Accuracy>2</Accuracy>
-          <AccuracySource>2</AccuracySource>
-          <CalculationOf>pas_Costo_Levantamiento</CalculationOf>
-          <displaynames>
-            <displayname description="Costo de levantamiento (calculado) (Base)" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Value of the Costo de levantamiento (calculado) in base currency." languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Descripcion_Pmo">
-          <Type>ntext</Type>
-          <Name>pas_descripcion_pmo</Name>
-          <LogicalName>pas_descripcion_pmo</LogicalName>
+        <attribute PhysicalName="pas_Activo">
+          <Type>bit</Type>
+          <Name>pas_activo</Name>
+          <LogicalName>pas_activo</LogicalName>
           <RequiredLevel>required</RequiredLevel>
           <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
           <ImeMode>auto</ImeMode>
@@ -717,57 +518,41 @@
           <IsFilterable>0</IsFilterable>
           <IsRetrievable>0</IsRetrievable>
           <IsLocalizable>0</IsLocalizable>
-          <Format>textarea</Format>
-          <MaxLength>4000</MaxLength>
+          <AppDefaultValue>1</AppDefaultValue>
+          <optionset Name="pas_colaboradorcosto_pas_activo">
+            <OptionSetType>bit</OptionSetType>
+            <IntroducedVersion>1.0.0.0</IntroducedVersion>
+            <IsCustomizable>1</IsCustomizable>
+            <displaynames>
+              <displayname description="Activo" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="Soft delete: permite ocultar una fila sin borrarla" languagecode="1033" />
+            </Descriptions>
+            <options>
+              <option value="1" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Si" languagecode="1033" />
+                </labels>
+              </option>
+              <option value="0" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="No" languagecode="1033" />
+                </labels>
+              </option>
+            </options>
+          </optionset>
           <displaynames>
-            <displayname description="Descripcion PMO" languagecode="1033" />
+            <displayname description="Activo" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Descripcion PMO" languagecode="1033" />
+            <Description description="Soft delete: permite ocultar una fila sin borrarla" languagecode="1033" />
           </Descriptions>
         </attribute>
-        <attribute PhysicalName="pas_Estado">
-          <Type>picklist</Type>
-          <Name>pas_estado</Name>
-          <LogicalName>pas_estado</LogicalName>
-          <RequiredLevel>required</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>auto</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <OptionSetName>pas_evaluacion_estado</OptionSetName>
-          <displaynames>
-            <displayname description="Estado" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Estado" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_EvaluacionPMOId">
+        <attribute PhysicalName="pas_ColaboradorCostoId">
           <Type>primarykey</Type>
-          <Name>pas_evaluacionpmoid</Name>
-          <LogicalName>pas_evaluacionpmoid</LogicalName>
+          <Name>pas_colaboradorcostoid</Name>
+          <LogicalName>pas_colaboradorcostoid</LogicalName>
           <RequiredLevel>systemrequired</RequiredLevel>
           <DisplayMask>ValidForAdvancedFind|RequiredForGrid</DisplayMask>
           <ImeMode>auto</ImeMode>
@@ -795,58 +580,19 @@
           <IsRetrievable>1</IsRetrievable>
           <IsLocalizable>0</IsLocalizable>
           <displaynames>
-            <displayname description="Evaluacion PMO" languagecode="1033" />
+            <displayname description="Colaborador Costo" languagecode="1033" />
           </displaynames>
           <Descriptions>
             <Description description="Unique identifier for entity instances" languagecode="1033" />
           </Descriptions>
         </attribute>
-        <attribute PhysicalName="pas_Evaluador">
-          <Type>lookup</Type>
-          <Name>pas_evaluador</Name>
-          <LogicalName>pas_evaluador</LogicalName>
+        <attribute PhysicalName="pas_Descripcion_Aporte">
+          <Type>ntext</Type>
+          <Name>pas_descripcion_aporte</Name>
+          <LogicalName>pas_descripcion_aporte</LogicalName>
           <RequiredLevel>none</RequiredLevel>
           <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>0</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <ExternalName>pas_evaluador</ExternalName>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <LookupStyle>single</LookupStyle>
-          <LookupTypes />
-          <displaynames>
-            <displayname description="Evaluador PMO" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Evaluador PMO" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Fecha_Completada">
-          <Type>datetime</Type>
-          <Name>pas_fecha_completada</Name>
-          <LogicalName>pas_fecha_completada</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>inactive</ImeMode>
+          <ImeMode>auto</ImeMode>
           <ValidForUpdateApi>1</ValidForUpdateApi>
           <ValidForReadApi>1</ValidForReadApi>
           <ValidForCreateApi>1</ValidForCreateApi>
@@ -870,20 +616,19 @@
           <IsFilterable>0</IsFilterable>
           <IsRetrievable>0</IsRetrievable>
           <IsLocalizable>0</IsLocalizable>
-          <Format>datetime</Format>
-          <CanChangeDateTimeBehavior>1</CanChangeDateTimeBehavior>
-          <Behavior>1</Behavior>
+          <Format>textarea</Format>
+          <MaxLength>1000</MaxLength>
           <displaynames>
-            <displayname description="Fecha completada" languagecode="1033" />
+            <displayname description="Descripcion del aporte" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Fecha completada" languagecode="1033" />
+            <Description description="Opcional: que hace el colaborador en el proceso actual" languagecode="1033" />
           </Descriptions>
         </attribute>
-        <attribute PhysicalName="pas_Horas_Levantamiento">
+        <attribute PhysicalName="pas_Horas_Mensuales">
           <Type>decimal</Type>
-          <Name>pas_horas_levantamiento</Name>
-          <LogicalName>pas_horas_levantamiento</LogicalName>
+          <Name>pas_horas_mensuales</Name>
+          <LogicalName>pas_horas_mensuales</LogicalName>
           <RequiredLevel>none</RequiredLevel>
           <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
           <ImeMode>disabled</ImeMode>
@@ -914,10 +659,10 @@
           <MaxValue>100000000</MaxValue>
           <Accuracy>2</Accuracy>
           <displaynames>
-            <displayname description="Horas de levantamiento" languagecode="1033" />
+            <displayname description="Horas mensuales en el proceso actual" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Horas de levantamiento" languagecode="1033" />
+            <Description description="Horas que el colaborador invierte en el proceso actual mensualmente. Insumo para que PMO calcule el costo actual del proceso" languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="pas_Iniciativa">
@@ -959,10 +704,10 @@
             <Description description="Iniciativa" languagecode="1033" />
           </Descriptions>
         </attribute>
-        <attribute PhysicalName="pas_Nombre">
+        <attribute PhysicalName="pas_Nombre_Colaborador">
           <Type>nvarchar</Type>
-          <Name>pas_nombre</Name>
-          <LogicalName>pas_nombre</LogicalName>
+          <Name>pas_nombre_colaborador</Name>
+          <LogicalName>pas_nombre_colaborador</LogicalName>
           <RequiredLevel>required</RequiredLevel>
           <DisplayMask>PrimaryName|ValidForAdvancedFind|ValidForForm|ValidForGrid|RequiredForForm</DisplayMask>
           <ImeMode>auto</ImeMode>
@@ -993,16 +738,16 @@
           <MaxLength>200</MaxLength>
           <Length>400</Length>
           <displaynames>
-            <displayname description="Nombre" languagecode="1033" />
+            <displayname description="Nombre del colaborador" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Display compuesto: consecutivo iniciativa + evaluador" languagecode="1033" />
+            <Description description="Texto libre. Puede ser empleado externo al sistema; por eso no es lookup a systemuser" languagecode="1033" />
           </Descriptions>
         </attribute>
-        <attribute PhysicalName="pas_Recomendacion">
-          <Type>ntext</Type>
-          <Name>pas_recomendacion</Name>
-          <LogicalName>pas_recomendacion</LogicalName>
+        <attribute PhysicalName="pas_Puesto">
+          <Type>nvarchar</Type>
+          <Name>pas_puesto</Name>
+          <LogicalName>pas_puesto</LogicalName>
           <RequiredLevel>none</RequiredLevel>
           <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
           <ImeMode>auto</ImeMode>
@@ -1029,196 +774,14 @@
           <IsFilterable>0</IsFilterable>
           <IsRetrievable>0</IsRetrievable>
           <IsLocalizable>0</IsLocalizable>
-          <Format>textarea</Format>
-          <MaxLength>2000</MaxLength>
+          <Format>text</Format>
+          <MaxLength>200</MaxLength>
+          <Length>400</Length>
           <displaynames>
-            <displayname description="Recomendacion" languagecode="1033" />
+            <displayname description="Puesto del colaborador" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Recomendacion" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Requiere_Desarrollo">
-          <Type>bit</Type>
-          <Name>pas_requiere_desarrollo</Name>
-          <LogicalName>pas_requiere_desarrollo</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>auto</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <AppDefaultValue>0</AppDefaultValue>
-          <optionset Name="pas_evaluacionpmo_pas_requiere_desarrollo">
-            <OptionSetType>bit</OptionSetType>
-            <IntroducedVersion>1.0.0.0</IntroducedVersion>
-            <IsCustomizable>1</IsCustomizable>
-            <displaynames>
-              <displayname description="Requiere desarrollo" languagecode="1033" />
-            </displaynames>
-            <Descriptions>
-              <Description description="Requiere desarrollo" languagecode="1033" />
-            </Descriptions>
-            <options>
-              <option value="1" ExternalValue="" IsHidden="0">
-                <labels>
-                  <label description="Si" languagecode="1033" />
-                </labels>
-              </option>
-              <option value="0" ExternalValue="" IsHidden="0">
-                <labels>
-                  <label description="No" languagecode="1033" />
-                </labels>
-              </option>
-            </options>
-          </optionset>
-          <displaynames>
-            <displayname description="Requiere desarrollo" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Requiere desarrollo" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Riesgos_Pmo">
-          <Type>ntext</Type>
-          <Name>pas_riesgos_pmo</Name>
-          <LogicalName>pas_riesgos_pmo</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>auto</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <Format>textarea</Format>
-          <MaxLength>2000</MaxLength>
-          <displaynames>
-            <displayname description="Riesgos identificados" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Riesgos identificados" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_Tarifa_Aplicada">
-          <Type>money</Type>
-          <Name>pas_tarifa_aplicada</Name>
-          <LogicalName>pas_tarifa_aplicada</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>disabled</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <MinValue>0</MinValue>
-          <MaxValue>1000000000000</MaxValue>
-          <Accuracy>2</Accuracy>
-          <AccuracySource>2</AccuracySource>
-          <displaynames>
-            <displayname description="Tarifa hora aplicada (snapshot)" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Tarifa hora aplicada (snapshot)" languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="pas_tarifa_aplicada_Base">
-          <Type>money</Type>
-          <Name>pas_tarifa_aplicada_base</Name>
-          <LogicalName>pas_tarifa_aplicada_base</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>disabled</ImeMode>
-          <ValidForUpdateApi>0</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>0</ValidForCreateApi>
-          <IsCustomField>1</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <MinValue>-922337203685477</MinValue>
-          <MaxValue>922337203685477</MaxValue>
-          <Accuracy>2</Accuracy>
-          <AccuracySource>2</AccuracySource>
-          <CalculationOf>pas_Tarifa_Aplicada</CalculationOf>
-          <displaynames>
-            <displayname description="Tarifa hora aplicada (snapshot) (Base)" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Value of the Tarifa hora aplicada (snapshot) in base currency." languagecode="1033" />
+            <Description description="Cargo/rol del colaborador en el proceso actual" languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="statecode">
@@ -1251,7 +814,7 @@
           <IsFilterable>1</IsFilterable>
           <IsRetrievable>0</IsRetrievable>
           <IsLocalizable>0</IsLocalizable>
-          <optionset Name="pas_evaluacionpmo_statecode">
+          <optionset Name="pas_colaboradorcosto_statecode">
             <OptionSetType>state</OptionSetType>
             <IntroducedVersion>1.0.0.0</IntroducedVersion>
             <IsCustomizable>1</IsCustomizable>
@@ -1259,7 +822,7 @@
               <displayname description="Status" languagecode="1033" />
             </displaynames>
             <Descriptions>
-              <Description description="Status of the Evaluacion PMO" languagecode="1033" />
+              <Description description="Status of the Colaborador Costo" languagecode="1033" />
             </Descriptions>
             <states>
               <state value="0" defaultstatus="1" invariantname="Active">
@@ -1278,7 +841,7 @@
             <displayname description="Status" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Status of the Evaluacion PMO" languagecode="1033" />
+            <Description description="Status of the Colaborador Costo" languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="statuscode">
@@ -1311,7 +874,7 @@
           <IsFilterable>0</IsFilterable>
           <IsRetrievable>0</IsRetrievable>
           <IsLocalizable>0</IsLocalizable>
-          <optionset Name="pas_evaluacionpmo_statuscode">
+          <optionset Name="pas_colaboradorcosto_statuscode">
             <OptionSetType>status</OptionSetType>
             <IntroducedVersion>1.0.0.0</IntroducedVersion>
             <IsCustomizable>1</IsCustomizable>
@@ -1319,7 +882,7 @@
               <displayname description="Status Reason" languagecode="1033" />
             </displaynames>
             <Descriptions>
-              <Description description="Reason for the status of the Evaluacion PMO" languagecode="1033" />
+              <Description description="Reason for the status of the Colaborador Costo" languagecode="1033" />
             </Descriptions>
             <statuses>
               <status value="1" state="0">
@@ -1338,7 +901,7 @@
             <displayname description="Status Reason" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Reason for the status of the Evaluacion PMO" languagecode="1033" />
+            <Description description="Reason for the status of the Colaborador Costo" languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="TimeZoneRuleVersionNumber">
@@ -1378,45 +941,6 @@
           </displaynames>
           <Descriptions>
             <Description description="For internal use only." languagecode="1033" />
-          </Descriptions>
-        </attribute>
-        <attribute PhysicalName="TransactionCurrencyId">
-          <Type>lookup</Type>
-          <Name>transactioncurrencyid</Name>
-          <LogicalName>transactioncurrencyid</LogicalName>
-          <RequiredLevel>none</RequiredLevel>
-          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
-          <ImeMode>auto</ImeMode>
-          <ValidForUpdateApi>1</ValidForUpdateApi>
-          <ValidForReadApi>1</ValidForReadApi>
-          <ValidForCreateApi>1</ValidForCreateApi>
-          <IsCustomField>0</IsCustomField>
-          <IsAuditEnabled>1</IsAuditEnabled>
-          <IsSecured>0</IsSecured>
-          <IntroducedVersion>1.0.0.0</IntroducedVersion>
-          <IsCustomizable>1</IsCustomizable>
-          <IsRenameable>1</IsRenameable>
-          <CanModifySearchSettings>1</CanModifySearchSettings>
-          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
-          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
-          <SourceType>0</SourceType>
-          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
-          <IsSortableEnabled>0</IsSortableEnabled>
-          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
-          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
-          <IsDataSourceSecret>0</IsDataSourceSecret>
-          <AutoNumberFormat></AutoNumberFormat>
-          <IsSearchable>0</IsSearchable>
-          <IsFilterable>0</IsFilterable>
-          <IsRetrievable>0</IsRetrievable>
-          <IsLocalizable>0</IsLocalizable>
-          <LookupStyle>single</LookupStyle>
-          <LookupTypes />
-          <displaynames>
-            <displayname description="Currency" languagecode="1033" />
-          </displaynames>
-          <Descriptions>
-            <Description description="Unique identifier of the currency associated with the entity." languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="UTCConversionTimeZoneCode">
@@ -1459,7 +983,7 @@
           </Descriptions>
         </attribute>
       </attributes>
-      <EntitySetName>pas_evaluacionpmos</EntitySetName>
+      <EntitySetName>pas_colaboradorcostos</EntitySetName>
       <IsDuplicateCheckSupported>0</IsDuplicateCheckSupported>
       <IsBusinessProcessEnabled>0</IsBusinessProcessEnabled>
       <IsRequiredOffline>0</IsRequiredOffline>

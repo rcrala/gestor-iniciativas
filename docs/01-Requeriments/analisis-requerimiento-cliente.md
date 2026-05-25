@@ -223,4 +223,4 @@ Estas respuestas se incorporan al EPIC #27 y a los issues G1-G8 (#28-#35).
 - Modelo actual: [`docs/architecture/data-model.md`](../architecture/data-model.md) v1.1
 - Plan vigente: [`docs/plan/00-roadmap.md`](../plan/00-roadmap.md)
 - Matriz seguridad: [`docs/architecture/security-roles.md`](../architecture/security-roles.md)
-- Imágenes extraídas (referencia para devs): `%TEMP%\innova-req-extract\word\media\` (image1-14.png)
+- Imágenes extraídas (referencia para devs): [`./media/`](./media/) (image1-14.png) — ver [`./media/README.md`](./media/README.md) con el mapeo de cada imagen a su pantalla M0-M13

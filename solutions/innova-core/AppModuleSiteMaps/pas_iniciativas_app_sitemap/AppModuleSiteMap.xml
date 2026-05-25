@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModuleSiteMap xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SiteMapUniqueName>pas_iniciativas_app_sitemap</SiteMapUniqueName>
+  <EnableCollapsibleGroups>False</EnableCollapsibleGroups>
+  <ShowHome>True</ShowHome>
+  <ShowPinned>True</ShowPinned>
+  <ShowRecents>True</ShowRecents>
+  <SiteMap>
+    <Area Id="Iniciativas" Title="Iniciativas" ShowGroups="true">
+      <Group Id="Gestion" Title="Gestion">
+        <SubArea Id="nav_iniciativa" Entity="pas_iniciativa" Title="Iniciativas" />
+      </Group>
+    </Area>
+  </SiteMap>
+  <LocalizedNames>
+    <LocalizedName description="pas_iniciativas_app_sitemap" languagecode="1033" />
+  </LocalizedNames>
+</AppModuleSiteMap>
