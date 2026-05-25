@@ -651,6 +651,45 @@
             <Description description="Ano" languagecode="1033" />
           </Descriptions>
         </attribute>
+        <attribute PhysicalName="pas_Beneficios_Estrategicos">
+          <Type>ntext</Type>
+          <Name>pas_beneficios_estrategicos</Name>
+          <LogicalName>pas_beneficios_estrategicos</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+          <ImeMode>auto</ImeMode>
+          <ValidForUpdateApi>1</ValidForUpdateApi>
+          <ValidForReadApi>1</ValidForReadApi>
+          <ValidForCreateApi>1</ValidForCreateApi>
+          <IsCustomField>1</IsCustomField>
+          <IsAuditEnabled>1</IsAuditEnabled>
+          <IsSecured>0</IsSecured>
+          <IntroducedVersion>1.0.0.0</IntroducedVersion>
+          <IsCustomizable>1</IsCustomizable>
+          <IsRenameable>1</IsRenameable>
+          <CanModifySearchSettings>1</CanModifySearchSettings>
+          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+          <SourceType>0</SourceType>
+          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+          <IsSortableEnabled>0</IsSortableEnabled>
+          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+          <IsDataSourceSecret>0</IsDataSourceSecret>
+          <AutoNumberFormat></AutoNumberFormat>
+          <IsSearchable>0</IsSearchable>
+          <IsFilterable>0</IsFilterable>
+          <IsRetrievable>0</IsRetrievable>
+          <IsLocalizable>0</IsLocalizable>
+          <Format>textarea</Format>
+          <MaxLength>2000</MaxLength>
+          <displaynames>
+            <displayname description="Beneficios estrategicos esperados" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="G4: beneficios cualitativos/cuantitativos esperados al implementar la iniciativa. Capturado por Solicitante en M2" languagecode="1033" />
+          </Descriptions>
+        </attribute>
         <attribute PhysicalName="pas_CentroCosto">
           <Type>lookup</Type>
           <Name>pas_centrocosto</Name>
@@ -691,7 +730,7 @@
           </Descriptions>
         </attribute>
         <attribute PhysicalName="pas_Clasificacion">
-          <Type>picklist</Type>
+          <Type>multiselectpicklist</Type>
           <Name>pas_clasificacion</Name>
           <LogicalName>pas_clasificacion</LogicalName>
           <RequiredLevel>none</RequiredLevel>
@@ -725,7 +764,7 @@
             <displayname description="Clasificacion" languagecode="1033" />
           </displaynames>
           <Descriptions>
-            <Description description="Clasificacion" languagecode="1033" />
+            <Description description="G5: multi-select; cliente puede marcar varias categorias (Regulatoria/Operativa/Estrategica/Tecnologia)" languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="pas_Complejidad">
@@ -844,6 +883,89 @@
           </displaynames>
           <Descriptions>
             <Description description="G7: secuencia numerica por empresa+ano usada para componer pas_consecutivo (formato COA-AAAA-NNN). Persistir aparte evita race conditions al calcular el siguiente numero" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="pas_Costo_Actual_Proceso">
+          <Type>money</Type>
+          <Name>pas_costo_actual_proceso</Name>
+          <LogicalName>pas_costo_actual_proceso</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+          <ImeMode>disabled</ImeMode>
+          <ValidForUpdateApi>1</ValidForUpdateApi>
+          <ValidForReadApi>1</ValidForReadApi>
+          <ValidForCreateApi>1</ValidForCreateApi>
+          <IsCustomField>1</IsCustomField>
+          <IsAuditEnabled>1</IsAuditEnabled>
+          <IsSecured>0</IsSecured>
+          <IntroducedVersion>1.0.0.0</IntroducedVersion>
+          <IsCustomizable>1</IsCustomizable>
+          <IsRenameable>1</IsRenameable>
+          <CanModifySearchSettings>1</CanModifySearchSettings>
+          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+          <SourceType>0</SourceType>
+          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+          <IsSortableEnabled>0</IsSortableEnabled>
+          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+          <IsDataSourceSecret>0</IsDataSourceSecret>
+          <AutoNumberFormat></AutoNumberFormat>
+          <IsSearchable>0</IsSearchable>
+          <IsFilterable>0</IsFilterable>
+          <IsRetrievable>0</IsRetrievable>
+          <IsLocalizable>0</IsLocalizable>
+          <MinValue>0</MinValue>
+          <MaxValue>1000000000000</MaxValue>
+          <Accuracy>2</Accuracy>
+          <AccuracySource>2</AccuracySource>
+          <displaynames>
+            <displayname description="Costo actual del proceso" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="G4: costo monetario del proceso actual (sin la iniciativa implementada). Capturado por PMO en M3 segun clarificacion C1 del cliente. No es suma automatica de pas_colaboradorcosto sino captura manual del PMO" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="pas_costo_actual_proceso_Base">
+          <Type>money</Type>
+          <Name>pas_costo_actual_proceso_base</Name>
+          <LogicalName>pas_costo_actual_proceso_base</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+          <ImeMode>disabled</ImeMode>
+          <ValidForUpdateApi>0</ValidForUpdateApi>
+          <ValidForReadApi>1</ValidForReadApi>
+          <ValidForCreateApi>0</ValidForCreateApi>
+          <IsCustomField>1</IsCustomField>
+          <IsAuditEnabled>1</IsAuditEnabled>
+          <IsSecured>0</IsSecured>
+          <IntroducedVersion>1.0.0.0</IntroducedVersion>
+          <IsCustomizable>1</IsCustomizable>
+          <IsRenameable>1</IsRenameable>
+          <CanModifySearchSettings>1</CanModifySearchSettings>
+          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+          <SourceType>0</SourceType>
+          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+          <IsSortableEnabled>0</IsSortableEnabled>
+          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+          <IsDataSourceSecret>0</IsDataSourceSecret>
+          <AutoNumberFormat></AutoNumberFormat>
+          <IsSearchable>0</IsSearchable>
+          <IsFilterable>0</IsFilterable>
+          <IsRetrievable>0</IsRetrievable>
+          <IsLocalizable>0</IsLocalizable>
+          <MinValue>-922337203685477</MinValue>
+          <MaxValue>922337203685477</MaxValue>
+          <Accuracy>2</Accuracy>
+          <AccuracySource>2</AccuracySource>
+          <CalculationOf>pas_Costo_Actual_Proceso</CalculationOf>
+          <displaynames>
+            <displayname description="Costo actual del proceso (Base)" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Value of the Costo actual del proceso in base currency." languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="pas_Decision_Gerencia">
@@ -1493,6 +1615,45 @@
             <Description description="Unique identifier for entity instances" languagecode="1033" />
           </Descriptions>
         </attribute>
+        <attribute PhysicalName="pas_Justificacion">
+          <Type>ntext</Type>
+          <Name>pas_justificacion</Name>
+          <LogicalName>pas_justificacion</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+          <ImeMode>auto</ImeMode>
+          <ValidForUpdateApi>1</ValidForUpdateApi>
+          <ValidForReadApi>1</ValidForReadApi>
+          <ValidForCreateApi>1</ValidForCreateApi>
+          <IsCustomField>1</IsCustomField>
+          <IsAuditEnabled>1</IsAuditEnabled>
+          <IsSecured>0</IsSecured>
+          <IntroducedVersion>1.0.0.0</IntroducedVersion>
+          <IsCustomizable>1</IsCustomizable>
+          <IsRenameable>1</IsRenameable>
+          <CanModifySearchSettings>1</CanModifySearchSettings>
+          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+          <SourceType>0</SourceType>
+          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+          <IsSortableEnabled>0</IsSortableEnabled>
+          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+          <IsDataSourceSecret>0</IsDataSourceSecret>
+          <AutoNumberFormat></AutoNumberFormat>
+          <IsSearchable>0</IsSearchable>
+          <IsFilterable>0</IsFilterable>
+          <IsRetrievable>0</IsRetrievable>
+          <IsLocalizable>0</IsLocalizable>
+          <Format>textarea</Format>
+          <MaxLength>2000</MaxLength>
+          <displaynames>
+            <displayname description="Justificacion de la iniciativa" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="G4: por que se solicita la iniciativa. Capturado por Solicitante en M2. Texto libre" languagecode="1033" />
+          </Descriptions>
+        </attribute>
         <attribute PhysicalName="pas_Monto_Estimado">
           <Type>money</Type>
           <Name>pas_monto_estimado</Name>
@@ -1712,6 +1873,67 @@
           </displaynames>
           <Descriptions>
             <Description description="Requiere desarrollo" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="pas_Requiere_Integracion">
+          <Type>bit</Type>
+          <Name>pas_requiere_integracion</Name>
+          <LogicalName>pas_requiere_integracion</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <DisplayMask>ValidForAdvancedFind|ValidForForm|ValidForGrid</DisplayMask>
+          <ImeMode>auto</ImeMode>
+          <ValidForUpdateApi>1</ValidForUpdateApi>
+          <ValidForReadApi>1</ValidForReadApi>
+          <ValidForCreateApi>1</ValidForCreateApi>
+          <IsCustomField>1</IsCustomField>
+          <IsAuditEnabled>1</IsAuditEnabled>
+          <IsSecured>0</IsSecured>
+          <IntroducedVersion>1.0.0.0</IntroducedVersion>
+          <IsCustomizable>1</IsCustomizable>
+          <IsRenameable>1</IsRenameable>
+          <CanModifySearchSettings>1</CanModifySearchSettings>
+          <CanModifyRequirementLevelSettings>1</CanModifyRequirementLevelSettings>
+          <CanModifyAdditionalSettings>1</CanModifyAdditionalSettings>
+          <SourceType>0</SourceType>
+          <IsGlobalFilterEnabled>0</IsGlobalFilterEnabled>
+          <IsSortableEnabled>0</IsSortableEnabled>
+          <CanModifyGlobalFilterSettings>1</CanModifyGlobalFilterSettings>
+          <CanModifyIsSortableSettings>1</CanModifyIsSortableSettings>
+          <IsDataSourceSecret>0</IsDataSourceSecret>
+          <AutoNumberFormat></AutoNumberFormat>
+          <IsSearchable>0</IsSearchable>
+          <IsFilterable>0</IsFilterable>
+          <IsRetrievable>0</IsRetrievable>
+          <IsLocalizable>0</IsLocalizable>
+          <AppDefaultValue>0</AppDefaultValue>
+          <optionset Name="pas_iniciativa_pas_requiere_integracion">
+            <OptionSetType>bit</OptionSetType>
+            <IntroducedVersion>1.0.0.0</IntroducedVersion>
+            <IsCustomizable>1</IsCustomizable>
+            <displaynames>
+              <displayname description="Requiere integracion entre sistemas" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="G4: si true, en M2 se habilita el multi-select de pas_sistema (bridge pas_iniciativa_sistema)" languagecode="1033" />
+            </Descriptions>
+            <options>
+              <option value="1" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Si" languagecode="1033" />
+                </labels>
+              </option>
+              <option value="0" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="No" languagecode="1033" />
+                </labels>
+              </option>
+            </options>
+          </optionset>
+          <displaynames>
+            <displayname description="Requiere integracion entre sistemas" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="G4: si true, en M2 se habilita el multi-select de pas_sistema (bridge pas_iniciativa_sistema)" languagecode="1033" />
           </Descriptions>
         </attribute>
         <attribute PhysicalName="pas_Resumen_Ejecucion">

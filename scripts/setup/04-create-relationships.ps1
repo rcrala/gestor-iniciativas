@@ -125,6 +125,8 @@ $relationships = @(
     # pas_votocomite
     @{ SchemaName = 'pas_votocomite_iniciativa';     ReferencingEntity = 'pas_votocomite';     ReferencedEntity = 'pas_iniciativa';   LookupSchemaName = 'pas_Iniciativa';   LookupLogicalName = 'pas_iniciativa';   LookupDisplay = 'Iniciativa';                  DeleteBehavior = 'Cascade' }
     @{ SchemaName = 'pas_votocomite_miembro';        ReferencingEntity = 'pas_votocomite';     ReferencedEntity = 'pas_miembrocomite'; LookupSchemaName = 'pas_Miembro';     LookupLogicalName = 'pas_miembro';      LookupDisplay = 'Miembro del Comite';          DeleteBehavior = 'Restrict' }
+    # pas_colaboradorcosto (G3 - issue #30): cascade porque las filas no tienen sentido sin la iniciativa padre
+    @{ SchemaName = 'pas_colaboradorcosto_iniciativa'; ReferencingEntity = 'pas_colaboradorcosto'; ReferencedEntity = 'pas_iniciativa'; LookupSchemaName = 'pas_Iniciativa';   LookupLogicalName = 'pas_iniciativa';   LookupDisplay = 'Iniciativa';                  DeleteBehavior = 'Cascade' }
     # pas_documentoadj
     @{ SchemaName = 'pas_documentoadj_iniciativa';   ReferencingEntity = 'pas_documentoadj';   ReferencedEntity = 'pas_iniciativa';   LookupSchemaName = 'pas_Iniciativa';   LookupLogicalName = 'pas_iniciativa';   LookupDisplay = 'Iniciativa';                  DeleteBehavior = 'Cascade' }
     @{ SchemaName = 'pas_documentoadj_subidopor';    ReferencingEntity = 'pas_documentoadj';   ReferencedEntity = 'systemuser';       LookupSchemaName = 'pas_Subido_Por';   LookupLogicalName = 'pas_subido_por';   LookupDisplay = 'Subido por';                  DeleteBehavior = 'Restrict' }

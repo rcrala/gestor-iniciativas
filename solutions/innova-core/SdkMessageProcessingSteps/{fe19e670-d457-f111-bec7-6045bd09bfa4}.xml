@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SdkMessageProcessingStep Name="Pasqui.Innova.Plugins.Iniciativa.IniciativaPreCreatePlugin: Create of pas_iniciativa" SdkMessageProcessingStepId="{fe19e670-d457-f111-bec7-6045bd09bfa4}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SdkMessageId>9ebdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeName>Pasqui.Innova.Plugins.Iniciativa.IniciativaPreCreatePlugin, Pasqui.Innova.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=325f2d7fee382dd0</PluginTypeName>
+  <PluginTypeId>fd19e670-d457-f111-bec7-6045bd09bfa4</PluginTypeId>
+  <PrimaryEntity>pas_iniciativa</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Pre-operation Create de pas_iniciativa: asigna pas_consecutivo, pas_consecutivo_secuencia y pas_anio</Description>
+  <FilteringAttributes></FilteringAttributes>
+  <InvocationSource>1</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>20</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

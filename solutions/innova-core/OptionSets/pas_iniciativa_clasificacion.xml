@@ -11,34 +11,24 @@
     <Description description="Categoria funcional de la iniciativa" languagecode="1033" />
   </Descriptions>
   <options>
-    <option value="1" ExternalValue="" IsHidden="0">
-      <labels>
-        <label description="Mejora de proceso" languagecode="1033" />
-      </labels>
-    </option>
-    <option value="2" ExternalValue="" IsHidden="0">
-      <labels>
-        <label description="Nuevo proceso" languagecode="1033" />
-      </labels>
-    </option>
     <option value="3" ExternalValue="" IsHidden="0">
       <labels>
-        <label description="Cumplimiento regulatorio" languagecode="1033" />
+        <label description="Regulatoria" languagecode="1033" />
       </labels>
     </option>
     <option value="4" ExternalValue="" IsHidden="0">
       <labels>
-        <label description="Tecnologia / Sistemas" languagecode="1033" />
+        <label description="Tecnologia" languagecode="1033" />
       </labels>
     </option>
-    <option value="5" ExternalValue="" IsHidden="0">
+    <option value="7" IsHidden="0">
       <labels>
-        <label description="Infraestructura" languagecode="1033" />
+        <label description="Operativa" languagecode="1033" />
       </labels>
     </option>
-    <option value="6" ExternalValue="" IsHidden="0">
+    <option value="8" IsHidden="0">
       <labels>
-        <label description="Otro" languagecode="1033" />
+        <label description="Estrategica" languagecode="1033" />
       </labels>
     </option>
   </options>
