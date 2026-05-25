@@ -17,4 +17,12 @@ Connection References declaradas aquí. El ambiente destino debe tener las conex
 - Runbook completo: [`../../docs/runbooks/09-flow-template-canonico.md`](../../docs/runbooks/09-flow-template-canonico.md)
 - Scripts: [`../../scripts/flows/register-flow-template.ps1`](../../scripts/flows/register-flow-template.ps1), [`../../scripts/flows/test-flow-template.ps1`](../../scripts/flows/test-flow-template.ps1)
 
+## Flows productivos
+
+| Flow | Trigger | Archivo | Issue / Test plan |
+|---|---|---|---|
+| `INNOVA - Iniciativa Creada - Notificar PMO` | Dataverse Create sobre `pas_iniciativa` | [`flows/INNOVA-iniciativa-creada-notificar-pmo.json`](flows/INNOVA-iniciativa-creada-notificar-pmo.json) | #55 / [`tests/flows/iniciativa-creada-notificar-pmo-test-plan.md`](../../tests/flows/iniciativa-creada-notificar-pmo-test-plan.md) |
+
+Para registrar/redesplegar un flow productivo, usar el script correspondiente en `scripts/flows/register-<flow-slug>.ps1`. Todos siguen el patron idempotente del template.
+
 Ver `docs/conventions/power-automate-style.md` para el estilo de flows.
