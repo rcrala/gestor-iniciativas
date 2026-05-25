@@ -1,0 +1,292 @@
+{
+  "$comentario_plantilla": [
+    "PLANTILLA - NO MODIFICAR, COPIAR PARA FLOWS NUEVOS",
+    "",
+    "Esta es la estructura canonica de TODO flow de INNOVA. Antes de crear un flow nuevo:",
+    "  1. Copiar este JSON",
+    "  2. Renombrar el flow segun docs/conventions/power-automate-style.md (INNOVA - <Trigger> - <Purpose>)",
+    "  3. Reemplazar los Compose marcados '// TODO real' por la accion real (Office365 Send Email, Dataverse Add row, Workflow child flow, etc.)",
+    "  4. Mantener los 4 scopes y los run-after exactos.",
+    "  5. Si el trigger cambia (Manual -> Dataverse When a row is added), conservar los scopes intactos.",
+    "",
+    "Patron documentado en docs/runbooks/08-historia-piloto-notificacion-pmo.md y docs/conventions/power-automate-style.md",
+    "Trigger Manual (PowerApps V2) para ser testeable sin dependencia de Dataverse trigger.",
+    "Para registrar via API ver scripts/flows/register-flow-template.ps1"
+  ],
+  "properties": {
+    "apiId": "/providers/Microsoft.PowerApps/apis/shared_logicflows",
+    "displayName": "INNOVA - Plantilla - Patron Estandar [PLANTILLA - NO MODIFICAR, COPIAR PARA FLOWS NUEVOS]",
+    "category": 5,
+    "schemaVersion": "1.0.0.0",
+    "flowFailureAlertSubscribed": false,
+    "isManaged": false,
+    "connectionReferences": {},
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "metadata": {
+            "operationMetadataId": "f5e1b4a0-1111-2222-3333-444455556666"
+          },
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "Mensaje_de_prueba": {
+                  "type": "string",
+                  "title": "Mensaje de prueba",
+                  "description": "Texto incluido en el payload de notificacion. Vacio -> Validations termina Cancelled.",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "Forzar_fallo_validacion": {
+                  "type": "boolean",
+                  "title": "Forzar fallo en Validations",
+                  "description": "Si true, fuerza Terminate Cancelled en Validations (test del run-after Cancelled).",
+                  "default": false
+                },
+                "Forzar_fallo_main": {
+                  "type": "boolean",
+                  "title": "Forzar fallo en Main Logic",
+                  "description": "Si true, Main Logic lanza un error tecnico y dispara Scope - Error Handler.",
+                  "default": false
+                }
+              },
+              "required": [
+                "Mensaje_de_prueba"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Scope_-_Validations": {
+          "type": "Scope",
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "a1b2c3d4-0001-0001-0001-000000000001"
+          },
+          "actions": {
+            "Compose_-_Validar_inputs": {
+              "type": "Compose",
+              "runAfter": {},
+              "inputs": {
+                "mensajeRecibido": "@coalesce(triggerBody()?['Mensaje_de_prueba'], '')",
+                "forzarFalloValidacion": "@coalesce(triggerBody()?['Forzar_fallo_validacion'], false)",
+                "forzarFalloMain": "@coalesce(triggerBody()?['Forzar_fallo_main'], false)"
+              }
+            },
+            "Condition_-_Falla_de_validacion": {
+              "type": "If",
+              "runAfter": {
+                "Compose_-_Validar_inputs": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "or": [
+                  {
+                    "equals": [
+                      "@coalesce(triggerBody()?['Forzar_fallo_validacion'], false)",
+                      true
+                    ]
+                  },
+                  {
+                    "equals": [
+                      "@length(coalesce(triggerBody()?['Mensaje_de_prueba'], ''))",
+                      0
+                    ]
+                  }
+                ]
+              },
+              "actions": {
+                "Terminate_-_Cancelled_por_validacion": {
+                  "type": "Terminate",
+                  "runAfter": {},
+                  "inputs": {
+                    "runStatus": "Cancelled",
+                    "runError": {
+                      "code": "ValidationFailed",
+                      "message": "@{concat('Validacion fallo. mensajeRecibido=\"', coalesce(triggerBody()?['Mensaje_de_prueba'], '<vacio>'), '\" forzarFalloValidacion=', string(coalesce(triggerBody()?['Forzar_fallo_validacion'], false)))}"
+                    }
+                  }
+                }
+              },
+              "else": {
+                "actions": {}
+              }
+            }
+          }
+        },
+        "Scope_-_Main_Logic": {
+          "type": "Scope",
+          "runAfter": {
+            "Scope_-_Validations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a1b2c3d4-0002-0002-0002-000000000002"
+          },
+          "actions": {
+            "Compose_-_Construir_payload": {
+              "type": "Compose",
+              "runAfter": {},
+              "inputs": {
+                "mensaje": "@triggerBody()?['Mensaje_de_prueba']",
+                "fechaUtc": "@utcNow()",
+                "runId": "@workflow()?['run']?['name']",
+                "trigger": "Manual (PowerApps V2)",
+                "nota": "// TODO real: aqui va la logica principal del flow (calculos, queries Dataverse, transformaciones, etc.)"
+              }
+            },
+            "Condition_-_Forzar_fallo_main": {
+              "type": "If",
+              "runAfter": {
+                "Compose_-_Construir_payload": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "equals": [
+                  "@coalesce(triggerBody()?['Forzar_fallo_main'], false)",
+                  true
+                ]
+              },
+              "actions": {
+                "Compose_-_Provocar_fallo_int_invalido": {
+                  "type": "Compose",
+                  "runAfter": {},
+                  "inputs": "@int('fallo-inducido-no-es-numero')"
+                }
+              },
+              "else": {
+                "actions": {}
+              }
+            }
+          }
+        },
+        "Scope_-_Notifications": {
+          "type": "Scope",
+          "runAfter": {
+            "Scope_-_Main_Logic": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a1b2c3d4-0003-0003-0003-000000000003"
+          },
+          "actions": {
+            "Compose_-_TODO_real_Send_email_o_child_flow": {
+              "type": "Compose",
+              "runAfter": {},
+              "description": "Reemplazar este Compose por una accion REAL de notificacion. Ejemplos: Office365.SendEmailV2, Workflow (child flow Helper - Enviar Correo con Plantilla), Teams Post message. La accion DEBE llevar retryPolicy Fixed 10s x 4. Ver inputs para la estructura del payload.",
+              "inputs": {
+                "tipo": "EMAIL_NOTIFICACION",
+                "para": [
+                  "// TODO real: destinatarios resueltos por rol/grupo en Main Logic"
+                ],
+                "asunto": "// TODO real: subject de la notificacion",
+                "cuerpo": "@outputs('Compose_-_Construir_payload')",
+                "retryPolicyDocumentada": {
+                  "type": "fixed",
+                  "count": 4,
+                  "interval": "PT10S"
+                },
+                "ejemploAccionReal": "Cuando se reemplace por Office365 Send Email V2: agregar 'retryPolicy' al sibling de 'inputs' con la estructura de retryPolicyDocumentada arriba."
+              }
+            },
+            "Compose_-_Resumen_notificacion": {
+              "type": "Compose",
+              "runAfter": {
+                "Compose_-_TODO_real_Send_email_o_child_flow": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "estado": "NOTIFICACION_ENVIADA",
+                "runId": "@workflow()?['run']?['name']",
+                "fechaUtc": "@utcNow()"
+              }
+            }
+          }
+        },
+        "Scope_-_Error_Handler": {
+          "type": "Scope",
+          "runAfter": {
+            "Scope_-_Validations": [
+              "Failed",
+              "TimedOut"
+            ],
+            "Scope_-_Main_Logic": [
+              "Failed",
+              "TimedOut"
+            ],
+            "Scope_-_Notifications": [
+              "Failed",
+              "TimedOut"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a1b2c3d4-0004-0004-0004-000000000004"
+          },
+          "actions": {
+            "Compose_-_Detalle_error": {
+              "type": "Compose",
+              "runAfter": {},
+              "inputs": {
+                "runId": "@workflow()?['run']?['name']",
+                "flowName": "@workflow()?['tags']?['flowDisplayName']",
+                "fechaUtc": "@utcNow()",
+                "scopesResults": {
+                  "Validations": "@result('Scope_-_Validations')",
+                  "MainLogic": "@result('Scope_-_Main_Logic')",
+                  "Notifications": "@result('Scope_-_Notifications')"
+                }
+              }
+            },
+            "Compose_-_TODO_real_log_a_pas_errorlog_y_correo_admin": {
+              "type": "Compose",
+              "runAfter": {
+                "Compose_-_Detalle_error": [
+                  "Succeeded"
+                ]
+              },
+              "description": "Reemplazar por: 1) Dataverse Add a new row (pas_errorlog) con el detalle. 2) Office365 Send Email V2 al admin con outputs('Compose_-_Detalle_error'). Ambas con retryPolicy Fixed 10s x 4.",
+              "inputs": "// TODO real: agregar 2 acciones: (a) Add row a pas_errorlog, (b) Send email V2 al admin con outputs(Compose_-_Detalle_error)."
+            },
+            "Terminate_-_Failed_final": {
+              "type": "Terminate",
+              "runAfter": {
+                "Compose_-_TODO_real_log_a_pas_errorlog_y_correo_admin": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "runStatus": "Failed",
+                "runError": {
+                  "code": "UnhandledScopeFailure",
+                  "message": "@{concat('Flow fallo en uno de los scopes. Run ID: ', workflow()?['run']?['name'])}"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}
