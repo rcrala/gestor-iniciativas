@@ -51,6 +51,33 @@ $TypesManifest = @(
             }
         )
     },
+    # ==========================================================================
+    # IniciativaEstadoTransitionPlugin - NO REGISTRADO en este momento
+    # ==========================================================================
+    # El plug-in CODE esta completo (146 tests passing) pero NO se puede registrar
+    # en DEV hasta que se complete la migracion del attribute pas_iniciativa.pas_estado
+    # del optionset viejo 'pas_estados' (3 valores 1/5/10) al nuevo
+    # 'pas_iniciativa_estado' (17 valores 100000000+) documentado en CHANGELOG v1.4.
+    #
+    # Bloqueador: la migracion via scripts/setup/migrate-pas-estado-to-17values.ps1
+    # falla por 3 dependencias (form refs + step refs). Requiere PR dedicado que:
+    #   1. Strip pas_estado de form INNOVA - Iniciativa - Formulario Principal
+    #   2. Delete attribute pas_estado
+    #   3. Recreate con GlobalOptionSet pas_iniciativa_estado
+    #   4. Re-attach al form
+    #   5. Activar bloque comentado abajo
+    #
+    # Ver docs/architecture/estados-iniciativa.md para el flujo de transiciones.
+    # ==========================================================================
+    # @{
+    #     TypeName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaEstadoTransitionPlugin'
+    #     FriendlyName = 'INNOVA - Iniciativa Validacion Transicion Estado'
+    #     Description = 'Valida transiciones de pas_estado contra matriz documentada'
+    #     Steps = @(
+    #         @{ StepName='...Create of pas_iniciativa'; Message='Create'; ... }
+    #         @{ StepName='...Update of pas_iniciativa'; Message='Update'; FilteringAttributes='pas_estado'; PreImages=@(@{...}) }
+    #     )
+    # },
     @{
         TypeName = 'Pasqui.Innova.Plugins.Iniciativa.IniciativaRoiPlugin'
         FriendlyName = 'INNOVA - Iniciativa ROI (auto-calculo)'
