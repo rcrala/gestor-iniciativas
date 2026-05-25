@@ -1,0 +1,452 @@
+{
+  "$comentario_flow": [
+    "INNOVA - Iniciativa Creada - Notificar PMO (S1-01, issue #55)",
+    "",
+    "PRIMER flow derivado de la plantilla canonica (S0-8, PR #54).",
+    "Conserva los 4 scopes (Validations -> Main Logic -> Notifications -> Error Handler)",
+    "y reemplaza el trigger Manual por Dataverse Create + las acciones reales.",
+    "",
+    "Trigger : Dataverse 'When a row is added' sobre pas_iniciativa, scope=Organization",
+    "Email   : Office365 Send Email V2 (NO premium si owner tiene Power Apps Premium)",
+    "Lookups : Dataverse List rows sobre pas_parametro (PmoDestinatariosCorreo, AdminCorreo) y pas_plantillacorreo (iniciativa_creada_pmo)",
+    "",
+    "Tokens sustituidos en HTML: {consecutivo}, {titulo}, {solicitante}, {urlIniciativa}",
+    "UrlIniciativa se construye como: <UrlBaseApp> + pas_iniciativaid",
+    "",
+    "Connection References necesarias (crear en innova_core / innova_flows una sola vez):",
+    "  - pas_innova_dataverse (apunta a conexion Dataverse del environment)",
+    "  - pas_innova_office365 (apunta a conexion Office 365 Outlook de la cuenta de servicio)"
+  ],
+  "properties": {
+    "apiId": "/providers/Microsoft.PowerApps/apis/shared_logicflows",
+    "displayName": "INNOVA - Iniciativa Creada - Notificar PMO",
+    "category": 5,
+    "schemaVersion": "1.0.0.0",
+    "flowFailureAlertSubscribed": false,
+    "isManaged": false,
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pas_innova_dataverse"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "shared_office365": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "pas_innova_office365"
+        },
+        "api": {
+          "name": "shared_office365"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "Cuando_se_agrega_una_fila_pas_iniciativa": {
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 1,
+              "subscriptionRequest/entityname": "pas_iniciativa",
+              "subscriptionRequest/scope": 4
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Scope_-_Validations": {
+          "type": "Scope",
+          "runAfter": {},
+          "actions": {
+            "Compose_-_Snapshot_inputs": {
+              "type": "Compose",
+              "runAfter": {},
+              "inputs": {
+                "iniciativaId": "@triggerOutputs()?['body/pas_iniciativaid']",
+                "consecutivo": "@coalesce(triggerOutputs()?['body/pas_consecutivo'], '')",
+                "titulo": "@coalesce(triggerOutputs()?['body/pas_titulo'], '')",
+                "solicitanteIdValue": "@coalesce(triggerOutputs()?['body/_pas_solicitante_value'], '')",
+                "solicitanteName": "@coalesce(triggerOutputs()?['body/_pas_solicitante_value@OData.Community.Display.V1.FormattedValue'], '')",
+                "fechaCreacion": "@triggerOutputs()?['body/createdon']"
+              }
+            },
+            "Condition_-_Datos_minimos_invalidos": {
+              "type": "If",
+              "runAfter": {
+                "Compose_-_Snapshot_inputs": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "or": [
+                  {
+                    "equals": [
+                      "@length(coalesce(triggerOutputs()?['body/pas_titulo'], ''))",
+                      0
+                    ]
+                  },
+                  {
+                    "equals": [
+                      "@length(coalesce(triggerOutputs()?['body/_pas_solicitante_value'], ''))",
+                      0
+                    ]
+                  },
+                  {
+                    "equals": [
+                      "@length(coalesce(triggerOutputs()?['body/pas_consecutivo'], ''))",
+                      0
+                    ]
+                  }
+                ]
+              },
+              "actions": {
+                "Terminate_-_Cancelled_por_validacion": {
+                  "type": "Terminate",
+                  "runAfter": {},
+                  "inputs": {
+                    "runStatus": "Cancelled",
+                    "runError": {
+                      "code": "ValidationFailed",
+                      "message": "@{concat('pas_iniciativa creada con datos minimos invalidos. titulo=\"', coalesce(triggerOutputs()?['body/pas_titulo'], '<vacio>'), '\" solicitante=', coalesce(triggerOutputs()?['body/_pas_solicitante_value'], '<vacio>'), ' consecutivo=', coalesce(triggerOutputs()?['body/pas_consecutivo'], '<vacio>'))}"
+                    }
+                  }
+                }
+              },
+              "else": {
+                "actions": {}
+              }
+            }
+          }
+        },
+        "Scope_-_Main_Logic": {
+          "type": "Scope",
+          "runAfter": {
+            "Scope_-_Validations": [
+              "Succeeded"
+            ]
+          },
+          "actions": {
+            "List_-_pas_parametro_PmoDestinatariosCorreo": {
+              "type": "OpenApiConnection",
+              "runAfter": {},
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "pas_parametros",
+                  "$select": "pas_clave,pas_valor_texto",
+                  "$filter": "pas_clave eq 'PmoDestinatariosCorreo'",
+                  "$top": 1
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "retryPolicy": {
+                "type": "fixed",
+                "count": 4,
+                "interval": "PT10S"
+              }
+            },
+            "List_-_pas_parametro_UrlBaseApp": {
+              "type": "OpenApiConnection",
+              "runAfter": {
+                "List_-_pas_parametro_PmoDestinatariosCorreo": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "pas_parametros",
+                  "$select": "pas_clave,pas_valor_texto",
+                  "$filter": "pas_clave eq 'UrlBaseApp'",
+                  "$top": 1
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "retryPolicy": {
+                "type": "fixed",
+                "count": 4,
+                "interval": "PT10S"
+              }
+            },
+            "List_-_pas_plantillacorreo_iniciativa_creada_pmo": {
+              "type": "OpenApiConnection",
+              "runAfter": {
+                "List_-_pas_parametro_UrlBaseApp": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "pas_plantillacorreos",
+                  "$select": "pas_nombre_clave,pas_asunto,pas_cuerpo_html,pas_activa",
+                  "$filter": "pas_nombre_clave eq 'iniciativa_creada_pmo' and pas_activa eq true",
+                  "$top": 1
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "retryPolicy": {
+                "type": "fixed",
+                "count": 4,
+                "interval": "PT10S"
+              }
+            },
+            "Condition_-_Plantilla_existe_y_activa": {
+              "type": "If",
+              "runAfter": {
+                "List_-_pas_plantillacorreo_iniciativa_creada_pmo": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "equals": [
+                  "@length(outputs('List_-_pas_plantillacorreo_iniciativa_creada_pmo')?['body/value'])",
+                  0
+                ]
+              },
+              "actions": {
+                "Compose_-_Forzar_fallo_plantilla_faltante": {
+                  "type": "Compose",
+                  "runAfter": {},
+                  "inputs": "@int('Plantilla iniciativa_creada_pmo no existe o esta inactiva en pas_plantillacorreo - fallo intencional para disparar Error Handler')"
+                }
+              },
+              "else": {
+                "actions": {}
+              }
+            },
+            "Compose_-_Construir_payload": {
+              "type": "Compose",
+              "runAfter": {
+                "Condition_-_Plantilla_existe_y_activa": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "iniciativaId": "@triggerOutputs()?['body/pas_iniciativaid']",
+                "consecutivo": "@triggerOutputs()?['body/pas_consecutivo']",
+                "titulo": "@triggerOutputs()?['body/pas_titulo']",
+                "solicitanteName": "@coalesce(triggerOutputs()?['body/_pas_solicitante_value@OData.Community.Display.V1.FormattedValue'], 'Desconocido')",
+                "fechaCreacion": "@triggerOutputs()?['body/createdon']",
+                "urlIniciativa": "@concat(coalesce(first(outputs('List_-_pas_parametro_UrlBaseApp')?['body/value'])?['pas_valor_texto'], 'https://make.powerapps.com'), triggerOutputs()?['body/pas_iniciativaid'])",
+                "destinatariosPmo": "@coalesce(first(outputs('List_-_pas_parametro_PmoDestinatariosCorreo')?['body/value'])?['pas_valor_texto'], '')",
+                "asuntoBase": "@first(outputs('List_-_pas_plantillacorreo_iniciativa_creada_pmo')?['body/value'])?['pas_asunto']",
+                "cuerpoBaseHtml": "@first(outputs('List_-_pas_plantillacorreo_iniciativa_creada_pmo')?['body/value'])?['pas_cuerpo_html']"
+              }
+            },
+            "Compose_-_Sustituir_tokens_asunto": {
+              "type": "Compose",
+              "runAfter": {
+                "Compose_-_Construir_payload": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": "@replace(replace(replace(replace(coalesce(outputs('Compose_-_Construir_payload')?['asuntoBase'], '[INNOVA] Nueva iniciativa requiere evaluacion - {consecutivo}'), '{consecutivo}', coalesce(outputs('Compose_-_Construir_payload')?['consecutivo'], '')), '{titulo}', coalesce(outputs('Compose_-_Construir_payload')?['titulo'], '')), '{solicitante}', coalesce(outputs('Compose_-_Construir_payload')?['solicitanteName'], '')), '{urlIniciativa}', coalesce(outputs('Compose_-_Construir_payload')?['urlIniciativa'], ''))"
+            },
+            "Compose_-_Sustituir_tokens_cuerpo": {
+              "type": "Compose",
+              "runAfter": {
+                "Compose_-_Sustituir_tokens_asunto": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": "@replace(replace(replace(replace(coalesce(outputs('Compose_-_Construir_payload')?['cuerpoBaseHtml'], '<p>Plantilla no encontrada</p>'), '{consecutivo}', coalesce(outputs('Compose_-_Construir_payload')?['consecutivo'], '')), '{titulo}', coalesce(outputs('Compose_-_Construir_payload')?['titulo'], '')), '{solicitante}', coalesce(outputs('Compose_-_Construir_payload')?['solicitanteName'], '')), '{urlIniciativa}', coalesce(outputs('Compose_-_Construir_payload')?['urlIniciativa'], ''))"
+            }
+          }
+        },
+        "Scope_-_Notifications": {
+          "type": "Scope",
+          "runAfter": {
+            "Scope_-_Main_Logic": [
+              "Succeeded"
+            ]
+          },
+          "actions": {
+            "Send_an_email_-_Notificar_PMO": {
+              "type": "OpenApiConnection",
+              "runAfter": {},
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_office365",
+                  "operationId": "SendEmailV2",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                },
+                "parameters": {
+                  "emailMessage/To": "@outputs('Compose_-_Construir_payload')?['destinatariosPmo']",
+                  "emailMessage/Subject": "@outputs('Compose_-_Sustituir_tokens_asunto')",
+                  "emailMessage/Body": "@outputs('Compose_-_Sustituir_tokens_cuerpo')",
+                  "emailMessage/Importance": "Normal"
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "retryPolicy": {
+                "type": "fixed",
+                "count": 4,
+                "interval": "PT10S"
+              }
+            },
+            "Compose_-_Resumen_notificacion_enviada": {
+              "type": "Compose",
+              "runAfter": {
+                "Send_an_email_-_Notificar_PMO": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "estado": "NOTIFICACION_ENVIADA",
+                "iniciativaId": "@outputs('Compose_-_Construir_payload')?['iniciativaId']",
+                "consecutivo": "@outputs('Compose_-_Construir_payload')?['consecutivo']",
+                "destinatariosPmo": "@outputs('Compose_-_Construir_payload')?['destinatariosPmo']",
+                "runId": "@workflow()?['run']?['name']",
+                "fechaUtc": "@utcNow()"
+              }
+            }
+          }
+        },
+        "Scope_-_Error_Handler": {
+          "type": "Scope",
+          "runAfter": {
+            "Scope_-_Validations": [
+              "Failed",
+              "TimedOut"
+            ],
+            "Scope_-_Main_Logic": [
+              "Failed",
+              "TimedOut"
+            ],
+            "Scope_-_Notifications": [
+              "Failed",
+              "TimedOut"
+            ]
+          },
+          "actions": {
+            "Compose_-_Detalle_error": {
+              "type": "Compose",
+              "runAfter": {},
+              "inputs": {
+                "runId": "@workflow()?['run']?['name']",
+                "flowName": "INNOVA - Iniciativa Creada - Notificar PMO",
+                "iniciativaIdTrigger": "@triggerOutputs()?['body/pas_iniciativaid']",
+                "consecutivoTrigger": "@coalesce(triggerOutputs()?['body/pas_consecutivo'], '<no resuelto>')",
+                "fechaUtc": "@utcNow()",
+                "scopesResults": {
+                  "Validations": "@result('Scope_-_Validations')",
+                  "MainLogic": "@result('Scope_-_Main_Logic')",
+                  "Notifications": "@result('Scope_-_Notifications')"
+                }
+              }
+            },
+            "List_-_pas_parametro_AdminCorreo_para_alerta": {
+              "type": "OpenApiConnection",
+              "runAfter": {
+                "Compose_-_Detalle_error": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "pas_parametros",
+                  "$select": "pas_clave,pas_valor_texto",
+                  "$filter": "pas_clave eq 'AdminCorreo'",
+                  "$top": 1
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "retryPolicy": {
+                "type": "fixed",
+                "count": 4,
+                "interval": "PT10S"
+              }
+            },
+            "Send_an_email_-_Alertar_admin": {
+              "type": "OpenApiConnection",
+              "runAfter": {
+                "List_-_pas_parametro_AdminCorreo_para_alerta": [
+                  "Succeeded"
+                ]
+              },
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_office365",
+                  "operationId": "SendEmailV2",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                },
+                "parameters": {
+                  "emailMessage/To": "@coalesce(first(outputs('List_-_pas_parametro_AdminCorreo_para_alerta')?['body/value'])?['pas_valor_texto'], 'admin@grupopasqui.com')",
+                  "emailMessage/Subject": "@{concat('[INNOVA-ERROR] Fallo en flow Notificar PMO - Run ', workflow()?['run']?['name'])}",
+                  "emailMessage/Body": "@{concat('<p>El flow <b>INNOVA - Iniciativa Creada - Notificar PMO</b> fallo.</p><pre>', string(outputs('Compose_-_Detalle_error')), '</pre>')}",
+                  "emailMessage/Importance": "High"
+                },
+                "authentication": "@parameters('$authentication')"
+              },
+              "retryPolicy": {
+                "type": "fixed",
+                "count": 4,
+                "interval": "PT10S"
+              }
+            },
+            "Terminate_-_Failed_final": {
+              "type": "Terminate",
+              "runAfter": {
+                "Send_an_email_-_Alertar_admin": [
+                  "Succeeded",
+                  "Failed",
+                  "Skipped",
+                  "TimedOut"
+                ]
+              },
+              "inputs": {
+                "runStatus": "Failed",
+                "runError": {
+                  "code": "UnhandledScopeFailure",
+                  "message": "@{concat('Flow INNOVA - Iniciativa Creada - Notificar PMO fallo. Run: ', workflow()?['run']?['name'], '. Detalle: ', string(outputs('Compose_-_Detalle_error')))}"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}
