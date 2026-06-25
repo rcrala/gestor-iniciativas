@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git rev-parse --git-dir >/dev/null 2>&1 && code-review-graph update --skip-flows --repo . || true",
+            "command": "git rev-parse --git-dir >/dev/null 2>&1 && wsl -- bash -lc 'code-review-graph update --skip-flows --repo .' || true",
             "timeout": 30
           }
         ]
@@ -48,7 +48,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "git rev-parse --git-dir >/dev/null 2>&1 && code-review-graph status --repo . || echo 'Not a git repo or code-review-graph not installed, skipping'",
+            "command": "git rev-parse --git-dir >/dev/null 2>&1 && wsl -- bash -lc 'code-review-graph status --repo .' || echo 'Not a git repo or code-review-graph not installed, skipping'",
             "timeout": 10
           }
         ]

@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "code-review-graph": {
-      "command": "code-review-graph",
-      "args": ["serve"],
+      "command": "wsl",
+      "args": ["--", "bash", "-lc", "exec code-review-graph serve"],
       "type": "stdio"
     }
   }
