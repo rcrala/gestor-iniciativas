@@ -1,5 +1,10 @@
 # INNOVA
 
+> ⚠️ **Repositorio en mantenimiento.** Esta es la implementación original sobre
+> Microsoft Power Platform. El desarrollo activo continúa en el producto pro-code
+> **React + .NET**: https://github.com/rcrala/innova — ver
+> [ADR-0006](docs/decisions/0006-stack-react-dotnet-deployable-saas.md).
+
 **Plataforma Corporativa de Iniciativas — Grupo Pasquí**
 
 INNOVA estandariza el ciclo completo de gestión de iniciativas de proyectos, desde el registro inicial por parte del solicitante hasta la aprobación final por la Gerencia General o el Comité de Proyectos.

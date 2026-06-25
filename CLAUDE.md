@@ -1,5 +1,10 @@
 # INNOVA — Project context for Claude Code
 
+> ⚠️ **Repositorio en mantenimiento (Power Platform).** El desarrollo activo
+> continúa en el producto React + .NET: https://github.com/rcrala/innova
+> (ver ADR-0006). Aplica cambios aquí solo para soporte de la versión Power
+> Platform existente.
+
 This file gives Claude Code the context it needs to be productive in this repository. Keep it short, accurate, and updated as the project evolves. When in doubt, prefer this file over assumptions.
 
 ## What is INNOVA?

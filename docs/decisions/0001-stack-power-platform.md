@@ -1,6 +1,6 @@
 # ADR-0001: Stack tecnológico Microsoft Power Platform
 
-- **Status**: Aceptado
+- **Status**: Superseded by ADR-0006
 - **Fecha**: 2026-05-23
 - **Decisores**: Tech Lead, Arquitecto, Patrocinador
 

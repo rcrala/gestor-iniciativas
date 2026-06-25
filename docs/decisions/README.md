@@ -4,7 +4,7 @@ Registramos aquí decisiones arquitectónicas significativas que afectan el sist
 
 ## Lista de ADRs
 
-- [ADR-0001](0001-stack-power-platform.md) — Stack tecnológico Microsoft Power Platform _(superseded by ADR-0006, propuesto)_
+- [ADR-0001](0001-stack-power-platform.md) — Stack tecnológico Microsoft Power Platform _(superseded by ADR-0006)_
 - [ADR-0002](0002-adopcion-claude-code.md) — Adopción de Claude Code para desarrollo
 - [ADR-0003](0003-arquitectura-multi-empresa.md) — Arquitectura multi-empresa con Business Units
 - [ADR-0004](0004-entrega-cliente.md) — Estrategia de entrega al cliente

@@ -1,6 +1,6 @@
 # ADR-0006: Stack pro-code React + .NET, desplegable en cliente y evolución a SaaS
 
-- **Status**: Propuesto (supersedes ADR-0001 si es aceptado)
+- **Status**: Aceptado (supersedes ADR-0001)
 - **Fecha**: 2026-06-25
 - **Decisores**: Tech Lead, Arquitecto, Patrocinador (pendiente de ratificación)
 
